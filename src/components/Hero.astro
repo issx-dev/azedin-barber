@@ -1,0 +1,37 @@
+---
+const barbers = [
+  {
+    name: 'Azedin',
+    tag: 'Fundador · Master Barber',
+    img: 'https://images.pexels.com/photos/1836983/pexels-photo-1836983.jpeg?auto=compress&cs=tinysrgb&w=1200&h=1500&fit=crop',
+    alt: 'Barbero cortando el pelo de pie en el salón',
+  },
+  {
+    name: 'Samir',
+    tag: 'Barber Specialist',
+    img: 'https://images.pexels.com/photos/2076930/pexels-photo-2076930.jpeg?auto=compress&cs=tinysrgb&w=1200&h=1500&fit=crop',
+    alt: 'Barbero de pie cortando el pelo a un cliente',
+  },
+];
+---
+<section class="hero" style="padding:0;">
+  <div class="hero-hint">Elige tu <b>barbero</b></div>
+  <div class="center-divider"></div>
+
+  {barbers.map((b) => (
+    <div class="chooser" onclick={`openModal('${b.name}')`}>
+      <img class="portrait-photo" src={b.img} alt={b.alt} />
+      <div class="portrait-field"></div>
+      <div class="chooser-content">
+        <span class="tag">{b.tag}</span>
+        <h2 class="barber-name">{b.name}</h2>
+        <button
+          class="btn btn-gold"
+          onclick={`event.stopPropagation(); openModal('${b.name}')`}
+        >
+          Reservar con {b.name}
+        </button>
+      </div>
+    </div>
+  ))}
+</section>

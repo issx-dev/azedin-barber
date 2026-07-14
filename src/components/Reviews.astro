@@ -1,0 +1,27 @@
+---
+import { reviews } from '../data/content.js';
+// Duplicated once so the CSS marquee animation (translateX -50%) loops seamlessly.
+const loop = [...reviews, ...reviews];
+---
+<section id="reseñas" style="padding-left:0; padding-right:0;">
+  <div class="section-head" style="padding:0 5vw;">
+    <div>
+      <div class="eyebrow">Lo que dicen</div>
+      <h2 class="section-title">Reseñas reales</h2>
+    </div>
+  </div>
+  <div class="reviews-wrap">
+    <div class="marquee" id="marquee">
+      {loop.map((r) => (
+        <div class="review-card">
+          <span class="stars">★★★★★</span>
+          <p>"{r.quote}"</p>
+          <div class="review-who">
+            <span>Cliente verificado · Booksy</span>
+            <b>{r.barber}</b>
+          </div>
+        </div>
+      ))}
+    </div>
+  </div>
+</section>

@@ -1,0 +1,51 @@
+---
+import { galleryItems } from '../data/content.js';
+
+const filters = [
+  { key: 'all', label: 'Todos' },
+  { key: 'fade', label: 'Skin Fade' },
+  { key: 'beard', label: 'Beard' },
+  { key: 'crop', label: 'Crop Top' },
+];
+---
+<section id="lookbook">
+  <div class="section-head">
+    <div>
+      <div class="eyebrow">Portfolio</div>
+      <h2 class="section-title">Lookbook</h2>
+    </div>
+    <p class="section-desc">
+      Cada corte, firmado. Filtra por estilo y reserva directamente sobre el trabajo que más te convence.
+    </p>
+  </div>
+
+  <div class="filters" id="filters">
+    {filters.map((f, i) => (
+      <div class={`filter-btn ${i === 0 ? 'active' : ''}`} data-f={f.key}>{f.label}</div>
+    ))}
+  </div>
+
+  <div class="gallery-grid" id="galleryGrid">
+    {galleryItems.map((item) => (
+      <div class="g-item" data-c={item.style}>
+        <img class="g-photo" src={item.img} alt={item.alt} />
+        <span class="g-caption">{item.label} · <b>{item.barber}</b></span>
+        <span class="g-book">↗</span>
+      </div>
+    ))}
+  </div>
+</section>
+
+<script>
+  document.querySelectorAll('#filters .filter-btn').forEach((btn) => {
+    btn.addEventListener('click', () => {
+      document.querySelectorAll('#filters .filter-btn').forEach((b) => b.classList.remove('active'));
+      btn.classList.add('active');
+      const f = (btn as HTMLElement).dataset.f;
+      document.querySelectorAll('#galleryGrid .g-item').forEach((item) => {
+        const el = item as HTMLElement;
+        el.style.display = f === 'all' || el.dataset.c === f ? 'flex' : 'none';
+      });
+    });
+  });
+</script>

@@ -1,0 +1,21 @@
+---
+import { services } from '../data/content.js';
+---
+<section id="servicios">
+  <div class="section-head">
+    <div>
+      <div class="eyebrow">Tarifas</div>
+      <h2 class="section-title">Servicios</h2>
+    </div>
+    <p class="section-desc">Precios claros, sin sorpresas. El barbero y el horario exacto se eligen al reservar.</p>
+  </div>
+  <div class="services-grid">
+    {services.map((s) => (
+      <div class="service-card">
+        <h3>{s.name}</h3>
+        <div class="service-price">{s.price}</div>
+        <div class="service-time">{s.time}</div>
+      </div>
+    ))}
+  </div>
+</section>

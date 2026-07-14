@@ -1,0 +1,15 @@
+---
+import { business } from '../data/content.js';
+const year = new Date().getFullYear();
+---
+<footer>
+  <div class="logo">AZEDIN<span>·</span>BARBER</div>
+  <div class="foot-social">
+    <a href={business.instagramUrl} target="_blank" rel="noopener">Instagram</a>
+    <a href={business.booksyUrl} target="_blank" rel="noopener">Booksy</a>
+    <a href="#ubicacion">Cómo llegar</a>
+  </div>
+  <div class="foot-note">© {year} {business.name} · Berja, Almería</div>
+</footer>
+
+<button class="btn btn-gold float-cta" onclick="openModal()">Reservar ahora</button>

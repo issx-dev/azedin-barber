@@ -1,0 +1,34 @@
+---
+import { business } from '../data/content.js';
+---
+<section id="ubicacion">
+  <div class="section-head">
+    <div>
+      <div class="eyebrow">Encuéntranos</div>
+      <h2 class="section-title">Ubicación</h2>
+    </div>
+  </div>
+  <div class="loc-grid">
+    <div class="map-block">
+      <div class="pin"><div class="pin-dot"></div></div>
+    </div>
+    <div class="info-block">
+      <div class="info-row">
+        <div class="k">📍</div>
+        <div class="v"><h4>Dirección</h4><p set:html={business.address.replace(', ', '<br>')} /></div>
+      </div>
+      <div class="info-row">
+        <div class="k">🕘</div>
+        <div class="v">
+          <h4>Horario</h4>
+          <table class="hours-table">
+            {business.hours.map((h) => (
+              <tr><td>{h.day}</td><td>{h.time}</td></tr>
+            ))}
+          </table>
+        </div>
+      </div>
+      <button class="btn btn-gold" style="align-self:flex-start;" onclick="openModal()">Reservar cita</button>
+    </div>
+  </div>
+</section>
