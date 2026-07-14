@@ -1,34 +1,42 @@
 ---
 import { business } from '../data/content.js';
 ---
-<section id="ubicacion">
-  <div class="section-head">
+<section id="ubicacion" class="py-[120px] px-[5vw]">
+  <div class="flex justify-between items-end mb-14 gap-6 flex-wrap">
     <div>
-      <div class="eyebrow">Encuéntranos</div>
-      <h2 class="section-title">Ubicación</h2>
+      <div class="text-[11px] tracking-[0.22em] uppercase text-gold font-bold">Encuéntranos</div>
+      <h2 class="font-syne text-[clamp(30px,4.2vw,54px)] font-extrabold tracking-[-0.02em] uppercase leading-[0.95]">Ubicación</h2>
     </div>
   </div>
-  <div class="loc-grid">
-    <div class="map-block">
-      <div class="pin"><div class="pin-dot"></div></div>
-    </div>
-    <div class="info-block">
-      <div class="info-row">
-        <div class="k">📍</div>
-        <div class="v"><h4>Dirección</h4><p set:html={business.address.replace(', ', '<br>')} /></div>
+  <div class="grid grid-cols-1 md:grid-cols-2 border border-border">
+    <div class="min-h-[420px] relative overflow-hidden bg-[linear-gradient(rgba(5,5,5,0.55),rgba(5,5,5,0.75)),repeating-linear-gradient(0deg,#141414_0_1px,#0a0a0a_1px_42px),repeating-linear-gradient(90deg,#141414_0_1px,#0a0a0a_1px_42px)] border-r border-border max-md:border-r-0 max-md:border-b max-md:min-h-[280px]">
+      <div class="absolute left-[52%] top-[46%] -translate-x-1/2 -translate-y-full text-center">
+        <div class="w-4 h-4 rounded-[50%_50%_50%_0] bg-gold -rotate-45 mx-auto shadow-[0_0_0_6px_rgba(212,175,55,0.15)]"></div>
       </div>
-      <div class="info-row">
-        <div class="k">🕘</div>
-        <div class="v">
-          <h4>Horario</h4>
-          <table class="hours-table">
+    </div>
+    <div class="py-[52px] px-11 flex flex-col justify-center gap-8">
+      <div class="flex gap-[18px]">
+        <div class="w-5 text-gold text-base">📍</div>
+        <div>
+          <h4 class="text-[11px] tracking-[0.12em] uppercase text-ink-faint mb-1.5 font-bold">Dirección</h4>
+          <p class="text-sm leading-[1.7] text-[#d8d8d8]" set:html={business.address.replace(', ', '<br>')} />
+        </div>
+      </div>
+      <div class="flex gap-[18px]">
+        <div class="w-5 text-gold text-base">🕘</div>
+        <div>
+          <h4 class="text-[11px] tracking-[0.12em] uppercase text-ink-faint mb-1.5 font-bold">Horario</h4>
+          <table class="w-full text-[13px] border-collapse">
             {business.hours.map((h) => (
-              <tr><td>{h.day}</td><td>{h.time}</td></tr>
+              <tr>
+                <td class="py-1.5 text-[#d8d8d8] border-t border-border">{h.day}</td>
+                <td class="py-1.5 text-right text-ink-dim border-t border-border">{h.time}</td>
+              </tr>
             ))}
           </table>
         </div>
       </div>
-      <button class="btn btn-gold" style="align-self:flex-start;" onclick="openModal()">Reservar cita</button>
+      <button class="self-start inline-flex items-center gap-2 py-3.5 px-7 text-xs tracking-[0.14em] uppercase font-bold border border-gold bg-gold text-dark-bg rounded hover:bg-gold-hi hover:border-gold-hi hover:text-black transition-colors" data-book-trigger>Reservar cita</button>
     </div>
   </div>
 </section>

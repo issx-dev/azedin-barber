@@ -3,22 +3,22 @@ import { reviews } from '../data/content.js';
 // Duplicated once so the CSS marquee animation (translateX -50%) loops seamlessly.
 const loop = [...reviews, ...reviews];
 ---
-<section id="reseñas" style="padding-left:0; padding-right:0;">
-  <div class="section-head" style="padding:0 5vw;">
+<section id="reseñas" class="py-[120px] px-0">
+  <div class="flex justify-between items-end mb-14 gap-6 flex-wrap px-[5vw]">
     <div>
-      <div class="eyebrow">Lo que dicen</div>
-      <h2 class="section-title">Reseñas reales</h2>
+      <div class="text-[11px] tracking-[0.22em] uppercase text-gold font-bold">Lo que dicen</div>
+      <h2 class="font-syne text-[clamp(30px,4.2vw,54px)] font-extrabold tracking-[-0.02em] uppercase leading-[0.95]">Reseñas reales</h2>
     </div>
   </div>
-  <div class="reviews-wrap">
-    <div class="marquee" id="marquee">
+  <div class="overflow-hidden border-t border-b border-border py-12">
+    <div class="flex gap-5 w-max animate-marquee hover:[animation-play-state:paused]">
       {loop.map((r) => (
-        <div class="review-card">
-          <span class="stars">★★★★★</span>
-          <p>"{r.quote}"</p>
-          <div class="review-who">
+        <div class="w-[320px] flex-none p-[26px] border border-border bg-surface">
+          <span class="block mb-3.5 text-[13px] text-gold tracking-[2px]">★★★★★</span>
+          <p class="text-sm leading-relaxed text-[#d8d8d8] mb-[18px] min-h-[66px]">"{r.quote}"</p>
+          <div class="flex justify-between text-[11px] tracking-[0.06em] text-ink-faint uppercase">
             <span>Cliente verificado · Booksy</span>
-            <b>{r.barber}</b>
+            <b class="text-gold">{r.barber}</b>
           </div>
         </div>
       ))}

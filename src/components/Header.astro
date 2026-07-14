@@ -1,15 +1,19 @@
 ---
 ---
-<header>
-  <div class="logo">AZEDIN<span>·</span>BARBER</div>
-  <nav class="links">
-    <a href="#lookbook">Lookbook</a>
-    <a href="#servicios">Servicios</a>
-    <a href="#ubicacion">Ubicación</a>
-    <a href="#reseñas">Reseñas</a>
+<header class="fixed top-0 left-0 right-0 z-[100] flex items-center justify-between py-5 px-[5vw] bg-dark-bg/70 backdrop-blur-[14px] border-b border-white/[0.06]">
+  <div class="font-syne font-extrabold text-xl tracking-[0.02em]">AZEDIN<span class="text-gold">·</span>BARBER</div>
+  <nav class="hidden md:flex gap-[34px] text-[12px] tracking-[0.12em] uppercase font-semibold">
+    <a href="#lookbook" class="text-ink-dim transition-colors hover:text-ink">Lookbook</a>
+    <a href="#servicios" class="text-ink-dim transition-colors hover:text-ink">Servicios</a>
+    <a href="#ubicacion" class="text-ink-dim transition-colors hover:text-ink">Ubicación</a>
+    <a href="#reseñas" class="text-ink-dim transition-colors hover:text-ink">Reseñas</a>
   </nav>
-  <div class="nav-cta">
-    <button class="btn btn-gold" onclick="openModal()">Reservar</button>
+  <div class="hidden md:flex items-center gap-6">
+    <button class="inline-flex items-center gap-2 py-3.5 px-7 text-xs tracking-[0.14em] uppercase font-bold border border-gold bg-gold text-dark-bg rounded hover:bg-gold-hi hover:border-gold-hi hover:text-black transition-colors" data-book-trigger>Reservar</button>
   </div>
-  <div class="burger" onclick="openModal()"><span></span><span></span><span></span></div>
+  <div class="flex md:hidden flex-col gap-[5px] cursor-pointer" data-book-trigger>
+    <span class="w-[22px] h-[2px] bg-ink"></span>
+    <span class="w-[22px] h-[2px] bg-ink"></span>
+    <span class="w-[22px] h-[2px] bg-ink"></span>
+  </div>
 </header>

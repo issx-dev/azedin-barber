@@ -26,28 +26,17 @@ const {
     rel="stylesheet"
   />
 </head>
-<body>
+<body class="bg-dark-bg text-ink font-jakarta antialiased overflow-x-hidden">
   <slot />
 
-  <script>
-    // Global booking-modal controls, used via onclick="" attributes across
-    // Header, Hero, Location and BookingModal components.
-    function openModal(barber?: string) {
-      document.getElementById('modalOverlay')?.classList.add('open');
-      if (barber) selectBarber(barber);
-    }
-    function closeModal() {
-      document.getElementById('modalOverlay')?.classList.remove('open');
-    }
-    function selectBarber(name: string) {
-      document.getElementById('tabAzedin')?.classList.toggle('active', name === 'Azedin');
-      document.getElementById('tabSamir')?.classList.toggle('active', name === 'Samir');
-    }
-
-    // Expose on window so inline onclick="" handlers can reach them.
-    (window as any).openModal = openModal;
-    (window as any).closeModal = closeModal;
-    (window as any).selectBarber = selectBarber;
+  <script is:inline>
+    document.addEventListener('click', function(e) {
+      var trigger = e.target.closest('[data-book-trigger]');
+      if (!trigger) return;
+      window.dispatchEvent(new CustomEvent('book:open', {
+        detail: { barber: trigger.dataset.bookBarber || null }
+      }));
+    });
   </script>
 </body>
 </html>

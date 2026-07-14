@@ -3,21 +3,22 @@ import Layout from '../layouts/Layout.astro';
 import Header from '../components/Header.astro';
 import Hero from '../components/Hero.astro';
 import Trust from '../components/Trust.astro';
-import Lookbook from '../components/Lookbook.astro';
+import Lookbook from '../components/Lookbook.jsx';
 import Reviews from '../components/Reviews.astro';
 import Services from '../components/Services.astro';
 import Location from '../components/Location.astro';
 import Footer from '../components/Footer.astro';
-import BookingModal from '../components/BookingModal.astro';
+import BookingModal from '../components/BookingModal.jsx';
+import { business, galleryItems } from '../data/content.js';
 ---
 <Layout>
   <Header />
   <Hero />
   <Trust />
-  <Lookbook />
+  <Lookbook client:visible items={galleryItems} />
   <Reviews />
   <Services />
   <Location />
   <Footer />
-  <BookingModal />
+  <BookingModal client:load booksyUrl={business.booksyUrl} />
 </Layout>

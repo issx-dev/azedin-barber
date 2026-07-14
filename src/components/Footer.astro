@@ -2,14 +2,14 @@
 import { business } from '../data/content.js';
 const year = new Date().getFullYear();
 ---
-<footer>
-  <div class="logo">AZEDIN<span>·</span>BARBER</div>
-  <div class="foot-social">
-    <a href={business.instagramUrl} target="_blank" rel="noopener">Instagram</a>
-    <a href={business.booksyUrl} target="_blank" rel="noopener">Booksy</a>
-    <a href="#ubicacion">Cómo llegar</a>
+<footer class="py-[60px] px-[5vw] flex justify-between items-center border-t border-border flex-wrap gap-5">
+  <div class="font-syne font-extrabold text-xl tracking-[0.02em]">AZEDIN<span class="text-gold">·</span>BARBER</div>
+  <div class="flex gap-[22px] text-[12px] tracking-[0.08em] uppercase text-ink-dim">
+    <a href={business.instagramUrl} target="_blank" rel="noopener" class="transition-colors hover:text-gold">Instagram</a>
+    <a href={business.booksyUrl} target="_blank" rel="noopener" class="transition-colors hover:text-gold">Booksy</a>
+    <a href="#ubicacion" class="transition-colors hover:text-gold">Cómo llegar</a>
   </div>
-  <div class="foot-note">© {year} {business.name} · Berja, Almería</div>
+  <div class="text-[11px] text-ink-faint">© {year} {business.name} · Berja, Almería</div>
 </footer>
 
-<button class="btn btn-gold float-cta" onclick="openModal()">Reservar ahora</button>
+<button class="fixed bottom-[26px] right-[26px] z-[90] py-4 px-[26px] rounded-[40px] inline-flex items-center gap-2 text-xs tracking-[0.14em] uppercase font-bold border border-gold bg-gold text-dark-bg hover:bg-gold-hi hover:border-gold-hi hover:text-black transition-colors" data-book-trigger>Reservar ahora</button>

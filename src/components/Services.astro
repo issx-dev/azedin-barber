@@ -1,20 +1,20 @@
 ---
 import { services } from '../data/content.js';
 ---
-<section id="servicios">
-  <div class="section-head">
+<section id="servicios" class="py-[120px] px-[5vw]">
+  <div class="flex justify-between items-end mb-14 gap-6 flex-wrap">
     <div>
-      <div class="eyebrow">Tarifas</div>
-      <h2 class="section-title">Servicios</h2>
+      <div class="text-[11px] tracking-[0.22em] uppercase text-gold font-bold">Tarifas</div>
+      <h2 class="font-syne text-[clamp(30px,4.2vw,54px)] font-extrabold tracking-[-0.02em] uppercase leading-[0.95]">Servicios</h2>
     </div>
-    <p class="section-desc">Precios claros, sin sorpresas. El barbero y el horario exacto se eligen al reservar.</p>
+    <p class="max-w-[360px] text-ink-dim text-sm leading-relaxed">Precios claros, sin sorpresas. El barbero y el horario exacto se eligen al reservar.</p>
   </div>
-  <div class="services-grid">
+  <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
     {services.map((s) => (
-      <div class="service-card">
-        <h3>{s.name}</h3>
-        <div class="service-price">{s.price}</div>
-        <div class="service-time">{s.time}</div>
+      <div class="py-8 px-6 border border-border bg-surface transition-all duration-250 hover:border-gold hover:-translate-y-1">
+        <h3 class="font-syne text-base mb-[26px] tracking-[0.01em]">{s.name}</h3>
+        <div class="font-syne font-extrabold text-[34px] text-gold mb-2">{s.price}</div>
+        <div class="text-[11px] text-ink-faint tracking-[0.08em] uppercase">{s.time}</div>
       </div>
     ))}
   </div>

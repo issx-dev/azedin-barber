@@ -14,20 +14,35 @@ const barbers = [
   },
 ];
 ---
-<section class="hero" style="padding:0;">
-  <div class="hero-hint">Elige tu <b>barbero</b></div>
-  <div class="center-divider"></div>
+<section class="group/hero flex h-screen min-h-[640px] max-sm:flex-col max-sm:h-auto p-0">
+  <div class="absolute top-[110px] left-0 right-0 text-center z-[3] text-ink-faint text-[11px] tracking-[0.3em] uppercase max-sm:top-[90px]">
+    Elige tu <b class="text-gold">barbero</b>
+  </div>
+  <div class="absolute left-1/2 top-0 bottom-0 w-px bg-gradient-to-b from-transparent via-gold to-transparent opacity-50 z-[3] pointer-events-none max-sm:hidden"></div>
 
   {barbers.map((b) => (
-    <div class="chooser" onclick={`openModal('${b.name}')`}>
-      <img class="portrait-photo" src={b.img} alt={b.alt} />
-      <div class="portrait-field"></div>
-      <div class="chooser-content">
-        <span class="tag">{b.tag}</span>
-        <h2 class="barber-name">{b.name}</h2>
+    <div
+      class="group/hero relative flex-1 overflow-hidden flex items-end border-r border-border transition-[flex] duration-[550ms] ease-[cubic-bezier(.22,1,.36,1)] cursor-pointer group-hover/hero:flex-[0.72] hover:!flex-[1.4] last:border-r-0 max-sm:flex-none max-sm:h-[70vh] max-sm:border-r-0 max-sm:border-b max-sm:border-border max-sm:group-hover/hero:flex-none max-sm:hover:!flex-none"
+      data-book-trigger
+      data-book-barber={b.name}
+    >
+      <img
+        src={b.img}
+        alt={b.alt}
+        class="absolute inset-0 w-full h-full object-cover [filter:grayscale(85%)_contrast(1.08)_brightness(0.85)] transition-all duration-[600ms] ease-[cubic-bezier(.22,1,.36,1)] scale-104 group-hover:scale-109 group-hover:[filter:grayscale(15%)_sepia(12%)_contrast(1.1)_brightness(0.92)]"
+      />
+      <div class="absolute inset-0 bg-[linear-gradient(0deg,rgba(3,3,3,0.92)_0%,rgba(3,3,3,0.35)_45%,rgba(3,3,3,0.55)_100%),radial-gradient(circle_at_50%_20%,rgba(212,175,55,0.08),transparent_60%)]"></div>
+      <div class="relative z-[2] w-full px-11 pb-14">
+        <span class="inline-block py-1.5 px-3.5 mb-[18px] border border-gold text-gold text-[10px] tracking-[0.18em] uppercase font-bold">
+          {b.tag}
+        </span>
+        <h2 class="font-syne text-[clamp(42px,7vw,88px)] mb-[22px] font-extrabold tracking-[-0.02em] uppercase leading-[0.95]">
+          {b.name}
+        </h2>
         <button
-          class="btn btn-gold"
-          onclick={`event.stopPropagation(); openModal('${b.name}')`}
+          class="inline-flex items-center gap-2 py-3.5 px-7 text-xs tracking-[0.14em] uppercase font-bold border border-gold bg-gold text-dark-bg rounded hover:bg-gold-hi hover:border-gold-hi hover:text-black transition-colors"
+          data-book-trigger
+          data-book-barber={b.name}
         >
           Reservar con {b.name}
         </button>
