@@ -1,21 +1,105 @@
 ---
-import { services } from '../data/content.js';
+/**
+ * Services — Editorial list section.
+ *
+ * No cards. Border-top separators only (like a premium restaurant menu).
+ * Stagger animation via GSAP data-stagger on scroll.
+ * Price in oak, time in ink-dim.
+ */
+import { services, business } from '../data/content.js';
 ---
-<section id="servicios" class="py-[120px] px-[5vw]">
-  <div class="flex justify-between items-end mb-14 gap-6 flex-wrap">
-    <div>
-      <div class="text-[11px] tracking-[0.22em] uppercase text-gold font-bold">Tarifas</div>
-      <h2 class="font-syne text-[clamp(30px,4.2vw,54px)] font-extrabold tracking-[-0.02em] uppercase leading-[0.95]">Servicios</h2>
+
+<section
+  id="servicios"
+  class="py-0 relative overflow-hidden"
+  aria-labelledby="servicios-heading"
+>
+  <div class="max-w-4xl mx-auto px-6 md:px-10 py-[clamp(5rem,10vw,8rem)]">
+
+    <!-- Header -->
+    <div class="mb-16">
+      <p
+        data-fade
+        class="text-[10px] tracking-[0.3em] uppercase text-oak font-semibold mb-4 opacity-0"
+      >
+        Lo que ofrecemos
+      </p>
+      <h2
+        id="servicios-heading"
+        data-reveal
+        class="font-display text-section text-cream leading-none opacity-0"
+      >
+        Servicios
+      </h2>
     </div>
-    <p class="max-w-[360px] text-ink-dim text-sm leading-relaxed">Precios claros, sin sorpresas. El barbero y el horario exacto se eligen al reservar.</p>
+
+    <!-- Service list — no cards, just separator lines -->
+    <ul
+      data-stagger
+      role="list"
+      aria-label="Lista de servicios y precios"
+      class="border-t border-border"
+    >
+      {services.map((service) => (
+        <li class="service-row border-b border-border py-7 px-4 -mx-4">
+          <div class="flex items-center justify-between gap-4">
+            <!-- Service name -->
+            <span class="font-display text-[clamp(1.35rem,3vw,1.75rem)] text-cream tracking-[-0.01em] leading-tight">
+              {service.name}
+            </span>
+
+            <!-- Time + Price -->
+            <div class="flex items-center gap-6 shrink-0">
+              <span class="text-[11px] text-ink-dim font-medium tracking-wider hidden sm:block">
+                {service.time}
+              </span>
+              <span class="font-display text-[clamp(1.35rem,3vw,1.75rem)] text-oak font-bold">
+                {service.price}
+              </span>
+            </div>
+          </div>
+          <!-- Time visible on mobile below -->
+          <span class="text-[11px] text-ink-faint font-medium tracking-wider sm:hidden mt-1 block">
+            {service.time}
+          </span>
+        </li>
+      ))}
+    </ul>
+
+    <!-- CTA -->
+    <div class="mt-14 flex flex-col sm:flex-row items-start sm:items-center gap-5">
+      <button
+        data-book-trigger
+        class="btn-oak"
+        aria-label="Reservar cita en Booksy"
+      >
+        Reservar cita
+      </button>
+      <p class="text-ink-faint text-[11px] tracking-wide">
+        Reserva en segundos a través de Booksy
+      </p>
+    </div>
+
   </div>
-  <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
-    {services.map((s) => (
-      <div class="py-8 px-6 border border-border bg-surface transition-all duration-250 hover:border-gold hover:-translate-y-1">
-        <h3 class="font-syne text-base mb-[26px] tracking-[0.01em]">{s.name}</h3>
-        <div class="font-syne font-extrabold text-[34px] text-gold mb-2">{s.price}</div>
-        <div class="text-[11px] text-ink-faint tracking-[0.08em] uppercase">{s.time}</div>
-      </div>
-    ))}
+
+  <!-- Hex decoration on the right side -->
+  <div
+    class="absolute right-0 top-1/2 -translate-y-1/2 -translate-x-4 opacity-20 pointer-events-none hidden lg:block"
+    aria-hidden="true"
+  >
+    <svg viewBox="0 0 120 140" width="120" height="140" fill="none">
+      <polygon
+        points="60,8 104,32 104,80 60,104 16,80 16,32"
+        stroke="#C4956A"
+        stroke-width="0.8"
+      />
+      <polygon
+        points="60,24 88,40 88,72 60,88 32,72 32,40"
+        stroke="#C4956A"
+        stroke-width="0.5"
+        fill="rgba(196,149,106,0.03)"
+      />
+    </svg>
   </div>
+
 </section>

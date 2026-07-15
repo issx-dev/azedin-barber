@@ -2,23 +2,71 @@
 import Layout from '../layouts/Layout.astro';
 import Header from '../components/Header.astro';
 import Hero from '../components/Hero.astro';
-import Trust from '../components/Trust.astro';
-import Lookbook from '../components/Lookbook.jsx';
-import Reviews from '../components/Reviews.astro';
+import Barbers from '../components/Barbers.astro';
+import Lookbook from '../components/Lookbook.astro';
 import Services from '../components/Services.astro';
+import Reviews from '../components/Reviews.astro';
 import Location from '../components/Location.astro';
 import Footer from '../components/Footer.astro';
 import BookingModal from '../components/BookingModal.jsx';
-import { business, galleryItems } from '../data/content.js';
+import MobileNav from '../components/MobileNav.jsx';
+import { business, barberImgs } from '../data/content.js';
+import logoSrc from '../assets/img/azedin-logo.jpg';
 ---
+
 <Layout>
   <Header />
-  <Hero />
-  <Trust />
-  <Lookbook client:visible items={galleryItems} />
-  <Reviews />
-  <Services />
-  <Location />
+
+  <main id="main-content">
+    <Hero />
+    <Barbers />
+
+    <!-- Trust strip: rating between Barbers and Lookbook -->
+    <div class="border-y border-border py-5 overflow-hidden bg-bg-panel">
+      <div class="flex items-center justify-center gap-4 px-6 text-center flex-wrap">
+        <div class="flex items-center gap-1" aria-label="5 estrellas en Booksy">
+          {Array.from({ length: 5 }).map(() => (
+            <svg width="13" height="13" viewBox="0 0 16 16" fill="#C4956A" aria-hidden="true">
+              <path d="M8 1.5l1.8 3.7 4 .6-2.9 2.8.7 4-3.6-1.9L4.4 12.6l.7-4L2.2 5.8l4-.6z"/>
+            </svg>
+          ))}
+        </div>
+        <span class="font-display text-cream font-bold text-lg">{business.rating}</span>
+        <span class="text-border-hi select-none">·</span>
+        <span class="text-ink-dim text-[12px]">{business.reviewCount}</span>
+        <span class="text-border-hi select-none hidden sm:inline">·</span>
+        <a
+          href={business.booksyUrl}
+          target="_blank"
+          rel="noopener noreferrer"
+          class="text-[11px] uppercase tracking-[0.14em] font-semibold text-oak hover:text-oak-light transition-colors duration-180"
+          aria-label="Ver perfil en Booksy"
+        >
+          Booksy
+        </a>
+      </div>
+    </div>
+
+    <Lookbook />
+    <Services />
+    <Reviews />
+    <Location />
+  </main>
+
   <Footer />
-  <BookingModal client:load booksyUrl={business.booksyUrl} />
+
+  <!-- React islands: load only when needed -->
+  <BookingModal
+    client:load
+    booksyUrl={business.booksyUrl}
+    barbers={[
+      { name: 'Azedin', img: barberImgs.Azedin.src.src },
+      { name: 'Samir', img: barberImgs.Samir.src.src }
+    ]}
+  />
+  <MobileNav
+    client:load
+    logoSrc={logoSrc.src}
+  />
 </Layout>
+

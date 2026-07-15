@@ -1,5 +1,6 @@
 ---
 import '../styles/global.css';
+import logoSrc from '../assets/img/azedin-logo.jpg';
 
 export interface Props {
   title?: string;
@@ -7,8 +8,8 @@ export interface Props {
 }
 
 const {
-  title = 'Azedin Barber — Elite Grooming Berja',
-  description = 'Barbería en Berja, Almería. Reserva con Azedin o Samir. Fades, cortes de tendencia y arreglo de barba. 5.0★ en Booksy.',
+  title = 'Azedin Barber — Barbería en Berja, Almería',
+  description = 'Reserva tu corte con Azedin o Samir. Fades, cortes de tendencia y arreglo de barba. 5.0★ en Booksy. Berja, Almería.',
 } = Astro.props;
 ---
 
@@ -19,24 +20,67 @@ const {
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>{title}</title>
   <meta name="description" content={description} />
+  <meta name="theme-color" content="#0C0A09" />
+
+  <!-- Open Graph -->
+  <meta property="og:title" content={title} />
+  <meta property="og:description" content={description} />
+  <meta property="og:type" content="website" />
+  <meta property="og:locale" content="es_ES" />
+
+  <!-- Preconnect for fonts -->
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link
-    href="https://fonts.googleapis.com/css2?family=Syne:wght@700;800&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap"
+    href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;0,900;1,700&family=Instrument+Sans:wght@400;500;600&display=swap"
     rel="stylesheet"
   />
+
+  <!-- Lenis CSS -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/lenis@1.1.20/dist/lenis.min.css" />
 </head>
-<body class="bg-dark-bg text-ink font-jakarta antialiased overflow-x-hidden">
+
+<body class="bg-bg-deep text-ink font-body antialiased overflow-x-hidden">
   <slot />
 
+  <!-- ─── Global event bus ─────────────────────────────────────────────── -->
   <script is:inline>
     document.addEventListener('click', function(e) {
-      var trigger = e.target.closest('[data-book-trigger]');
-      if (!trigger) return;
-      window.dispatchEvent(new CustomEvent('book:open', {
-        detail: { barber: trigger.dataset.bookBarber || null }
-      }));
+      // Booking trigger
+      var bookTrigger = e.target.closest('[data-book-trigger]');
+      if (bookTrigger) {
+        window.dispatchEvent(new CustomEvent('book:open', {
+          detail: { barber: bookTrigger.dataset.bookBarber || null }
+        }));
+        return;
+      }
+      // Mobile nav trigger
+      var navTrigger = e.target.closest('[data-nav-trigger]');
+      if (navTrigger) {
+        window.dispatchEvent(new CustomEvent('nav:open'));
+      }
     });
+
+    // Header scroll state
+    (function() {
+      var header = document.getElementById('site-header');
+      if (!header) return;
+      var THRESHOLD = 60;
+      function onScroll() {
+        if (window.scrollY > THRESHOLD) {
+          header.classList.add('scrolled');
+        } else {
+          header.classList.remove('scrolled');
+        }
+      }
+      window.addEventListener('scroll', onScroll, { passive: true });
+      onScroll();
+    })();
+  </script>
+
+  <!-- ─── GSAP + Lenis animation engine ───────────────────────────────── -->
+  <script>
+    import '../scripts/animations.js';
   </script>
 </body>
 </html>

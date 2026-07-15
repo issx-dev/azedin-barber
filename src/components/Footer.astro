@@ -1,15 +1,92 @@
 ---
+/**
+ * Footer — CTA final + hex decoration + social links.
+ *
+ * Minimal, editorial. Hexagonal motif as top decoration.
+ * CTA: "¿Listo para tu próximo corte?" + Booksy button.
+ * Social: Instagram + Booksy links.
+ */
+import HexPattern from './HexPattern.astro';
 import { business } from '../data/content.js';
-const year = new Date().getFullYear();
+import logoSrc from '../assets/img/azedin-logo.jpg';
 ---
-<footer class="py-[60px] px-[5vw] flex justify-between items-center border-t border-border flex-wrap gap-5">
-  <div class="font-syne font-extrabold text-xl tracking-[0.02em]">AZEDIN<span class="text-gold">·</span>BARBER</div>
-  <div class="flex gap-[22px] text-[12px] tracking-[0.08em] uppercase text-ink-dim">
-    <a href={business.instagramUrl} target="_blank" rel="noopener" class="transition-colors hover:text-gold">Instagram</a>
-    <a href={business.booksyUrl} target="_blank" rel="noopener" class="transition-colors hover:text-gold">Booksy</a>
-    <a href="#ubicacion" class="transition-colors hover:text-gold">Cómo llegar</a>
-  </div>
-  <div class="text-[11px] text-ink-faint">© {year} {business.name} · Berja, Almería</div>
-</footer>
 
-<button class="fixed bottom-[26px] right-[26px] z-[90] py-4 px-[26px] rounded-[40px] inline-flex items-center gap-2 text-xs tracking-[0.14em] uppercase font-bold border border-gold bg-gold text-dark-bg hover:bg-gold-hi hover:border-gold-hi hover:text-black transition-colors" data-book-trigger>Reservar ahora</button>
+<footer class="relative border-t border-border overflow-hidden" role="contentinfo">
+
+  <!-- LED ceiling hex — illuminates the CTA from above in bright white glow -->
+  <div class="flex justify-center pt-14 pb-0 animate-pulse-slow" aria-hidden="true">
+    <HexPattern layout="cluster" size="lg" color="white" class="opacity-[0.14]" />
+  </div>
+
+  <!-- Logo — brand seal, standalone under the hex lights with elegant spacing -->
+  <div class="flex justify-center mt-6 md:mt-10 mb-6">
+    <img
+      src={logoSrc.src}
+      alt="Azedin Barber Logo"
+      width="108"
+      height="108"
+      class="w-24 h-24 md:w-28 md:h-28 object-cover rounded-full border border-oak-dim"
+      style="box-shadow: 0 0 45px rgba(196,149,106,0.28), 0 0 0 1.5px rgba(196,149,106,0.22);"
+    />
+  </div>
+
+  <!-- CTA block -->
+  <div class="text-center px-6 pb-16 pt-0 max-w-2xl mx-auto">
+    <h2
+      data-fade
+      class="font-display text-[clamp(2rem,5vw,3.5rem)] text-cream leading-none tracking-[-0.02em] mb-4 opacity-0"
+    >
+      ¿Listo para tu<br/>
+      <span class="text-oak italic">próximo corte?</span>
+    </h2>
+    <p
+      data-fade
+      class="text-ink-dim text-[13px] mb-8 opacity-0"
+    >
+      Reserva en segundos. Sin esperas, sin sorpresas.
+    </p>
+    <button
+      data-book-trigger
+      data-fade
+      class="btn-oak text-[11px] px-10 py-4 opacity-0"
+      aria-label="Reservar cita en Booksy"
+    >
+      Reservar cita
+    </button>
+  </div>
+
+  <!-- Bottom bar -->
+  <div class="border-t border-border">
+    <div class="max-w-6xl mx-auto px-6 md:px-10 py-7 flex flex-col sm:flex-row items-center justify-between gap-4">
+
+      <!-- Copyright -->
+      <p class="text-ink-faint text-[11px] tracking-wide">
+        &copy; {new Date().getFullYear()} {business.name} &middot; Berja, Almería
+      </p>
+
+      <!-- Social links -->
+      <nav class="flex items-center gap-6" aria-label="Redes sociales">
+        <a
+          href={business.instagramUrl}
+          target="_blank"
+          rel="noopener noreferrer"
+          class="text-[11px] uppercase tracking-[0.16em] text-ink-dim hover:text-oak transition-colors duration-180 font-semibold"
+          aria-label="Instagram de Azedin Barber"
+        >
+          Instagram
+        </a>
+        <a
+          href={business.booksyUrl}
+          target="_blank"
+          rel="noopener noreferrer"
+          class="text-[11px] uppercase tracking-[0.16em] text-ink-dim hover:text-oak transition-colors duration-180 font-semibold"
+          aria-label="Reservas en Booksy"
+        >
+          Booksy
+        </a>
+      </nav>
+
+    </div>
+  </div>
+
+</footer>

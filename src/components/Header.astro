@@ -1,19 +1,96 @@
 ---
+/**
+ * Header — Fixed nav with logo, desktop links, CTA, and mobile hamburger.
+ * Transitions from transparent to blur+dark after 60px scroll.
+ *
+ * The logo uses the actual azedin-logo.jpg (small, 2.9KB) — displays it
+ * at a tasteful size in the header. We treat it as a raster logo since
+ * vectorizing in Astro build is complex.
+ */
+import logoSrc from '../assets/img/azedin-logo.jpg';
+
+const navLinks = [
+  { href: '#lookbook',  label: 'Lookbook'  },
+  { href: '#servicios', label: 'Servicios' },
+  { href: '#reseñas',   label: 'Reseñas'   },
+  { href: '#ubicacion', label: 'Ubicación' },
+];
 ---
-<header class="fixed top-0 left-0 right-0 z-[100] flex items-center justify-between py-5 px-[5vw] bg-dark-bg/70 backdrop-blur-[14px] border-b border-white/[0.06]">
-  <div class="font-syne font-extrabold text-xl tracking-[0.02em]">AZEDIN<span class="text-gold">·</span>BARBER</div>
-  <nav class="hidden md:flex gap-[34px] text-[12px] tracking-[0.12em] uppercase font-semibold">
-    <a href="#lookbook" class="text-ink-dim transition-colors hover:text-ink">Lookbook</a>
-    <a href="#servicios" class="text-ink-dim transition-colors hover:text-ink">Servicios</a>
-    <a href="#ubicacion" class="text-ink-dim transition-colors hover:text-ink">Ubicación</a>
-    <a href="#reseñas" class="text-ink-dim transition-colors hover:text-ink">Reseñas</a>
-  </nav>
-  <div class="hidden md:flex items-center gap-6">
-    <button class="inline-flex items-center gap-2 py-3.5 px-7 text-xs tracking-[0.14em] uppercase font-bold border border-gold bg-gold text-dark-bg rounded hover:bg-gold-hi hover:border-gold-hi hover:text-black transition-colors" data-book-trigger>Reservar</button>
+
+<header
+  id="site-header"
+  class="fixed top-0 left-0 right-0 z-[100] transition-[background-color,backdrop-filter] duration-300"
+  style="transition-timing-function: var(--ease-out);"
+>
+  <div class="flex items-center justify-between px-6 md:px-10 h-[68px]">
+
+    <!-- Logo -->
+    <a href="#hero" class="flex items-center gap-3 group" aria-label="Azedin Barber — Inicio">
+      <img
+        src={logoSrc.src}
+        alt="Azedin Barber"
+        width="38"
+        height="38"
+        class="w-9 h-9 object-cover rounded-full opacity-90 transition-opacity duration-200 group-hover:opacity-100"
+        loading="eager"
+      />
+      <span class="font-display text-[17px] tracking-tight text-cream hidden sm:block">
+        Azedin<span class="text-oak"> Barber</span>
+      </span>
+    </a>
+
+    <!-- Desktop navigation -->
+    <nav class="hidden md:flex items-center gap-8" aria-label="Navegación principal">
+      {navLinks.map(link => (
+        <a
+          href={link.href}
+          class="text-[11px] uppercase tracking-[0.16em] font-semibold text-ink-dim hover:text-cream transition-colors duration-180"
+          style="transition-timing-function: var(--ease-out);"
+        >
+          {link.label}
+        </a>
+      ))}
+    </nav>
+
+    <!-- CTA + hamburger -->
+    <div class="flex items-center gap-4">
+      <button
+        data-book-trigger
+        class="btn-oak hidden md:inline-flex text-[10px] px-5 py-2.5"
+        aria-label="Reservar cita"
+      >
+        Reservar cita
+      </button>
+
+      <!-- Mobile hamburger -->
+      <button
+        data-nav-trigger
+        class="md:hidden flex flex-col gap-[5px] p-2 cursor-pointer bg-transparent border-none"
+        aria-label="Abrir menú"
+        aria-expanded="false"
+      >
+        <span class="block w-5 h-[1.5px] bg-cream transition-transform duration-200"></span>
+        <span class="block w-5 h-[1.5px] bg-cream transition-transform duration-200"></span>
+        <span class="block w-3 h-[1.5px] bg-cream transition-transform duration-200 self-start"></span>
+      </button>
+    </div>
+
   </div>
-  <div class="flex md:hidden flex-col gap-[5px] cursor-pointer" data-book-trigger>
-    <span class="w-[22px] h-[2px] bg-ink"></span>
-    <span class="w-[22px] h-[2px] bg-ink"></span>
-    <span class="w-[22px] h-[2px] bg-ink"></span>
-  </div>
+
+  <!-- Bottom separator line -->
+  <div class="absolute bottom-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-border to-transparent opacity-0 transition-opacity duration-300" id="header-line"></div>
 </header>
+
+<script is:inline>
+  // Show header separator line after scroll
+  var headerLine = document.getElementById('header-line');
+  if (headerLine) {
+    window.addEventListener('scroll', function() {
+      if (window.scrollY > 60) {
+        headerLine.style.opacity = '1';
+      } else {
+        headerLine.style.opacity = '0';
+      }
+    }, { passive: true });
+  }
+</script>

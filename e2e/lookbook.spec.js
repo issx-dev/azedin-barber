@@ -1,6 +1,6 @@
 import { test, expect } from '@playwright/test';
 
-test('lookbook filter updates displayed items', async ({ page }) => {
+test('lookbook renders bento tiles without filters', async ({ page }) => {
   await page.goto('/');
 
   // Wait for the page to fully load
@@ -14,13 +14,18 @@ test('lookbook filter updates displayed items', async ({ page }) => {
   // Wait for the React island to hydrate
   await page.waitForTimeout(2000);
 
-  // Look for the filter buttons rendered by React
-  const skinFadeBtn = page.locator('button', { hasText: 'Skin Fade' });
-  await expect(skinFadeBtn).toBeVisible({ timeout: 10000 });
+  // Lookbook section should be visible
+  const lookbook = page.locator('#lookbook');
+  await expect(lookbook).toBeVisible({ timeout: 10000 });
 
-  // Click the "Skin Fade" filter
-  await skinFadeBtn.click();
+  // Bento tiles should render (12 items with data-bento attribute)
+  const bentoTiles = page.locator('[data-bento]');
+  await expect(bentoTiles).toHaveCount(12, { timeout: 10000 });
 
-  // Verify the filter button is active (has gold styling)
-  await expect(skinFadeBtn).toHaveClass(/text-gold/);
+  // First tile should have a data-bento attribute
+  await expect(bentoTiles.first()).toHaveAttribute('data-bento');
+
+  // No filter buttons should be present
+  const filterButtons = page.locator('button', { hasText: 'Todos' });
+  await expect(filterButtons).toHaveCount(0);
 });

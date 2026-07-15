@@ -1,0 +1,126 @@
+---
+/**
+ * Barbers — Editorial section below the Hero.
+ *
+ * Two barbers presented as full-height columns. On scroll:
+ * - clip-path reveal: inset(0 0 100% 0) → inset(0) (bottom-up curtain)
+ * - BN→color filter: grayscale(100%) → grayscale(0%)
+ * Both transitions via data-color-reveal in animations.js
+ *
+ * No barbers in the Hero (avoids the "tosco" feel of two giant faces).
+ * This section acts as a deliberate slow reveal: "meet who's waiting for you."
+ */
+
+import { Image } from 'astro:assets';
+import personaAzedin from '../assets/img/imagen-persona-azedin.jpeg';
+import personaSamir from '../assets/img/imagen-persona-samir.jpeg';
+
+const barbers = [
+  {
+    name:    'Azedin',
+    role:    'Fundador',
+    title:   'Master Barber',
+    desc:    'Más de una década perfeccionando cada degradado, cada arreglo. La precisión es su lenguaje.',
+    img:     personaAzedin,
+    alt:     'Azedin, fundador y master barber de Azedin Barber en Berja',
+  },
+  {
+    name:    'Samir',
+    role:    'Especialista',
+    title:   'Barber Specialist',
+    desc:    'Manos expertas, ojo para el detalle. Cada corte es una firma personal.',
+    img:     personaSamir,
+    alt:     'Samir, barber specialist de Azedin Barber en Berja',
+  },
+];
+---
+
+<section
+  id="barberos"
+  class="relative"
+  aria-label="Conoce a los barberos"
+>
+  <!-- Section header -->
+  <div class="px-6 md:px-10 pt-24 pb-16 max-w-6xl mx-auto">
+    <p
+      data-fade
+      class="text-[10px] tracking-[0.3em] uppercase text-oak font-semibold mb-4 opacity-0"
+    >
+      El equipo
+    </p>
+    <h2
+      data-reveal
+      class="font-display text-section text-cream leading-none opacity-0"
+    >
+      Quién te espera
+    </h2>
+  </div>
+
+  <!-- Barber columns — asymmetric on desktop (55/45), stacked on mobile -->
+  <div class="grid grid-cols-1 md:grid-cols-2 gap-px bg-border">
+    {barbers.map((barber, i) => (
+      <div class="relative group bg-bg-deep overflow-hidden">
+
+        <!-- Photo container with BN→color reveal -->
+        <div class="relative aspect-[4/5] md:aspect-[3/4] overflow-hidden">
+          <Image
+            src={barber.img}
+            alt={barber.alt}
+            widths={[480, 800, 1200, 1600, 2000, barber.img.width]}
+            sizes="(max-width: 768px) 100vw, 50vw"
+            quality={88}
+            format="webp"
+            loading="lazy"
+            data-color-reveal
+            class="w-full h-full object-cover opacity-0"
+            style="object-position: center 18%; transform-origin: center center;"
+          />
+          <!-- Gradient overlay -->
+          <div
+            class="absolute inset-0 pointer-events-none"
+            style="background: linear-gradient(0deg, rgba(12,10,9,0.92) 0%, rgba(12,10,9,0.2) 50%, transparent 100%);"
+          ></div>
+        </div>
+
+        <!-- Barber info — layered over photo bottom -->
+        <div class="absolute bottom-0 left-0 right-0 p-8 md:p-10 z-[1]">
+          <!-- Role badge -->
+          <span
+            data-fade
+            class="inline-block text-[9px] tracking-[0.2em] uppercase text-oak font-semibold border border-oak-dim/80 bg-bg-deep/80 backdrop-blur-md px-3.5 py-1.5 mb-4 opacity-0"
+          >
+            {barber.role} · {barber.title}
+          </span>
+
+          <!-- Name -->
+          <h3
+            data-fade
+            class="font-display text-[clamp(2.5rem,5vw,4rem)] text-cream leading-none mb-3 opacity-0"
+          >
+            {barber.name}
+          </h3>
+
+          <!-- Description -->
+          <p
+            data-fade
+            class="text-ink-dim text-[13px] leading-relaxed max-w-[280px] mb-6 opacity-0"
+          >
+            {barber.desc}
+          </p>
+
+          <!-- CTA -->
+          <button
+            data-book-trigger
+            data-book-barber={barber.name}
+            class="btn-oak text-[10px] px-6 py-3"
+            aria-label={`Reservar cita con ${barber.name}`}
+          >
+            Reservar con {barber.name}
+          </button>
+        </div>
+
+      </div>
+    ))}
+  </div>
+
+</section>

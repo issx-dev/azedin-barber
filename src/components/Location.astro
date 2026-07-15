@@ -1,42 +1,117 @@
 ---
+/**
+ * Location — Split layout 60/40.
+ * Left: address, hours, CTA.
+ * Right: Google Maps embed (iframe, tastefully styled).
+ *
+ * Maps link: https://maps.app.goo.gl/gvjmsWwo8HRToHvi8
+ * Maps embed iframe provided by user.
+ */
 import { business } from '../data/content.js';
+
+const mapsLink = 'https://maps.app.goo.gl/gvjmsWwo8HRToHvi8';
+const mapsEmbed = 'https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3193.049605924067!2d-2.945438799999954!3d36.841288!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0xd7049b3da9d6eed%3A0xa86993085bb7ece!2sAzedin%20Barber!5e0!3m2!1ses!2ses!4v1784059866369!5m2!1ses!2ses';
 ---
-<section id="ubicacion" class="py-[120px] px-[5vw]">
-  <div class="flex justify-between items-end mb-14 gap-6 flex-wrap">
-    <div>
-      <div class="text-[11px] tracking-[0.22em] uppercase text-gold font-bold">Encuéntranos</div>
-      <h2 class="font-syne text-[clamp(30px,4.2vw,54px)] font-extrabold tracking-[-0.02em] uppercase leading-[0.95]">Ubicación</h2>
-    </div>
+
+<section
+  id="ubicacion"
+  class="relative overflow-hidden py-0"
+  aria-labelledby="location-heading"
+>
+
+  <!-- Section header -->
+  <div class="px-6 md:px-10 max-w-6xl mx-auto pt-[clamp(5rem,10vw,8rem)] pb-12">
+    <p
+      data-fade
+      class="text-[10px] tracking-[0.3em] uppercase text-oak font-semibold mb-4 opacity-0"
+    >
+      Nos encontrarás
+    </p>
+    <h2
+      id="location-heading"
+      data-reveal
+      class="font-display text-section text-cream leading-none opacity-0"
+    >
+      Encuéntranos
+    </h2>
   </div>
-  <div class="grid grid-cols-1 md:grid-cols-2 border border-border">
-    <div class="min-h-[420px] relative overflow-hidden bg-[linear-gradient(rgba(5,5,5,0.55),rgba(5,5,5,0.75)),repeating-linear-gradient(0deg,#141414_0_1px,#0a0a0a_1px_42px),repeating-linear-gradient(90deg,#141414_0_1px,#0a0a0a_1px_42px)] border-r border-border max-md:border-r-0 max-md:border-b max-md:min-h-[280px]">
-      <div class="absolute left-[52%] top-[46%] -translate-x-1/2 -translate-y-full text-center">
-        <div class="w-4 h-4 rounded-[50%_50%_50%_0] bg-gold -rotate-45 mx-auto shadow-[0_0_0_6px_rgba(212,175,55,0.15)]"></div>
+
+  <!-- 60/40 split -->
+  <div class="grid grid-cols-1 lg:grid-cols-[1fr_1fr] gap-px bg-border max-w-[100vw] overflow-hidden">
+
+    <!-- Left: Info -->
+    <div class="bg-bg-deep px-8 md:px-14 py-14 lg:py-20 flex flex-col justify-between gap-10">
+
+      <!-- Address -->
+      <div data-fade class="opacity-0">
+        <p class="text-[10px] tracking-[0.25em] uppercase text-ink-faint font-medium mb-3">Dirección</p>
+        <address class="not-italic text-cream text-[clamp(1rem,2vw,1.2rem)] leading-relaxed font-medium">
+          {business.address}
+        </address>
+        <a
+          href={mapsLink}
+          target="_blank"
+          rel="noopener noreferrer"
+          class="inline-flex items-center gap-2 mt-4 text-[11px] text-oak uppercase tracking-[0.14em] font-semibold hover:text-oak-light transition-colors duration-180 underline underline-offset-4 decoration-oak-dim"
+          aria-label="Cómo llegar a Azedin Barber en Google Maps"
+        >
+          <svg width="12" height="12" viewBox="0 0 12 12" fill="none" aria-hidden="true">
+            <path d="M6 1a3.5 3.5 0 0 1 3.5 3.5c0 2.5-3.5 6.5-3.5 6.5S2.5 7 2.5 4.5A3.5 3.5 0 0 1 6 1z" stroke="#C4956A" stroke-width="1"/>
+            <circle cx="6" cy="4.5" r="1" fill="#C4956A"/>
+          </svg>
+          Cómo llegar
+        </a>
       </div>
+
+      <!-- Divider -->
+      <div class="w-12 h-px bg-border-hi"></div>
+
+      <!-- Hours -->
+      <div data-stagger class="flex flex-col gap-3">
+        {business.hours.map((h) => (
+          <div class="flex items-baseline justify-between gap-4 border-b border-border pb-3 last:border-0 last:pb-0 opacity-0">
+            <span class="text-[12px] text-ink-dim font-medium uppercase tracking-wide">{h.day}</span>
+            <span class="text-[13px] text-cream font-semibold text-right shrink-0">{h.time}</span>
+          </div>
+        ))}
+      </div>
+
+      <!-- CTA -->
+      <div data-fade class="opacity-0">
+        <button
+          data-book-trigger
+          class="btn-oak"
+          aria-label="Reservar cita en Booksy"
+        >
+          Reservar cita
+        </button>
+      </div>
+
     </div>
-    <div class="py-[52px] px-11 flex flex-col justify-center gap-8">
-      <div class="flex gap-[18px]">
-        <div class="w-5 text-gold text-base">📍</div>
-        <div>
-          <h4 class="text-[11px] tracking-[0.12em] uppercase text-ink-faint mb-1.5 font-bold">Dirección</h4>
-          <p class="text-sm leading-[1.7] text-[#d8d8d8]" set:html={business.address.replace(', ', '<br>')} />
-        </div>
-      </div>
-      <div class="flex gap-[18px]">
-        <div class="w-5 text-gold text-base">🕘</div>
-        <div>
-          <h4 class="text-[11px] tracking-[0.12em] uppercase text-ink-faint mb-1.5 font-bold">Horario</h4>
-          <table class="w-full text-[13px] border-collapse">
-            {business.hours.map((h) => (
-              <tr>
-                <td class="py-1.5 text-[#d8d8d8] border-t border-border">{h.day}</td>
-                <td class="py-1.5 text-right text-ink-dim border-t border-border">{h.time}</td>
-              </tr>
-            ))}
-          </table>
-        </div>
-      </div>
-      <button class="self-start inline-flex items-center gap-2 py-3.5 px-7 text-xs tracking-[0.14em] uppercase font-bold border border-gold bg-gold text-dark-bg rounded hover:bg-gold-hi hover:border-gold-hi hover:text-black transition-colors" data-book-trigger>Reservar cita</button>
+
+    <!-- Right: Map embed -->
+    <div
+      data-reveal="right"
+      class="relative min-h-[360px] lg:min-h-[520px] overflow-hidden opacity-0"
+    >
+      <iframe
+        src={mapsEmbed}
+        title="Mapa de Azedin Barber en Berja, Almería"
+        loading="lazy"
+        referrerpolicy="strict-origin-when-cross-origin"
+        allowfullscreen
+        class="absolute inset-0 w-full h-full border-0"
+        style="filter: sepia(30%) contrast(0.9) brightness(0.75) hue-rotate(10deg);"
+        aria-label="Mapa con la ubicación de Azedin Barber"
+      ></iframe>
+      <!-- Oak-tinted overlay to blend with palette -->
+      <div
+        class="absolute inset-0 pointer-events-none"
+        style="background: linear-gradient(135deg, rgba(196,149,106,0.05) 0%, transparent 60%); mix-blend-mode: color;"
+        aria-hidden="true"
+      ></div>
     </div>
+
   </div>
+
 </section>

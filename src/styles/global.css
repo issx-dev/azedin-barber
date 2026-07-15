@@ -1,3 +1,267 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+/* ─── Google Fonts ─────────────────────────────────────────────────────────── */
+/* Loaded via Layout.astro <link> — Playfair Display + Instrument Sans */
+
+@layer base {
+  :root {
+    /* ── Colour tokens — Caramel Craft palette ─────────────────────────── */
+    --color-bg-deep:    #0C0A09;   /* near-black, tinted warm */
+    --color-bg-panel:   #151210;   /* card/panel bg */
+    --color-bg-surface: #1E1A17;   /* elevated surface */
+    --color-oak:        #C4956A;   /* warm roble — primary accent */
+    --color-oak-light:  #D4AD82;   /* lighter oak for hover */
+    --color-oak-dim:    #8B6748;   /* muted oak for borders */
+    --color-sand:       #E8D5B5;   /* warm sand */
+    --color-cream:      #F5EDE0;   /* warm cream — primary text */
+    --color-ink:        #F0E6D8;   /* body text */
+    --color-ink-dim:    #9E8E7E;   /* secondary text */
+    --color-ink-faint:  #5E5248;   /* placeholder / very dim */
+    --color-border:     #2A2420;   /* subtle border */
+    --color-border-hi:  #3D332B;   /* visible border */
+
+    /* ── Typography ────────────────────────────────────────────────────── */
+    --font-display: 'Playfair Display', Georgia, serif;
+    --font-body:    'Instrument Sans', system-ui, sans-serif;
+
+    /* ── Easing curves — Emil Kowalski ─────────────────────────────────── */
+    --ease-out:    cubic-bezier(0.23, 1, 0.32, 1);
+    --ease-in-out: cubic-bezier(0.77, 0, 0.175, 1);
+    --ease-drawer: cubic-bezier(0.32, 0.72, 0, 1);
+
+    /* ── Spacing rhythm ────────────────────────────────────────────────── */
+    --section-py: clamp(5rem, 10vw, 8rem);
+    --container-px: clamp(1.5rem, 5vw, 4rem);
+  }
+
+  html {
+    /* Lenis handles smooth scroll — remove native smooth */
+    scroll-behavior: auto;
+  }
+
+  body {
+    font-family: var(--font-body);
+    color: var(--color-ink);
+    background-color: var(--color-bg-deep);
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    overflow-x: hidden;
+  }
+
+  h1, h2, h3, h4, h5, h6 {
+    font-family: var(--font-display);
+    font-weight: 700;
+    letter-spacing: -0.02em;
+    line-height: 1;
+    color: var(--color-cream);
+  }
+
+  /* Headings: size scale */
+  h1 { font-size: clamp(3.5rem, 8vw, 7rem); }
+  h2 { font-size: clamp(2.2rem, 5vw, 3.8rem); }
+  h3 { font-size: clamp(1.5rem, 3vw, 2rem); }
+}
+
+/* ─── Wood slat texture — from real barbershop panels ─────────────────────── */
+@layer components {
+  .wood-slats {
+    position: relative;
+  }
+  .wood-slats::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    z-index: 0;
+    background-image: repeating-linear-gradient(
+      90deg,
+      transparent 0px,
+      transparent 7px,
+      rgba(196, 149, 106, 0.035) 7px,
+      rgba(196, 149, 106, 0.035) 8px
+    );
+  }
+
+  /* Stronger slat accent for section borders */
+  .wood-slats-accent::before {
+    background-image: repeating-linear-gradient(
+      90deg,
+      transparent 0px,
+      transparent 5px,
+      rgba(196, 149, 106, 0.07) 5px,
+      rgba(196, 149, 106, 0.07) 6px
+    );
+  }
+
+  /* ── CTA Button — oak rectangular (editorial, not pill) ──────────────── */
+  .btn-oak {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    padding: 0.875rem 2.25rem;
+    background-color: var(--color-oak);
+    color: var(--color-bg-deep);
+    font-family: var(--font-body);
+    font-size: 0.6875rem;        /* 11px */
+    font-weight: 600;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    border: 1px solid var(--color-oak);
+    border-radius: 2px;          /* minimal radius — editorial */
+    cursor: pointer;
+    text-decoration: none;
+    /* Emil: exact properties, never 'all' */
+    transition:
+      background-color 180ms var(--ease-out),
+      border-color 180ms var(--ease-out),
+      transform 160ms var(--ease-out);
+    will-change: transform;
+  }
+
+  .btn-oak:hover {
+    background-color: var(--color-oak-light);
+    border-color: var(--color-oak-light);
+  }
+
+  /* Emil: active press feedback — scale(0.97) */
+  .btn-oak:active {
+    transform: scale(0.97);
+  }
+
+  /* Ghost variant */
+  .btn-ghost {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    padding: 0.875rem 2.25rem;
+    background-color: transparent;
+    color: var(--color-cream);
+    font-family: var(--font-body);
+    font-size: 0.6875rem;
+    font-weight: 600;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    border: 1px solid var(--color-border-hi);
+    border-radius: 2px;
+    cursor: pointer;
+    text-decoration: none;
+    transition:
+      background-color 180ms var(--ease-out),
+      border-color 180ms var(--ease-out),
+      color 180ms var(--ease-out),
+      transform 160ms var(--ease-out);
+    will-change: transform;
+  }
+
+  @media (hover: hover) and (pointer: fine) {
+    .btn-ghost:hover {
+      border-color: var(--color-oak);
+      color: var(--color-oak);
+    }
+  }
+
+  .btn-ghost:active {
+    transform: scale(0.97);
+  }
+}
+
+/* ─── Hex glow animation — from LED floor lights ──────────────────────────── */
+@layer utilities {
+  .hex-glow {
+    animation: hexPulse 4s ease-in-out infinite;
+  }
+
+  @keyframes hexPulse {
+    0%, 100% { opacity: 0.12; }
+    50%       { opacity: 0.28; }
+  }
+
+  /* Marquee — reviews section */
+  .marquee-track {
+    animation: marquee 42s linear infinite;
+    will-change: transform;
+  }
+  @media (hover: hover) and (pointer: fine) {
+    .marquee-track:hover {
+      animation-play-state: paused;
+    }
+  }
+
+  @keyframes marquee {
+    from { transform: translateX(0); }
+    to   { transform: translateX(-50%); }
+  }
+
+  /* ── Lookbook hover & mobile state ─────────────────────────────────────── */
+  .lookbook-tile {
+    overflow: hidden;
+  }
+  .lookbook-overlay {
+    opacity: 1; /* Always visible on mobile/touch screens */
+    transition: opacity 250ms var(--ease-out);
+  }
+  @media (hover: hover) and (pointer: fine) {
+    .lookbook-img {
+      transition: transform 250ms var(--ease-out);
+      will-change: transform;
+    }
+    .lookbook-tile:hover .lookbook-img {
+      transform: scale(1.04);
+    }
+    .lookbook-overlay {
+      opacity: 0; /* Hidden by default on desktop hover devices */
+    }
+    .lookbook-tile:hover .lookbook-overlay {
+      opacity: 1;
+    }
+  }
+
+  /* ── Service row hover ─────────────────────────────────────────────────── */
+  @media (hover: hover) and (pointer: fine) {
+    .service-row {
+      transition: background-color 180ms var(--ease-out);
+    }
+    .service-row:hover {
+      background-color: var(--color-bg-panel);
+    }
+  }
+
+  /* ── Header blur on scroll — toggled via JS ────────────────────────────── */
+  #site-header.scrolled {
+    background-color: rgba(12, 10, 9, 0.88);
+    backdrop-filter: blur(14px);
+    -webkit-backdrop-filter: blur(14px);
+  }
+
+  /* ── prefers-reduced-motion overrides ──────────────────────────────────── */
+  @media (prefers-reduced-motion: reduce) {
+    .hex-glow { animation: none; opacity: 0.15; }
+    .marquee-track { animation: none; }
+    .lookbook-img { transition: none; }
+    .service-row  { transition: none; }
+    [data-hero-text], [data-reveal], [data-fade], [data-stagger] > * {
+      opacity: 1 !important;
+      transform: none !important;
+      clip-path: none !important;
+      filter: none !important;
+    }
+  }
+
+  /* ── Lenis html overrides ─────────────────────────────────────────────── */
+  html.lenis, html.lenis body {
+    height: auto;
+  }
+  .lenis.lenis-smooth {
+    scroll-behavior: auto !important;
+  }
+  .lenis.lenis-smooth [data-lenis-prevent] {
+    overscroll-behavior: contain;
+  }
+  .lenis.lenis-stopped {
+    overflow: hidden;
+  }
+}

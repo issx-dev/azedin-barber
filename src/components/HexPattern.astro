@@ -1,0 +1,156 @@
+---
+/**
+ * HexPattern — LED ceiling hexagons referencing Azedin Barber's real lighting rig.
+ *
+ * Renders a compact connected honeycomb strip (like 3-5 hexagons sharing edges)
+ * that looks like a portion of the actual ceiling grid — not a symmetric flower.
+ *
+ * Props:
+ *   class?   — extra utility classes
+ *   size?    — 'sm' | 'md' | 'lg'
+ *   color?   — 'white' (LED glow, default) | 'oak' (warm brand colour)
+ *   layout?  — 'strip' (3-hex horizontal row, default) | 'cluster' (2+3 staggered grid)
+ */
+
+interface Props {
+  class?: string;
+  size?: 'sm' | 'md' | 'lg';
+  color?: 'white' | 'oak';
+  layout?: 'strip' | 'cluster' | 'panel';
+}
+
+const { class: className = '', size = 'md', color = 'white', layout = 'strip' } = Astro.props;
+
+// ── CSS width classes ─────────────────────────────────────────────────────────
+// Responsive sizes so they scale beautifully down on mobile viewports.
+const sizeMap = {
+  strip: {
+    sm: 'w-28 h-10 md:w-48 md:h-16',
+    md: 'w-40 h-14 md:w-72 md:h-24',
+    lg: 'w-56 h-20 md:w-[480px] md:h-36'
+  },
+  cluster: {
+    sm: 'w-24 h-20 md:w-32 md:h-28',
+    md: 'w-32 h-26 md:w-52 md:h-44',
+    lg: 'w-44 h-36 md:w-80 md:h-68'
+  },
+  panel: {
+    sm: 'w-36 h-28 md:w-56 md:h-44',
+    md: 'w-48 h-36 md:w-72 md:h-56',
+    lg: 'w-64 h-48 md:w-96 md:h-72'
+  }
+};
+
+// ── Geometry ──────────────────────────────────────────────────────────────────
+// Flat-top hexagons.
+// Vertex fn: (cx, cy, R) → polygon points string
+// For flat-top the 6 vertices are at 0°,60°,120°,180°,240°,300°
+function hex(cx: number, cy: number, R: number): string {
+  return Array.from({ length: 6 }, (_, i) => {
+    const a = Math.PI / 3 * i;          // 0°, 60°, 120°, ...
+    return `${(cx + R * Math.cos(a)).toFixed(2)},${(cy + R * Math.sin(a)).toFixed(2)}`;
+  }).join(' ');
+}
+
+// ── Hex centre positions ──────────────────────────────────────────────────────
+
+let R: number;
+let viewBox: string;
+let centers: { x: number; y: number }[];
+
+if (layout === 'strip') {
+  // Staggered arch (inverted V shape) of 3 connected hexagons.
+  // Not flat! It creates a dynamic crown/arch matching the ceiling grid style.
+  R = 36;
+  const dX = R * Math.sqrt(3); // ≈ 62.35
+  const dY = R * 1.5;          // 54
+  const cX = 114, cY = 88;
+  centers = [
+    // Center-bottom
+    { x: cX, y: cY },
+    // Top-left neighbor
+    { x: cX - dX / 2, y: cY - dY },
+    // Top-right neighbor
+    { x: cX + dX / 2, y: cY - dY },
+  ];
+  viewBox = `0 0 228 132`;
+
+} else if (layout === 'panel') {
+  // panel: Staggered wall panel grid matching the wall lights.
+  // Reduced to 6 connected hexagons to keep it clean and elegant.
+  R = 30;
+  const dX = R * Math.sqrt(3); // ≈ 51.96
+  const dY = R * 1.5;          // 45
+  const cX = 35, cY = 35;
+  centers = [
+    // Column 1
+    { x: cX,          y: cY },
+    { x: cX,          y: cY + 2 * dY },
+    // Column 2 (offset)
+    { x: cX + dX / 2, y: cY + dY },
+    { x: cX + dX / 2, y: cY + 3 * dY },
+    // Column 3
+    { x: cX + dX,     y: cY },
+    { x: cX + dX,     y: cY + 2 * dY },
+  ];
+  viewBox = `0 0 125 205`;
+
+} else {
+  // cluster: 2 hexes on top, 3 hexes on bottom — offset grid, like the real ceiling panel
+  // Pointy-top hexagons, shared-edge honeycomb geometry
+  R = 44;
+  const dX  = R * Math.sqrt(3); // horiz step between same-row centers ≈ 76.2
+  const dY  = R * 1.5;          // vert  step between row centers = 66
+  const cX = 132, cY = 50;
+  centers = [
+    // Row 1: 2 hexes (offset)
+    { x: cX - dX / 2, y: cY },
+    { x: cX + dX / 2, y: cY },
+    // Row 2: 3 hexes
+    { x: cX - dX,     y: cY + dY },
+    { x: cX,          y: cY + dY },
+    { x: cX + dX,     y: cY + dY },
+  ];
+  viewBox = `0 0 264 180`;
+}
+
+// ── Pointy-top vertex helper (used in both layouts) ───────────────────────────
+function hexPointy(cx: number, cy: number): string {
+  return Array.from({ length: 6 }, (_, i) => {
+    const a = Math.PI / 3 * i - Math.PI / 6;   // 30°, 90°, 150°, 210°, 270°, 330°
+    return `${(cx + R * Math.cos(a)).toFixed(2)},${(cy + R * Math.sin(a)).toFixed(2)}`;
+  }).join(' ');
+}
+
+// ── Colour tokens ─────────────────────────────────────────────────────────────
+const strokeColor = color === 'oak'
+  ? 'rgba(196,149,106,0.82)'
+  : 'rgba(255,255,255,0.88)';
+
+const glowA = color === 'oak' ? 'rgba(196,149,106,' : 'rgba(255,255,255,';
+
+const filterStyle = `
+  drop-shadow(0 0 3px ${glowA}0.8))
+  drop-shadow(0 0 10px ${glowA}0.4))
+  drop-shadow(0 0 24px ${glowA}0.15))
+`.trim().replace(/\n\s*/g, ' ');
+---
+
+<svg
+  class={`pointer-events-none select-none ${sizeMap[layout][size]} ${className}`}
+  viewBox={viewBox}
+  fill="none"
+  xmlns="http://www.w3.org/2000/svg"
+  aria-hidden="true"
+  style={`overflow: visible; filter: ${filterStyle};`}
+>
+  {centers.map(c => (
+    <polygon
+      points={hexPointy(c.x, c.y)}
+      stroke={strokeColor}
+      stroke-width="2.3"
+      stroke-linejoin="round"
+      fill="none"
+    />
+  ))}
+</svg>

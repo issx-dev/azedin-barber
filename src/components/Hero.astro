@@ -1,52 +1,127 @@
 ---
-const barbers = [
-  {
-    name: 'Azedin',
-    tag: 'Fundador · Master Barber',
-    img: 'https://images.pexels.com/photos/1836983/pexels-photo-1836983.jpeg?auto=compress&cs=tinysrgb&w=1200&h=1500&fit=crop',
-    alt: 'Barbero cortando el pelo de pie en el salón',
-  },
-  {
-    name: 'Samir',
-    tag: 'Barber Specialist',
-    img: 'https://images.pexels.com/photos/2076930/pexels-photo-2076930.jpeg?auto=compress&cs=tinysrgb&w=1200&h=1500&fit=crop',
-    alt: 'Barbero de pie cortando el pelo a un cliente',
-  },
-];
----
-<section class="group/hero flex h-screen min-h-[640px] max-sm:flex-col max-sm:h-auto p-0">
-  <div class="absolute top-[110px] left-0 right-0 text-center z-[3] text-ink-faint text-[11px] tracking-[0.3em] uppercase max-sm:top-[90px]">
-    Elige tu <b class="text-gold">barbero</b>
-  </div>
-  <div class="absolute left-1/2 top-0 bottom-0 w-px bg-gradient-to-b from-transparent via-gold to-transparent opacity-50 z-[3] pointer-events-none max-sm:hidden"></div>
+/**
+ * Hero — Fullscreen immersive section.
+ *
+ * Concept: "Entering the barbershop"
+ * - Logo (azedin-logo.jpg) prominent and centered
+ * - Workspace photo as full-bleed background with parallax
+ * - Wood slat texture overlay (CSS) — from real barbershop panels
+ * - Hexagonal SVG accents — from LED floor lights
+ * - CTA rect button (editorial, not pill)
+ * - data-hero-text targets → staggered entrance via GSAP
+ */
 
-  {barbers.map((b) => (
+import { Image } from 'astro:assets';
+import HexPattern from './HexPattern.astro';
+import workspaceImg from '../assets/img/espaciotrabajo02.jpeg';
+import logoSrc from '../assets/img/azedin-logo.jpg';
+import { business } from '../data/content.js';
+---
+
+<section
+  id="hero"
+  class="relative flex flex-col items-center justify-center min-h-[100dvh] overflow-hidden wood-slats"
+  aria-label="Bienvenida"
+>
+  <!-- ── Background: workspace photo with parallax ──────────────────── -->
+  <div class="absolute inset-0 z-0" aria-hidden="true">
+    <Image
+      src={workspaceImg}
+      alt="Interior de Azedin Barber — barbería en Berja"
+      widths={[768, 1176, 1920]}
+      sizes="100vw"
+      quality={88}
+      format="webp"
+      loading="eager"
+      data-parallax="0.18"
+      class="w-full h-[115%] object-cover object-center -translate-y-[7.5%]"
+      style="filter: sepia(20%) brightness(0.22) contrast(1.1);"
+    />
+    <!-- Radial glow from center — simulates the studio spotlight feel -->
     <div
-      class="group/hero relative flex-1 overflow-hidden flex items-end border-r border-border transition-[flex] duration-[550ms] ease-[cubic-bezier(.22,1,.36,1)] cursor-pointer group-hover/hero:flex-[0.72] hover:!flex-[1.4] last:border-r-0 max-sm:flex-none max-sm:h-[70vh] max-sm:border-r-0 max-sm:border-b max-sm:border-border max-sm:group-hover/hero:flex-none max-sm:hover:!flex-none"
-      data-book-trigger
-      data-book-barber={b.name}
+      class="absolute inset-0"
+      style="background: radial-gradient(ellipse 70% 60% at 50% 40%, rgba(196,149,106,0.06) 0%, transparent 70%), linear-gradient(to bottom, rgba(12,10,9,0.5) 0%, rgba(12,10,9,0.1) 40%, rgba(12,10,9,0.7) 80%, rgba(12,10,9,1) 100%);"
+    ></div>
+  </div>
+
+  <!-- ── Hex accents ─────────────────────────────────────────────────── -->
+  <HexPattern layout="panel" size="sm" class="absolute top-28 left-4 md:left-10 z-[1] opacity-35" />
+  <HexPattern layout="panel" size="sm" class="absolute bottom-16 right-4 md:right-10 z-[1] opacity-25" />
+
+  <!-- ── Main content ────────────────────────────────────────────────── -->
+  <div class="relative z-[2] flex flex-col items-center text-center px-6 max-w-2xl mx-auto">
+
+    <!-- Logo image -->
+    <div
+      data-hero-text
+      class="mb-8 opacity-0"
     >
       <img
-        src={b.img}
-        alt={b.alt}
-        class="absolute inset-0 w-full h-full object-cover [filter:grayscale(85%)_contrast(1.08)_brightness(0.85)] transition-all duration-[600ms] ease-[cubic-bezier(.22,1,.36,1)] scale-104 group-hover:scale-109 group-hover:[filter:grayscale(15%)_sepia(12%)_contrast(1.1)_brightness(0.92)]"
+        src={logoSrc.src}
+        alt="Azedin Barber"
+        width="120"
+        height="120"
+        class="w-28 h-28 md:w-36 md:h-36 object-cover rounded-full border border-oak-dim mx-auto"
+        loading="eager"
+        style="box-shadow: 0 0 55px rgba(196,149,106,0.25), 0 0 0 1.5px rgba(196,149,106,0.2);"
       />
-      <div class="absolute inset-0 bg-[linear-gradient(0deg,rgba(3,3,3,0.92)_0%,rgba(3,3,3,0.35)_45%,rgba(3,3,3,0.55)_100%),radial-gradient(circle_at_50%_20%,rgba(212,175,55,0.08),transparent_60%)]"></div>
-      <div class="relative z-[2] w-full px-11 pb-14">
-        <span class="inline-block py-1.5 px-3.5 mb-[18px] border border-gold text-gold text-[10px] tracking-[0.18em] uppercase font-bold">
-          {b.tag}
-        </span>
-        <h2 class="font-syne text-[clamp(42px,7vw,88px)] mb-[22px] font-extrabold tracking-[-0.02em] uppercase leading-[0.95]">
-          {b.name}
-        </h2>
-        <button
-          class="inline-flex items-center gap-2 py-3.5 px-7 text-xs tracking-[0.14em] uppercase font-bold border border-gold bg-gold text-dark-bg rounded hover:bg-gold-hi hover:border-gold-hi hover:text-black transition-colors"
-          data-book-trigger
-          data-book-barber={b.name}
-        >
-          Reservar con {b.name}
-        </button>
-      </div>
     </div>
-  ))}
+
+    <!-- Barbershop name -->
+    <h1
+      data-hero-text
+      class="font-display text-[clamp(3rem,8vw,6.5rem)] text-cream tracking-[-0.03em] leading-[0.92] mb-4 opacity-0"
+    >
+      Azedin<br/><span class="text-oak italic">Barber</span>
+    </h1>
+
+    <!-- Tagline -->
+    <p
+      data-hero-text
+      class="text-ink-dim text-[13px] md:text-[14px] tracking-[0.22em] uppercase font-medium mb-10 opacity-0"
+    >
+      Berja · Almería · Barbería artesanal
+    </p>
+
+    <!-- CTA group -->
+    <div
+      data-hero-text
+      class="flex flex-col sm:flex-row items-center gap-4 opacity-0"
+    >
+      <button
+        data-book-trigger
+        class="btn-oak text-[11px] px-8 py-3.5"
+        aria-label="Reservar cita en Booksy"
+      >
+        Reservar cita
+      </button>
+      <a
+        href="#lookbook"
+        class="btn-ghost text-[11px] px-8 py-3.5"
+        aria-label="Ver lookbook de cortes"
+      >
+        Ver cortes
+      </a>
+    </div>
+
+  </div>
+
+  <!-- ── Scroll indicator ────────────────────────────────────────────── -->
+  <div
+    class="absolute bottom-10 left-1/2 -translate-x-1/2 z-[2] flex flex-col items-center gap-2"
+    aria-hidden="true"
+    data-hero-text
+    style="opacity:0;"
+  >
+    <span class="text-ink-faint text-[9px] tracking-[0.3em] uppercase">Scroll</span>
+    <div class="w-px h-10 bg-gradient-to-b from-oak-dim to-transparent opacity-60"></div>
+  </div>
+
+  <!-- ── Bottom edge: wood slat separator ───────────────────────────── -->
+  <div
+    class="absolute bottom-0 left-0 right-0 h-px z-[3]"
+    style="background: linear-gradient(90deg, transparent 0%, rgba(196,149,106,0.3) 30%, rgba(196,149,106,0.5) 50%, rgba(196,149,106,0.3) 70%, transparent 100%);"
+    aria-hidden="true"
+  ></div>
+
 </section>
