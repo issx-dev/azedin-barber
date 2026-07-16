@@ -1,14 +1,13 @@
-import corte01 from '../assets/img/corte01.jpeg';
-import corte02 from '../assets/img/corte02.jpeg';
-import corte03 from '../assets/img/corte03.jpeg';
-import corte04 from '../assets/img/corte04.jpeg';
-import corte05 from '../assets/img/corte05.jpeg';
-import corte06 from '../assets/img/corte06.jpeg';
-import corte07 from '../assets/img/corte07.jpeg';
-import espaciotrabajo01 from '../assets/img/espaciotrabajo01.jpeg';
-import espaciotrabajo02 from '../assets/img/espaciotrabajo02.jpeg';
-import personaAzedin from '../assets/img/imagen-persona-azedin.jpeg';
-import personaSamir from '../assets/img/imagen-persona-samir.jpeg';
+import corteSkinFade from '../assets/img/corte-skin-fade-degradado.jpeg';
+import corteArregloBarba from '../assets/img/corte-arreglo-barba-perfilado.jpeg';
+import corteCropTop from '../assets/img/corte-crop-top-texturizado.jpeg';
+import corteLowFade from '../assets/img/corte-low-fade-degradado-bajo.jpeg';
+import corteAfeitadoClasico from '../assets/img/corte-afeitado-clasico-navaja.jpeg';
+import corteMidFade from '../assets/img/corte-mid-fade-degradado-medio.jpeg';
+import barberiaInteriorSalon from '../assets/img/barberia-interior-salon.jpeg';
+import barberiaInteriorRecepcion from '../assets/img/barberia-interior-recepcion.jpeg';
+import personaAzedin from '../assets/img/barbero-azedin-berja.jpeg';
+import personaSamir from '../assets/img/barbero-samir-berja.jpeg';
 
 export const services = [
   { name: 'Corte de pelo', price: '13€', time: '30 min' },
@@ -19,17 +18,17 @@ export const services = [
 
 export const galleryItems = [
   // focus = object-position: where the haircut sits in the photo
-  { area: 'tall', label: 'Skin Fade',        barber: 'Azedin', alt: 'Skin fade corte degradado',      src: corte01, width: 1179, height: 2071, focus: 'center 30%' },
-  { area: 'sq',   label: 'Beard Sculpt',     barber: 'Samir',  alt: 'Escultura de barba profesional', src: corte02, width: 1179, height: 2556, focus: 'center 28%' },
-  { area: 'sq',   label: 'Crop Top',         barber: 'Azedin', alt: 'Crop top texturizado',           src: corte03, width: 1755, height: 2340, focus: 'center 30%' },
-  { area: 'sq',   label: 'Low Fade',         barber: 'Samir',  alt: 'Low fade degradado bajo',        src: corte04, width: 1755, height: 2340, focus: 'center 35%' },
-  { area: 'tall', label: 'Afeitado Clásico', barber: 'Azedin', alt: 'Afeitado clásico con navaja',   src: corte05, width: 1755, height: 2340, focus: 'center 38%' },
-  { area: 'sq',   label: 'Mid Fade',         barber: 'Azedin', alt: 'Mid fade degradado medio',       src: corte07, width: 1440, height: 1800, focus: 'center 30%' },
-  { area: 'sq',   label: 'Taper Fade',       barber: 'Samir',  alt: 'Taper fade degradado en sien',   src: corte04, width: 1755, height: 2340, focus: 'center 35%' },
-  { area: 'tall', label: 'Buzz Cut',         barber: 'Azedin', alt: 'Corte rapado con máquina',       src: corte05, width: 1755, height: 2340, focus: 'center 38%' },
-  { area: 'sq',   label: 'Line Up',          barber: 'Samir',  alt: 'Perfilado de línea frontal',     src: corte01, width: 1179, height: 2071, focus: 'center 30%' },
-  { area: 'sq',   label: 'Pompadour',        barber: 'Azedin', alt: 'Pompadour clásico',              src: corte02, width: 1179, height: 2556, focus: 'center 28%' },
-  { area: 'sq',   label: 'Fade & Design',    barber: 'Samir',  alt: 'Fade con diseño artístico',      src: corte03, width: 1755, height: 2340, focus: 'center 30%' },
+  { area: 'tall', label: 'Skin Fade',        barber: 'Azedin', alt: 'Skin fade corte degradado',      src: corteSkinFade, width: 1179, height: 2071, focus: 'center 30%' },
+  { area: 'sq',   label: 'Beard Sculpt',     barber: 'Samir',  alt: 'Escultura de barba profesional', src: corteArregloBarba, width: 1179, height: 2556, focus: 'center 28%' },
+  { area: 'sq',   label: 'Crop Top',         barber: 'Azedin', alt: 'Crop top texturizado',           src: corteCropTop, width: 1755, height: 2340, focus: 'center 30%' },
+  { area: 'sq',   label: 'Low Fade',         barber: 'Samir',  alt: 'Low fade degradado bajo',        src: corteLowFade, width: 1755, height: 2340, focus: 'center 35%' },
+  { area: 'tall', label: 'Afeitado Clásico', barber: 'Azedin', alt: 'Afeitado clásico con navaja',   src: corteAfeitadoClasico, width: 1755, height: 2340, focus: 'center 38%' },
+  { area: 'sq',   label: 'Mid Fade',         barber: 'Azedin', alt: 'Mid fade degradado medio',       src: corteMidFade, width: 1440, height: 1800, focus: 'center 30%' },
+  { area: 'sq',   label: 'Taper Fade',       barber: 'Samir',  alt: 'Taper fade degradado en sien',   src: corteLowFade, width: 1755, height: 2340, focus: 'center 35%' },
+  { area: 'tall', label: 'Buzz Cut',         barber: 'Azedin', alt: 'Corte rapado con máquina',       src: corteAfeitadoClasico, width: 1755, height: 2340, focus: 'center 38%' },
+  { area: 'sq',   label: 'Line Up',          barber: 'Samir',  alt: 'Perfilado de línea frontal',     src: corteSkinFade, width: 1179, height: 2071, focus: 'center 30%' },
+  { area: 'sq',   label: 'Pompadour',        barber: 'Azedin', alt: 'Pompadour clásico',              src: corteArregloBarba, width: 1179, height: 2556, focus: 'center 28%' },
+  { area: 'sq',   label: 'Fade & Design',    barber: 'Samir',  alt: 'Fade con diseño artístico',      src: corteCropTop, width: 1755, height: 2340, focus: 'center 30%' },
 ];
 
 export const barberImgs = {
