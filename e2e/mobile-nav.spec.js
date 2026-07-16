@@ -14,13 +14,13 @@ test.describe('Mobile Navigation', () => {
     await hamburger.click();
 
     // MobileNav overlay should appear (panel slides in via transform)
-    const overlay = page.locator('[role="dialog"][aria-label="Navegación"]');
+    const overlay = page.locator('[role="dialog"][aria-label="Menú de navegación"]');
     await expect(overlay).toBeVisible({ timeout: 5000 });
 
     // Panel should not be translated off-screen when open
     // Wait for the CSS transition to settle
     await page.waitForFunction(() => {
-      const el = document.querySelector('[role="dialog"][aria-label="Navegación"]');
+      const el = document.querySelector('[role="dialog"][aria-label="Menú de navegación"]');
       if (!el) return false;
       const t = getComputedStyle(el).transform;
       return t === 'none' || t === 'matrix(1, 0, 0, 1, 0, 0)';
@@ -35,7 +35,7 @@ test.describe('Mobile Navigation', () => {
     await expect(hamburger).toBeVisible({ timeout: 5000 });
     await hamburger.click();
 
-    const overlay = page.locator('[role="dialog"][aria-label="Navegación"]');
+    const overlay = page.locator('[role="dialog"][aria-label="Menú de navegación"]');
     await expect(overlay).toBeVisible({ timeout: 5000 });
 
     // All 4 anchors should be present
@@ -53,7 +53,7 @@ test.describe('Mobile Navigation', () => {
     await expect(hamburger).toBeVisible({ timeout: 5000 });
     await hamburger.click();
 
-    const overlay = page.locator('[role="dialog"][aria-label="Navegación"]');
+    const overlay = page.locator('[role="dialog"][aria-label="Menú de navegación"]');
     await expect(overlay).toBeVisible({ timeout: 5000 });
 
     // Click an anchor
@@ -74,7 +74,7 @@ test.describe('Mobile Navigation', () => {
     await expect(hamburger).toBeVisible({ timeout: 5000 });
     await hamburger.click();
 
-    const overlay = page.locator('[role="dialog"][aria-label="Navegación"]');
+    const overlay = page.locator('[role="dialog"][aria-label="Menú de navegación"]');
     await expect(overlay).toBeVisible({ timeout: 5000 });
 
     // Press Escape
@@ -95,7 +95,7 @@ test.describe('Mobile Navigation', () => {
     await expect(hamburger).toBeVisible({ timeout: 5000 });
     await hamburger.click();
 
-    const overlay = page.locator('[role="dialog"][aria-label="Navegación"]');
+    const overlay = page.locator('[role="dialog"][aria-label="Menú de navegación"]');
     await expect(overlay).toBeVisible({ timeout: 5000 });
 
     // Click close button

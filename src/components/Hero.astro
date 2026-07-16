@@ -32,14 +32,16 @@ const mobileVideoSrc = '/video/instalaciones-mobile.mp4';
     <Image
       src={workspaceImg}
       alt="Interior de Azedin Barber — barbería en Berja"
-      widths={[768, 1176, 1920]}
+      widths={[768, 1176]}
       sizes="100vw"
       quality={88}
       format="webp"
       loading="eager"
+      decoding="sync"
+      fetchpriority="high"
       data-parallax="0.18"
       class="w-full h-[115%] object-cover object-center -translate-y-[7.5%]"
-      style="filter: sepia(20%) brightness(0.22) contrast(1.1);"
+      style="filter: sepia(20%) brightness(0.22) contrast(1.1); will-change: transform;"
     />
     <!-- Radial glow from center — simulates the studio spotlight feel -->
     <div
@@ -64,7 +66,7 @@ const mobileVideoSrc = '/video/instalaciones-mobile.mp4';
       loop
       muted
       playsinline
-      preload="metadata"
+      preload="none"
       aria-hidden="true"
       style="filter: sepia(15%) brightness(0.2) contrast(1.15);"
     >
@@ -186,17 +188,34 @@ const mobileVideoSrc = '/video/instalaciones-mobile.mp4';
 </style>
 
 <script>
-  // Fade in the video once it has enough data to play smoothly.
-  // This prevents a white flash if the video takes time to decode its first frame.
+  // Dynamically load the video after initial paint to save resources.
   const video = document.getElementById('hero-video-mobile') as HTMLVideoElement | null;
   if (video) {
     const makeReady = () => video.classList.add('ready');
-    if (video.readyState >= 3) {
-      makeReady();
-    } else {
-      video.addEventListener('canplay', makeReady, { once: true });
-      // Safety fallback: show after 1.5s even if canplay never fires
-      setTimeout(makeReady, 1500);
+    
+    // We only load the video on mobile screens
+    if (window.innerWidth < 768) {
+      const startVideo = () => {
+        video.preload = 'auto';
+        video.load();
+        video.play().then(() => {
+          if (video.readyState >= 3) {
+            makeReady();
+          } else {
+            video.addEventListener('canplay', makeReady, { once: true });
+          }
+        }).catch(err => {
+          console.warn("Autoplay was prevented or video load failed:", err);
+          // Safety fallback
+          makeReady();
+        });
+      };
+
+      if (document.readyState === 'complete') {
+        startVideo();
+      } else {
+        window.addEventListener('load', startVideo, { once: true });
+      }
     }
   }
 </script>

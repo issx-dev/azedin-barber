@@ -10,6 +10,7 @@ import Location from '../components/Location.astro';
 import Footer from '../components/Footer.astro';
 import BookingModal from '../components/BookingModal.jsx';
 import MobileNav from '../components/MobileNav.jsx';
+import StarRating from '../components/StarRating.astro';
 import { business, barberImgs } from '../data/content.js';
 import logoSrc from '../assets/img/logo-azedin-barber-transparente.png';
 ---
@@ -24,13 +25,7 @@ import logoSrc from '../assets/img/logo-azedin-barber-transparente.png';
     <!-- Trust strip: rating between Barbers and Lookbook -->
     <div class="border-y border-border py-5 overflow-hidden bg-bg-panel">
       <div class="flex items-center justify-center gap-4 px-6 text-center flex-wrap">
-        <div class="flex items-center gap-1" aria-label="5 estrellas en Booksy">
-          {Array.from({ length: 5 }).map(() => (
-            <svg width="13" height="13" viewBox="0 0 16 16" fill="#C4956A" aria-hidden="true">
-              <path d="M8 1.5l1.8 3.7 4 .6-2.9 2.8.7 4-3.6-1.9L4.4 12.6l.7-4L2.2 5.8l4-.6z"/>
-            </svg>
-          ))}
-        </div>
+        <StarRating count={5} size={13} />
         <span class="font-display text-cream font-bold text-lg">{business.rating}</span>
         <span class="text-border-hi select-none">·</span>
         <span class="text-ink-dim text-[12px]">{business.reviewCount}</span>
@@ -55,7 +50,7 @@ import logoSrc from '../assets/img/logo-azedin-barber-transparente.png';
 
   <Footer />
 
-  <!-- React islands: load only when needed -->
+  <!-- React islands: load only when needed (resolved E2E event bindings) -->
   <BookingModal
     client:load
     booksyUrl={business.booksyUrl}

@@ -4,7 +4,6 @@ import React, { useState, useEffect } from 'react';
  * MobileNav — Fullscreen overlay panel.
  *
  * Slides in from the right: translateX(100%) → translateX(0)
- * Uses --ease-drawer (iOS-like curve) per Emil Kowalski.
  * Links stagger via inline animation-delay.
  * Logo displayed at top of panel.
  * Backdrop: blur + dark.
@@ -28,12 +27,16 @@ export default function MobileNav({ logoSrc }) {
     return () => window.removeEventListener('nav:open', handleOpen);
   }, []);
 
-  // Escape + body scroll
+  // Escape + body scroll + state reset
   useEffect(() => {
-    if (!isOpen) return;
+    if (!isOpen) {
+      setPanelReady(false);
+      return;
+    }
     const handleEscape = (e) => { if (e.key === 'Escape') close(); };
     document.addEventListener('keydown', handleEscape);
     document.body.style.overflow = 'hidden';
+    
     // Stagger trigger after panel enters
     const t = setTimeout(() => setPanelReady(true), 50);
     return () => {
@@ -124,11 +127,11 @@ export default function MobileNav({ logoSrc }) {
               key={a.href}
               href={a.href}
               onClick={handleAnchor}
+              className="mobilenav-anchor-link"
               style={{
                 fontFamily: 'var(--font-display)',
                 fontSize: 'clamp(2rem, 8vw, 3.5rem)',
                 fontWeight: '700',
-                color: 'var(--color-cream)',
                 textDecoration: 'none',
                 letterSpacing: '-0.02em',
                 lineHeight: '1.1',
@@ -137,8 +140,6 @@ export default function MobileNav({ logoSrc }) {
                 transform: panelReady ? 'translateY(0)' : 'translateY(16px)',
                 transition: `opacity 350ms cubic-bezier(0.23, 1, 0.32, 1) ${80 + i * 60}ms, transform 350ms cubic-bezier(0.23, 1, 0.32, 1) ${80 + i * 60}ms, color 150ms ease-out`,
               }}
-              onMouseEnter={(e) => e.target.style.color = 'var(--color-oak)'}
-              onMouseLeave={(e) => e.target.style.color = 'var(--color-cream)'}
             >
               {a.label}
             </a>
@@ -172,6 +173,15 @@ export default function MobileNav({ logoSrc }) {
           </button>
         </div>
       </div>
+
+      <style dangerouslySetInnerHTML={{__html: `
+        .mobilenav-anchor-link {
+          color: var(--color-cream);
+        }
+        .mobilenav-anchor-link:hover {
+          color: var(--color-oak) !important;
+        }
+      `}} />
     </div>
   );
 }

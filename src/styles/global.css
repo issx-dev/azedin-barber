@@ -264,4 +264,16 @@
   .lenis.lenis-stopped {
     overflow: hidden;
   }
+  .lenis.lenis-scrolling iframe {
+    pointer-events: none;
+  }
+
+  /* Pulse slow animation for footer and glow elements (resolved CRIT-3) */
+  @keyframes pulse-slow {
+    0%, 100% { opacity: 0.1; }
+    50% { opacity: 0.25; }
+  }
+  .animate-pulse-slow {
+    animation: pulse-slow 8s ease-in-out infinite;
+  }
 }

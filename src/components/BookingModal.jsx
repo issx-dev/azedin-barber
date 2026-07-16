@@ -4,16 +4,20 @@ import React, { useState, useEffect } from 'react';
  * BookingModal — Barber selection + Booksy redirect.
  *
  * - Names from content.js via props (not hardcoded)
- * - Entry animation: scale(0.96) opacity(0) → scale(1) opacity(1) — Emil: never scale(0)
- * - Escape key + backdrop click to close
  * - Rectangular CTA (editorial, not pill)
- * - Smooth 200ms ease-out transition
+ * - CSS-driven transitions and hover events (no inline DOM mutations)
  */
 
 export default function BookingModal({ booksyUrl, barbers = [] }) {
   const [isOpen, setIsOpen] = useState(false);
-  const [selectedBarber, setSelectedBarber] = useState(barbers?.[0]?.name ?? 'Azedin');
-  const [mounted, setMounted] = useState(false);
+  const [selectedBarber, setSelectedBarber] = useState('Azedin');
+
+  // Set default selected barber once barbers prop loads
+  useEffect(() => {
+    if (barbers.length > 0 && !selectedBarber) {
+      setSelectedBarber(barbers[0].name);
+    }
+  }, [barbers]);
 
   // Listen for book:open event
   useEffect(() => {
@@ -27,28 +31,18 @@ export default function BookingModal({ booksyUrl, barbers = [] }) {
     return () => window.removeEventListener('book:open', handleOpen);
   }, [barbers]);
 
-  // Escape key
+  // Escape key + Body Scroll Lock
   useEffect(() => {
     if (!isOpen) return;
     const handleKeyDown = (e) => {
       if (e.key === 'Escape') setIsOpen(false);
     };
     window.addEventListener('keydown', handleKeyDown);
-    // Lock body scroll
     document.body.style.overflow = 'hidden';
     return () => {
       window.removeEventListener('keydown', handleKeyDown);
       document.body.style.overflow = '';
     };
-  }, [isOpen]);
-
-  // Mount flag for CSS animation trigger
-  useEffect(() => {
-    if (isOpen) {
-      requestAnimationFrame(() => setMounted(true));
-    } else {
-      setMounted(false);
-    }
   }, [isOpen]);
 
   if (!isOpen) return null;
@@ -58,26 +52,23 @@ export default function BookingModal({ booksyUrl, barbers = [] }) {
       role="dialog"
       aria-modal="true"
       aria-label="Reservar cita"
-      className="fixed inset-0 z-[500] flex items-center justify-center p-5"
+      className="fixed inset-0 z-[500] flex items-center justify-center p-5 modal-backdrop"
       onClick={(e) => { if (e.target === e.currentTarget) setIsOpen(false); }}
       style={{ backgroundColor: 'rgba(12,10,9,0.85)', backdropFilter: 'blur(8px)' }}
     >
       <div
-        className="w-full max-w-[420px] sm:max-w-[500px] relative p-8 sm:p-12"
+        className="w-full max-w-[420px] sm:max-w-[500px] relative p-8 sm:p-12 modal-content"
         style={{
           backgroundColor: 'var(--color-bg-surface)',
           border: '1px solid var(--color-border-hi)',
           borderRadius: '4px',
-          // Emil: scale from 0.96, not 0 — combined opacity
-          transform: mounted ? 'scale(1) translateY(0)' : 'scale(0.96) translateY(8px)',
-          opacity: mounted ? 1 : 0,
-          transition: 'transform 200ms cubic-bezier(0.23, 1, 0.32, 1), opacity 200ms cubic-bezier(0.23, 1, 0.32, 1)',
         }}
       >
         {/* Close button */}
         <button
           onClick={() => setIsOpen(false)}
           aria-label="Cerrar"
+          className="modal-close-btn"
           style={{
             position: 'absolute',
             top: '1rem',
@@ -91,8 +82,6 @@ export default function BookingModal({ booksyUrl, barbers = [] }) {
             padding: '0.25rem',
             transition: 'color 150ms ease-out',
           }}
-          onMouseEnter={(e) => e.target.style.color = 'var(--color-cream)'}
-          onMouseLeave={(e) => e.target.style.color = 'var(--color-ink-faint)'}
         >
           ✕
         </button>
@@ -120,7 +109,7 @@ export default function BookingModal({ booksyUrl, barbers = [] }) {
                 key={barber.name}
                 onClick={() => setSelectedBarber(barber.name)}
                 aria-pressed={isSelected}
-                className="flex-1 flex flex-col items-center py-5 sm:py-7 px-2"
+                className={`flex-1 flex flex-col items-center py-5 sm:py-7 px-2 barber-option-btn ${isSelected ? 'selected' : ''}`}
                 style={{
                   background: isSelected ? 'rgba(196,149,106,0.1)' : 'transparent',
                   border: `1px solid ${isSelected ? 'var(--color-oak)' : 'var(--color-border-hi)'}`,
@@ -128,12 +117,10 @@ export default function BookingModal({ booksyUrl, barbers = [] }) {
                   cursor: 'pointer',
                   transition: 'background 180ms ease-out, border-color 180ms ease-out, transform 160ms ease-out',
                 }}
-                onMouseEnter={(e) => { if (!isSelected) e.currentTarget.style.borderColor = 'var(--color-oak-dim)'; }}
-                onMouseLeave={(e) => { if (!isSelected) e.currentTarget.style.borderColor = 'var(--color-border-hi)'; }}
               >
                 {/* Barber Avatar Thumbnail */}
                 <div
-                  className="w-[60px] h-[60px] sm:w-[76px] sm:h-[76px] rounded-full overflow-hidden mb-3 transition-all duration-180"
+                  className="w-[60px] h-[60px] sm:w-[76px] sm:h-[76px] rounded-full overflow-hidden mb-3 transition-all duration-180 barber-avatar-container"
                   style={{
                     border: `2px solid ${isSelected ? 'var(--color-oak)' : 'transparent'}`,
                     boxShadow: isSelected ? '0 0 15px rgba(196,149,106,0.25)' : 'none',
@@ -153,7 +140,7 @@ export default function BookingModal({ booksyUrl, barbers = [] }) {
 
                 {/* Barber Name */}
                 <span
-                  className="font-body text-[0.7rem] sm:text-[0.78rem] font-semibold tracking-wider uppercase transition-colors duration-180"
+                  className="font-body text-[0.7rem] sm:text-[0.78rem] font-semibold tracking-wider uppercase transition-colors duration-180 barber-name"
                   style={{
                     color: isSelected ? 'var(--color-oak)' : 'var(--color-ink-dim)',
                   }}
@@ -185,6 +172,33 @@ export default function BookingModal({ booksyUrl, barbers = [] }) {
           Se abrirá Booksy en una nueva pestaña
         </p>
       </div>
+
+      <style dangerouslySetInnerHTML={{__html: `
+        .modal-backdrop {
+          animation: fadeIn 200ms cubic-bezier(0.23, 1, 0.32, 1) forwards;
+        }
+        .modal-content {
+          animation: scaleUp 220ms cubic-bezier(0.23, 1, 0.32, 1) forwards;
+        }
+        .modal-close-btn:hover {
+          color: var(--color-cream) !important;
+        }
+        .barber-option-btn:not(.selected):hover {
+          border-color: var(--color-oak-dim) !important;
+        }
+        .barber-option-btn:active {
+          transform: scale(0.97);
+        }
+
+        @keyframes fadeIn {
+          from { opacity: 0; }
+          to { opacity: 1; }
+        }
+        @keyframes scaleUp {
+          from { transform: scale(0.96) translateY(8px); opacity: 0; }
+          to { transform: scale(1) translateY(0); opacity: 1; }
+        }
+      `}} />
     </div>
   );
 }

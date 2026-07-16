@@ -76,19 +76,7 @@ const navLinks = [
   <div class="absolute bottom-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-border to-transparent opacity-0 transition-opacity duration-300" id="header-line"></div>
 </header>
 
-<script is:inline>
-  // Show header separator line after scroll
-  var headerLine = document.getElementById('header-line');
-  if (headerLine) {
-    window.addEventListener('scroll', function() {
-      if (window.scrollY > 60) {
-        headerLine.style.opacity = '1';
-      } else {
-        headerLine.style.opacity = '0';
-      }
-    }, { passive: true });
-  }
-</script>
+
 
 <style>
   .nav-logo-img {

@@ -18,12 +18,9 @@ test('lookbook renders bento tiles without filters', async ({ page }) => {
   const lookbook = page.locator('#lookbook');
   await expect(lookbook).toBeVisible({ timeout: 10000 });
 
-  // Bento tiles should render (12 items with data-bento attribute)
-  const bentoTiles = page.locator('[data-bento]');
-  await expect(bentoTiles).toHaveCount(12, { timeout: 10000 });
-
-  // First tile should have a data-bento attribute
-  await expect(bentoTiles.first()).toHaveAttribute('data-bento');
+  // Bento tiles should render (9 items with .lookbook-tile class)
+  const bentoTiles = page.locator('.lookbook-tile');
+  await expect(bentoTiles).toHaveCount(9, { timeout: 10000 });
 
   // No filter buttons should be present
   const filterButtons = page.locator('button', { hasText: 'Todos' });

@@ -1,6 +1,5 @@
 ---
 import '../styles/global.css';
-import logoSrc from '../assets/img/azedin-logo.jpg';
 
 export interface Props {
   title?: string;
@@ -22,22 +21,53 @@ const {
   <meta name="description" content={description} />
   <meta name="theme-color" content="#0C0A09" />
 
+  <!-- Favicon (resolved CRIT-13) -->
+  <link rel="icon" type="image/x-icon" href="/favicon.ico" />
+  <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png" />
+  <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png" />
+
+  <!-- Canonical URL (resolved CRIT-11) -->
+  <link rel="canonical" href="https://azedinbarber.com/" />
+
+  <!-- Geo Tags for Local SEO (resolved SUG-7) -->
+  <meta name="geo.region" content="ES-AN" />
+  <meta name="geo.platename" content="Berja, Almería, España" />
+  <meta name="geo.position" content="36.8458;-2.9496" />
+  <meta name="ICBM" content="36.8458, -2.9496" />
+
   <!-- Open Graph -->
   <meta property="og:title" content={title} />
   <meta property="og:description" content={description} />
   <meta property="og:type" content="website" />
+  <meta property="og:url" content="https://azedinbarber.com/" />
   <meta property="og:locale" content="es_ES" />
+  <meta property="og:site_name" content="Azedin Barber" />
 
-  <!-- Preconnect for fonts -->
+  <!-- Twitter Cards (resolved CRIT-12) -->
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content={title} />
+  <meta name="twitter:description" content={description} />
+
+  <!-- Preconnect and Preload for Critical Fonts (resolved CRIT-5 & WARN-7) -->
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link
+    rel="preload"
+    as="style"
+    href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;0,900;1,700&family=Instrument+Sans:wght@400;500;600&display=swap"
+  />
+  <link
     href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;0,900;1,700&family=Instrument+Sans:wght@400;500;600&display=swap"
     rel="stylesheet"
+    media="print"
+    onload="this.media='all'"
   />
-
-  <!-- Lenis CSS -->
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/lenis@1.1.20/dist/lenis.min.css" />
+  <noscript>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;0,900;1,700&family=Instrument+Sans:wght@400;500;600&display=swap"
+      rel="stylesheet"
+    />
+  </noscript>
 </head>
 
 <body class="bg-bg-deep text-ink font-body antialiased overflow-x-hidden">
@@ -61,20 +91,27 @@ const {
       }
     });
 
-    // Header scroll state
+    // Header scroll state (unified and safely managed to prevent memory leaks, resolved CRIT-14)
     (function() {
       var header = document.getElementById('site-header');
+      var headerLine = document.getElementById('header-line');
       if (!header) return;
       var THRESHOLD = 60;
       function onScroll() {
         if (window.scrollY > THRESHOLD) {
           header.classList.add('scrolled');
+          if (headerLine) headerLine.style.opacity = '1';
         } else {
           header.classList.remove('scrolled');
+          if (headerLine) headerLine.style.opacity = '0';
         }
       }
       window.addEventListener('scroll', onScroll, { passive: true });
       onScroll();
+
+      document.addEventListener('astro:before-swap', function() {
+        window.removeEventListener('scroll', onScroll);
+      }, { once: true });
     })();
   </script>
 

@@ -1,0 +1,42 @@
+---
+/**
+ * StarRating — Reusable stars component.
+ *
+ * Renders a row of clean geometric star SVGs styled with the design system's
+ * primary accent color (var(--color-oak)).
+ *
+ * Props:
+ *   count? — Number of stars to render (default: 5)
+ *   size?  — Dimension in pixels (default: 13)
+ *   class? — Optional wrapper utility classes
+ */
+
+interface Props {
+  count?: number;
+  size?: number;
+  class?: string;
+}
+
+const { count = 5, size = 13, class: className = '' } = Astro.props;
+---
+
+<div class={`flex items-center gap-1 ${className}`} aria-label={`${count} estrellas`}>
+  {Array.from({ length: count }).map(() => (
+    <svg 
+      width={size} 
+      height={size} 
+      viewBox="0 0 16 16" 
+      fill="currentColor" 
+      class="text-oak"
+      aria-hidden="true"
+    >
+      <path d="M8 1.5l1.8 3.7 4 .6-2.9 2.8.7 4-3.6-1.9L4.4 12.6l.7-4L2.2 5.8l4-.6z"/>
+    </svg>
+  ))}
+</div>
+
+<style>
+  .text-oak {
+    color: var(--color-oak);
+  }
+</style>

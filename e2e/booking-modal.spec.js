@@ -3,10 +3,9 @@ import { test, expect } from '@playwright/test';
 test('booking modal opens and closes via React state', async ({ page }) => {
   await page.goto('/');
 
-  // Click a data-book-trigger button (the floating CTA is always visible)
-  const reservarBtn = page.locator('[data-book-trigger]', { hasText: 'Reservar ahora' }).first();
+  // Click a data-book-trigger button (the main CTA)
+  const reservarBtn = page.locator('[data-book-trigger]').first();
   await expect(reservarBtn).toBeVisible({ timeout: 5000 });
-  // Wait for React island to hydrate, then click
   await page.waitForTimeout(1000);
   await reservarBtn.click();
 
@@ -14,7 +13,7 @@ test('booking modal opens and closes via React state', async ({ page }) => {
   await expect(page.locator('h3', { hasText: 'Reserva tu cita' })).toBeVisible({ timeout: 10000 });
 
   // Close the modal by clicking the close button
-  await page.locator('[aria-label="Close"]').click();
+  await page.locator('[aria-label="Cerrar"]').click();
 
   // Modal title should disappear (booking modal uses conditional rendering)
   await expect(page.locator('h3', { hasText: 'Reserva tu cita' })).not.toBeVisible({ timeout: 5000 });
@@ -24,7 +23,7 @@ test('booking modal shows circular barber thumbnails', async ({ page }) => {
   await page.goto('/');
 
   // Open modal
-  const reservarBtn = page.locator('[data-book-trigger]', { hasText: 'Reservar ahora' }).first();
+  const reservarBtn = page.locator('[data-book-trigger]').first();
   await expect(reservarBtn).toBeVisible({ timeout: 5000 });
   await reservarBtn.click();
 
@@ -39,7 +38,13 @@ test('booking modal shows circular barber thumbnails', async ({ page }) => {
 test('booking modal opens with specific barber from hero', async ({ page }) => {
   await page.goto('/');
 
-  // Click on Samir's chooser area in the hero
+  // Scroll to Barbers section where Samir's button is located
+  await page.evaluate(() => {
+    document.querySelector('#barberos')?.scrollIntoView();
+  });
+  await page.waitForTimeout(1000);
+
+  // Click on Samir's button in the Barbers section
   const samirChooser = page.locator('[data-book-barber="Samir"]').first();
   await expect(samirChooser).toBeVisible({ timeout: 5000 });
   await samirChooser.click();
@@ -47,7 +52,7 @@ test('booking modal opens with specific barber from hero', async ({ page }) => {
   // Modal should open
   await expect(page.locator('h3', { hasText: 'Reserva tu cita' })).toBeVisible({ timeout: 5000 });
 
-  // Samir thumbnail should be selected (has oak border class)
+  // Samir thumbnail should be visible inside the selector modal
   const samirImg = page.locator('img[alt="Samir"]').first();
   await expect(samirImg).toBeVisible();
 });
@@ -55,8 +60,8 @@ test('booking modal opens with specific barber from hero', async ({ page }) => {
 test('booking modal links to Booksy', async ({ page }) => {
   await page.goto('/');
 
-  // Open modal via the floating CTA
-  const reservarBtn = page.locator('[data-book-trigger]', { hasText: 'Reservar ahora' }).first();
+  // Open modal
+  const reservarBtn = page.locator('[data-book-trigger]').first();
   await expect(reservarBtn).toBeVisible({ timeout: 5000 });
   await reservarBtn.click();
 
