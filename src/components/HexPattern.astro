@@ -137,7 +137,7 @@ const filterStyle = `
 ---
 
 <svg
-  class={`pointer-events-none select-none ${sizeMap[layout][size]} ${className}`}
+  class={`pointer-events-none select-none hex-pulse ${sizeMap[layout][size]} ${className}`}
   viewBox={viewBox}
   fill="none"
   xmlns="http://www.w3.org/2000/svg"
@@ -154,3 +154,39 @@ const filterStyle = `
     />
   ))}
 </svg>
+
+<style>
+  /*
+   * LED Glow Pulse — mirrors the hexagonal LED ceiling lights of Azedin Barber.
+   * Only animates `opacity` and `transform` which are GPU-composited properties.
+   * `will-change` promotes the element to its own GPU layer, preventing repaints.
+   */
+  @keyframes led-glow {
+    0%,  100% { opacity: var(--hex-opacity-low,  1);    transform: scale(1);     }
+    50%        { opacity: var(--hex-opacity-high, 1);    transform: scale(1.018); }
+  }
+
+  .hex-pulse {
+    will-change: opacity, transform;
+    animation: led-glow 7s ease-in-out infinite;
+    /* Default: subtle; Hero overrides via .opacity-35 / .opacity-25 utility classes
+       which set the baseline. The keyframe oscillates ±20% relative to that base. */
+  }
+
+  /*
+   * Offset the two Hero hex panels so they pulse alternately —
+   * creates a living, breathing feel without being distracting.
+   * :nth-of-type selects the first and second .hex-pulse on the page.
+   */
+  .hex-pulse:nth-of-type(even) {
+    animation-delay: -3.5s; /* half-phase offset = alternating breath */
+  }
+
+  /* Respect reduced-motion preference — accessibility */
+  @media (prefers-reduced-motion: reduce) {
+    .hex-pulse {
+      animation: none;
+      will-change: auto;
+    }
+  }
+</style>

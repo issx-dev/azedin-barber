@@ -16,6 +16,10 @@ import HexPattern from './HexPattern.astro';
 import workspaceImg from '../assets/img/espaciotrabajo02.jpeg';
 import logoSrc from '../assets/img/new-logo-no-bg.png';
 import { business } from '../data/content.js';
+
+// Video path — served from public/ after build copy or referenced via import
+// We reference the compiled output path (Astro copies assets/ into _astro/)
+const mobileVideoSrc = '/video/instalaciones-mobile.mp4';
 ---
 
 <section
@@ -23,8 +27,8 @@ import { business } from '../data/content.js';
   class="relative flex flex-col items-center justify-center min-h-[100dvh] overflow-hidden wood-slats"
   aria-label="Bienvenida"
 >
-  <!-- ── Background: workspace photo with parallax ──────────────────── -->
-  <div class="absolute inset-0 z-0" aria-hidden="true">
+  <!-- ── Background: workspace photo with parallax (desktop) ─────────── -->
+  <div class="hero-bg-desktop absolute inset-0 z-0" aria-hidden="true">
     <Image
       src={workspaceImg}
       alt="Interior de Azedin Barber — barbería en Berja"
@@ -41,6 +45,35 @@ import { business } from '../data/content.js';
     <div
       class="absolute inset-0"
       style="background: radial-gradient(ellipse 70% 60% at 50% 40%, rgba(196,149,106,0.06) 0%, transparent 70%), linear-gradient(to bottom, rgba(12,10,9,0.5) 0%, rgba(12,10,9,0.1) 40%, rgba(12,10,9,0.7) 80%, rgba(12,10,9,1) 100%);"
+    ></div>
+  </div>
+
+  <!-- ── Background: video loop (mobile only, < 768px) ────────────────── -->
+  <div class="hero-bg-mobile absolute inset-0 z-0" aria-hidden="true">
+    <!--
+      poster= uses the static JPEG as placeholder — ensures LCP fires on the image
+      BEFORE the video loads, preventing layout shifts.
+      autoplay + muted + playsinline = required by browsers for auto-playback.
+      preload="none" = video bytes are NOT fetched until JS initiates; keeps initial
+      page load fast. We switch to "auto" on mobile via JS after page load.
+    -->
+    <video
+      id="hero-video-mobile"
+      class="hero-video w-full h-full object-cover"
+      autoplay
+      loop
+      muted
+      playsinline
+      preload="metadata"
+      aria-hidden="true"
+      style="filter: sepia(15%) brightness(0.2) contrast(1.15);"
+    >
+      <source src={mobileVideoSrc} type="video/mp4" />
+    </video>
+    <!-- Gradient overlay — same as desktop for consistent CTA legibility -->
+    <div
+      class="absolute inset-0"
+      style="background: radial-gradient(ellipse 70% 60% at 50% 40%, rgba(196,149,106,0.07) 0%, transparent 70%), linear-gradient(to bottom, rgba(12,10,9,0.45) 0%, rgba(12,10,9,0.05) 40%, rgba(12,10,9,0.72) 80%, rgba(12,10,9,1) 100%);"
     ></div>
   </div>
 
@@ -130,4 +163,40 @@ import { business } from '../data/content.js';
   .hero-logo-img:hover {
     transform: scale(1.02);
   }
+
+  /* ── Responsive background switching ──────────────────────────────── */
+  /* Mobile: show video, hide desktop photo */
+  .hero-bg-mobile  { display: block; }
+  .hero-bg-desktop { display: none; }
+
+  /* Desktop (≥ 768px): hide video, show static photo */
+  @media (min-width: 768px) {
+    .hero-bg-mobile  { display: none; }
+    .hero-bg-desktop { display: block; }
+  }
+
+  /* Fade-in animation for the video — prevents hard cut when it starts */
+  .hero-video {
+    opacity: 0;
+    transition: opacity 0.8s ease;
+  }
+  .hero-video.ready {
+    opacity: 1;
+  }
 </style>
+
+<script>
+  // Fade in the video once it has enough data to play smoothly.
+  // This prevents a white flash if the video takes time to decode its first frame.
+  const video = document.getElementById('hero-video-mobile') as HTMLVideoElement | null;
+  if (video) {
+    const makeReady = () => video.classList.add('ready');
+    if (video.readyState >= 3) {
+      makeReady();
+    } else {
+      video.addEventListener('canplay', makeReady, { once: true });
+      // Safety fallback: show after 1.5s even if canplay never fires
+      setTimeout(makeReady, 1500);
+    }
+  }
+</script>
