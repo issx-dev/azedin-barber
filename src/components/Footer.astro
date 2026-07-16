@@ -8,7 +8,7 @@
  */
 import HexPattern from './HexPattern.astro';
 import { business } from '../data/content.js';
-import logoSrc from '../assets/img/azedin-logo.jpg';
+import logoSrc from '../assets/img/new-logo-no-bg.png';
 ---
 
 <footer class="relative border-t border-border overflow-hidden" role="contentinfo">
@@ -23,10 +23,7 @@ import logoSrc from '../assets/img/azedin-logo.jpg';
     <img
       src={logoSrc.src}
       alt="Azedin Barber Logo"
-      width="108"
-      height="108"
-      class="w-24 h-24 md:w-28 md:h-28 object-cover rounded-full border border-oak-dim"
-      style="box-shadow: 0 0 45px rgba(196,149,106,0.28), 0 0 0 1.5px rgba(196,149,106,0.22);"
+      class="footer-logo-img"
     />
   </div>
 
@@ -90,3 +87,22 @@ import logoSrc from '../assets/img/azedin-logo.jpg';
   </div>
 
 </footer>
+
+<style>
+  .footer-logo-img {
+    width: 140px;
+    height: auto;
+    
+    /* Invert black text to cream, then add soft gold glow */
+    filter: invert(1) drop-shadow(0 0 15px rgba(196, 149, 106, 0.22));
+    mix-blend-mode: screen;
+    
+    opacity: 0.9;
+    transition: opacity 200ms var(--ease-out), transform 200ms var(--ease-out);
+  }
+  
+  .footer-logo-img:hover {
+    opacity: 1;
+    transform: scale(1.03);
+  }
+</style>

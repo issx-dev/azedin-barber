@@ -14,7 +14,7 @@
 import { Image } from 'astro:assets';
 import HexPattern from './HexPattern.astro';
 import workspaceImg from '../assets/img/espaciotrabajo02.jpeg';
-import logoSrc from '../assets/img/azedin-logo.jpg';
+import logoSrc from '../assets/img/new-logo-no-bg.png';
 import { business } from '../data/content.js';
 ---
 
@@ -51,28 +51,17 @@ import { business } from '../data/content.js';
   <!-- ── Main content ────────────────────────────────────────────────── -->
   <div class="relative z-[2] flex flex-col items-center text-center px-6 max-w-2xl mx-auto">
 
-    <!-- Logo image -->
-    <div
+    <!-- Logo / Heading -->
+    <h1
       data-hero-text
-      class="mb-8 opacity-0"
+      class="mb-6 opacity-0"
     >
       <img
         src={logoSrc.src}
         alt="Azedin Barber"
-        width="120"
-        height="120"
-        class="w-28 h-28 md:w-36 md:h-36 object-cover rounded-full border border-oak-dim mx-auto"
+        class="hero-logo-img mx-auto"
         loading="eager"
-        style="box-shadow: 0 0 55px rgba(196,149,106,0.25), 0 0 0 1.5px rgba(196,149,106,0.2);"
       />
-    </div>
-
-    <!-- Barbershop name -->
-    <h1
-      data-hero-text
-      class="font-display text-[clamp(3rem,8vw,6.5rem)] text-cream tracking-[-0.03em] leading-[0.92] mb-4 opacity-0"
-    >
-      Azedin<br/><span class="text-oak italic">Barber</span>
     </h1>
 
     <!-- Tagline -->
@@ -125,3 +114,20 @@ import { business } from '../data/content.js';
   ></div>
 
 </section>
+
+<style>
+  .hero-logo-img {
+    width: clamp(240px, 45vw, 420px);
+    height: auto;
+    
+    /* Invert black text on white bg to cream, then add soft luxury glow */
+    filter: invert(1) drop-shadow(0 0 25px rgba(196, 149, 106, 0.28));
+    mix-blend-mode: screen;
+    
+    transition: transform 300ms var(--ease-out);
+  }
+  
+  .hero-logo-img:hover {
+    transform: scale(1.02);
+  }
+</style>

@@ -7,7 +7,7 @@
  * at a tasteful size in the header. We treat it as a raster logo since
  * vectorizing in Astro build is complex.
  */
-import logoSrc from '../assets/img/azedin-logo.jpg';
+import logoSrc from '../assets/img/new-logo-no-bg.png';
 
 const navLinks = [
   { href: '#lookbook',  label: 'Lookbook'  },
@@ -25,18 +25,13 @@ const navLinks = [
   <div class="flex items-center justify-between px-6 md:px-10 h-[68px]">
 
     <!-- Logo -->
-    <a href="#hero" class="flex items-center gap-3 group" aria-label="Azedin Barber — Inicio">
+    <a href="#hero" class="flex items-center group" aria-label="Azedin Barber — Inicio">
       <img
         src={logoSrc.src}
         alt="Azedin Barber"
-        width="38"
-        height="38"
-        class="w-9 h-9 object-cover rounded-full opacity-90 transition-opacity duration-200 group-hover:opacity-100"
+        class="nav-logo-img"
         loading="eager"
       />
-      <span class="font-display text-[17px] tracking-tight text-cream hidden sm:block">
-        Azedin<span class="text-oak"> Barber</span>
-      </span>
     </a>
 
     <!-- Desktop navigation -->
@@ -94,3 +89,22 @@ const navLinks = [
     }, { passive: true });
   }
 </script>
+
+<style>
+  .nav-logo-img {
+    width: 110px;
+    height: auto;
+    
+    /* Invert black text on white bg to white text on black, then make black transparent */
+    filter: invert(1);
+    mix-blend-mode: screen;
+    
+    opacity: 0.94;
+    transition: opacity 200ms var(--ease-out), transform 200ms var(--ease-out);
+  }
+  
+  .nav-logo-img:hover {
+    opacity: 1;
+    transform: scale(1.03);
+  }
+</style>

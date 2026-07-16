@@ -84,18 +84,17 @@ export default function MobileNav({ logoSrc }) {
         {/* Header: Logo + Close */}
         <div className="flex items-center justify-between px-6 h-[68px]">
           {logoSrc && (
-            <div className="flex items-center gap-3">
-              <img
-                src={logoSrc}
-                alt="Azedin Barber"
-                width="36"
-                height="36"
-                style={{ width: '36px', height: '36px', objectFit: 'cover', borderRadius: '50%', opacity: 0.9 }}
-              />
-              <span style={{ fontFamily: 'var(--font-display)', fontSize: '16px', color: 'var(--color-cream)' }}>
-                Azedin<span style={{ color: 'var(--color-oak)' }}> Barber</span>
-              </span>
-            </div>
+            <img
+              src={logoSrc}
+              alt="Azedin Barber"
+              style={{
+                width: '100px',
+                height: 'auto',
+                filter: 'invert(1)',
+                mixBlendMode: 'screen',
+                opacity: 0.94,
+              }}
+            />
           )}
           <button
             onClick={close}
