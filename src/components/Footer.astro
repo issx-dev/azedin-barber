@@ -1,108 +1,59 @@
 ---
 /**
- * Footer — CTA final + hex decoration + social links.
+ * Footer — Minimal typographic block.
  *
- * Minimal, editorial. Hexagonal motif as top decoration.
- * CTA: "¿Listo para tu próximo corte?" + Booksy button.
- * Social: Instagram + Booksy links.
+ * Outfit 900 wordmark + horizontal social/copyright row.
+ * No CTA, no logo image.
  */
-import HexPattern from './HexPattern.astro';
 import { business } from '../data/content.js';
-import logoSrc from '../assets/img/logo-azedin-barber-transparente.png';
 ---
 
-<footer class="relative border-t border-border overflow-hidden" role="contentinfo">
+<footer class="border-t border-border" role="contentinfo">
+  <div class="max-w-6xl mx-auto px-6 md:px-10 py-14 flex flex-col items-center gap-8">
 
-  <!-- LED ceiling hex — illuminates the CTA from above in bright white glow -->
-  <div class="flex justify-center pt-14 pb-0 animate-pulse-slow" aria-hidden="true">
-    <HexPattern layout="cluster" size="lg" color="white" class="opacity-[0.14]" />
-  </div>
-
-  <!-- Logo — brand seal, standalone under the hex lights with elegant spacing -->
-  <div class="flex justify-center mt-6 md:mt-10 mb-6">
-    <img
-      src={logoSrc.src}
-      alt="Azedin Barber Logo"
-      class="footer-logo-img"
-    />
-  </div>
-
-  <!-- CTA block -->
-  <div class="text-center px-6 pb-16 pt-0 max-w-2xl mx-auto">
-    <h2
-      data-fade
-      class="font-display text-[clamp(2rem,5vw,3.5rem)] text-cream leading-none tracking-[-0.02em] mb-4 opacity-0"
-    >
-      ¿Listo para tu<br/>
-      <span class="text-oak italic">próximo corte?</span>
+    <!-- Wordmark -->
+    <h2 class="footer-wordmark font-display font-black text-[clamp(1.6rem,4vw,2.4rem)] tracking-[-0.04em] text-cream leading-none select-none">
+      AZEDIN BARBER
     </h2>
-    <p
-      data-fade
-      class="text-ink-dim text-[13px] mb-8 opacity-0"
-    >
-      Reserva en segundos. Sin esperas, sin sorpresas.
-    </p>
-    <button
-      data-book-trigger
-      data-fade
-      class="btn-oak text-[11px] px-10 py-4 opacity-0"
-      aria-label="Reservar cita en Booksy"
-    >
-      Reservar cita
-    </button>
-  </div>
 
-  <!-- Bottom bar -->
-  <div class="border-t border-border">
-    <div class="max-w-6xl mx-auto px-6 md:px-10 py-7 flex flex-col sm:flex-row items-center justify-between gap-4">
-
-      <!-- Copyright -->
-      <p class="text-ink-faint text-[11px] tracking-wide">
-        &copy; {new Date().getFullYear()} {business.name} &middot; Berja, Almería
-      </p>
-
-      <!-- Social links -->
-      <nav class="flex items-center gap-6" aria-label="Redes sociales">
+    <!-- Horizontal row: links + copyright -->
+    <div class="flex flex-col sm:flex-row items-center gap-3 sm:gap-5 text-[11px] text-ink-faint">
+      <nav class="flex items-center gap-4" aria-label="Redes sociales">
         <a
           href={business.instagramUrl}
           target="_blank"
           rel="noopener noreferrer"
-          class="text-[11px] uppercase tracking-[0.16em] text-ink-dim hover:text-oak transition-colors duration-180 font-semibold"
+          class="uppercase tracking-[0.16em] text-ink-dim hover:text-oak transition-colors duration-180 font-semibold"
           aria-label="Instagram de Azedin Barber"
         >
           Instagram
         </a>
+        <span class="text-border-hi">&middot;</span>
         <a
           href={business.booksyUrl}
           target="_blank"
           rel="noopener noreferrer"
-          class="text-[11px] uppercase tracking-[0.16em] text-ink-dim hover:text-oak transition-colors duration-180 font-semibold"
+          class="uppercase tracking-[0.16em] text-ink-dim hover:text-oak transition-colors duration-180 font-semibold"
           aria-label="Reservas en Booksy"
         >
           Booksy
         </a>
+        <span class="text-border-hi">&middot;</span>
+        <a
+          href="https://maps.app.goo.gl/gvjmsWwo8HRToHvi8"
+          target="_blank"
+          rel="noopener noreferrer"
+          class="uppercase tracking-[0.16em] text-ink-dim hover:text-oak transition-colors duration-180 font-semibold"
+          aria-label="Cómo llegar"
+        >
+          Cómo llegar
+        </a>
       </nav>
-
+      <span class="text-border-hi hidden sm:block">&middot;</span>
+      <p class="tracking-wide">
+        &copy; {new Date().getFullYear()}
+      </p>
     </div>
+
   </div>
-
 </footer>
-
-<style>
-  .footer-logo-img {
-    width: 140px;
-    height: auto;
-    
-    /* Invert black text to cream, then add soft gold glow */
-    filter: invert(1) drop-shadow(0 0 15px rgba(196, 149, 106, 0.22));
-    mix-blend-mode: screen;
-    
-    opacity: 0.9;
-    transition: opacity 200ms var(--ease-out), transform 200ms var(--ease-out);
-  }
-  
-  .footer-logo-img:hover {
-    opacity: 1;
-    transform: scale(1.03);
-  }
-</style>

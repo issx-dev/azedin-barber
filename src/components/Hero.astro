@@ -6,13 +6,11 @@
  * - Logo (azedin-logo.jpg) prominent and centered
  * - Workspace photo as full-bleed background with parallax
  * - Wood slat texture overlay (CSS) — from real barbershop panels
- * - Hexagonal SVG accents — from LED floor lights
  * - CTA rect button (editorial, not pill)
  * - data-hero-text targets → staggered entrance via GSAP
  */
 
 import { Image } from 'astro:assets';
-import HexPattern from './HexPattern.astro';
 import workspaceImg from '../assets/img/barberia-interior-recepcion.jpeg';
 import logoSrc from '../assets/img/logo-azedin-barber-transparente.png';
 import { business } from '../data/content.js';
@@ -78,10 +76,6 @@ const mobileVideoSrc = '/video/instalaciones-mobile.mp4';
       style="background: radial-gradient(ellipse 70% 60% at 50% 40%, rgba(196,149,106,0.07) 0%, transparent 70%), linear-gradient(to bottom, rgba(12,10,9,0.45) 0%, rgba(12,10,9,0.05) 40%, rgba(12,10,9,0.72) 80%, rgba(12,10,9,1) 100%);"
     ></div>
   </div>
-
-  <!-- ── Hex accents ─────────────────────────────────────────────────── -->
-  <HexPattern layout="panel" size="sm" class="absolute top-28 left-4 md:left-10 z-[1] opacity-35" />
-  <HexPattern layout="panel" size="sm" class="absolute bottom-16 right-4 md:right-10 z-[1] opacity-25" />
 
   <!-- ── Main content ────────────────────────────────────────────────── -->
   <div class="relative z-[2] flex flex-col items-center text-center px-6 max-w-2xl mx-auto">

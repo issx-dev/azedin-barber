@@ -3,7 +3,7 @@
 @tailwind utilities;
 
 /* ─── Google Fonts ─────────────────────────────────────────────────────────── */
-/* Loaded via Layout.astro <link> — Playfair Display + Instrument Sans */
+/* Loaded via Layout.astro <link> — Outfit + Instrument Sans */
 
 @layer base {
   :root {
@@ -23,7 +23,7 @@
     --color-border-hi:  #3D332B;   /* visible border */
 
     /* ── Typography ────────────────────────────────────────────────────── */
-    --font-display: 'Playfair Display', Georgia, serif;
+    --font-display: 'Outfit', sans-serif;
     --font-body:    'Instrument Sans', system-ui, sans-serif;
 
     /* ── Easing curves — Emil Kowalski ─────────────────────────────────── */
@@ -32,7 +32,7 @@
     --ease-drawer: cubic-bezier(0.32, 0.72, 0, 1);
 
     /* ── Spacing rhythm ────────────────────────────────────────────────── */
-    --section-py: clamp(5rem, 10vw, 8rem);
+    --section-py: clamp(6.5rem, 12vw, 10rem);
     --container-px: clamp(1.5rem, 5vw, 4rem);
   }
 
@@ -52,9 +52,10 @@
 
   h1, h2, h3, h4, h5, h6 {
     font-family: var(--font-display);
-    font-weight: 700;
-    letter-spacing: -0.02em;
-    line-height: 1;
+    font-weight: 900;
+    text-transform: uppercase;
+    letter-spacing: -0.04em;
+    line-height: 0.9;
     color: var(--color-cream);
   }
 
@@ -62,6 +63,15 @@
   h1 { font-size: clamp(3.5rem, 8vw, 7rem); }
   h2 { font-size: clamp(2.2rem, 5vw, 3.8rem); }
   h3 { font-size: clamp(1.5rem, 3vw, 2rem); }
+
+  /* Badge / metadata token */
+  .badge, [data-badge] {
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 0.25em;
+    font-weight: 700;
+    color: var(--color-oak);
+  }
 }
 
 /* ─── Wood slat texture — from real barbershop panels ─────────────────────── */
@@ -169,18 +179,8 @@
   }
 }
 
-/* ─── Hex glow animation — from LED floor lights ──────────────────────────── */
+/* ─── Marquee animation ────────────────────────────────────────────────────── */
 @layer utilities {
-  .hex-glow {
-    animation: hexPulse 4s ease-in-out infinite;
-  }
-
-  @keyframes hexPulse {
-    0%, 100% { opacity: 0.12; }
-    50%       { opacity: 0.28; }
-  }
-
-  /* Marquee — reviews section */
   .marquee-track {
     animation: marquee 42s linear infinite;
     will-change: transform;
@@ -239,7 +239,6 @@
 
   /* ── prefers-reduced-motion overrides ──────────────────────────────────── */
   @media (prefers-reduced-motion: reduce) {
-    .hex-glow { animation: none; opacity: 0.15; }
     .marquee-track { animation: none; }
     .lookbook-img { transition: none; }
     .service-row  { transition: none; }
@@ -266,14 +265,5 @@
   }
   .lenis.lenis-scrolling iframe {
     pointer-events: none;
-  }
-
-  /* Pulse slow animation for footer and glow elements (resolved CRIT-3) */
-  @keyframes pulse-slow {
-    0%, 100% { opacity: 0.1; }
-    50% { opacity: 0.25; }
-  }
-  .animate-pulse-slow {
-    animation: pulse-slow 8s ease-in-out infinite;
   }
 }

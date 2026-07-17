@@ -1,20 +1,21 @@
 ---
 /**
- * Services — Editorial list section.
+ * Services — Editorial dot-leader price menu.
  *
- * No cards. Border-top separators only (like a premium restaurant menu).
+ * Minimal typographic list: NAME ······· PRICE (DURATION).
+ * No cards, no row borders. Flex-based dot leader fills available width.
  * Stagger animation via GSAP data-stagger on scroll.
- * Price in oak, time in ink-dim.
  */
 import { services, business } from '../data/content.js';
 ---
 
 <section
   id="servicios"
-  class="py-0 relative overflow-hidden"
+  class="relative overflow-hidden"
   aria-labelledby="servicios-heading"
+  style={`padding-block: var(--section-py);`}
 >
-  <div class="max-w-4xl mx-auto px-6 md:px-10 py-[clamp(5rem,10vw,8rem)]">
+  <div class="max-w-4xl mx-auto px-6 md:px-10">
 
     <!-- Header -->
     <div class="mb-16">
@@ -33,38 +34,31 @@ import { services, business } from '../data/content.js';
       </h2>
     </div>
 
-    <!-- Service list — no cards, just separator lines -->
-    <ul
+    <!-- Service list — dot-leader menu -->
+    <div
       data-stagger
       role="list"
       aria-label="Lista de servicios y precios"
-      class="border-t border-border"
+      class="flex flex-col gap-0"
     >
       {services.map((service) => (
-        <li class="service-row border-b border-border py-7 px-4 -mx-4">
-          <div class="flex items-center justify-between gap-4">
-            <!-- Service name -->
-            <span class="font-display text-[clamp(1.35rem,3vw,1.75rem)] text-cream tracking-[-0.01em] leading-tight">
-              {service.name}
-            </span>
-
-            <!-- Time + Price -->
-            <div class="flex items-center gap-6 shrink-0">
-              <span class="text-[11px] text-ink-dim font-medium tracking-wider hidden sm:block">
-                {service.time}
-              </span>
-              <span class="font-display text-[clamp(1.35rem,3vw,1.75rem)] text-oak font-bold">
-                {service.price}
-              </span>
-            </div>
-          </div>
-          <!-- Time visible on mobile below -->
-          <span class="text-[11px] text-ink-faint font-medium tracking-wider sm:hidden mt-1 block">
+        <div class="service-row flex items-baseline gap-3 py-5" role="listitem">
+          <span class="font-display font-bold text-[13px] tracking-[0.08em] text-cream whitespace-nowrap">
+            {service.name.toUpperCase()}
+          </span>
+          <span
+            class="service-dots"
+            aria-hidden="true"
+          ></span>
+          <span class="text-oak font-bold text-[15px] whitespace-nowrap">
+            {service.price}
+          </span>
+          <span class="text-ink-faint text-[11px] whitespace-nowrap">
             {service.time}
           </span>
-        </li>
+        </div>
       ))}
-    </ul>
+    </div>
 
     <!-- CTA -->
     <div class="mt-14 flex flex-col sm:flex-row items-start sm:items-center gap-5">
@@ -81,25 +75,17 @@ import { services, business } from '../data/content.js';
     </div>
 
   </div>
-
-  <!-- Hex decoration on the right side -->
-  <div
-    class="absolute right-0 top-1/2 -translate-y-1/2 -translate-x-4 opacity-20 pointer-events-none hidden lg:block"
-    aria-hidden="true"
-  >
-    <svg viewBox="0 0 120 140" width="120" height="140" fill="none">
-      <polygon
-        points="60,8 104,32 104,80 60,104 16,80 16,32"
-        stroke="#C4956A"
-        stroke-width="0.8"
-      />
-      <polygon
-        points="60,24 88,40 88,72 60,88 32,72 32,40"
-        stroke="#C4956A"
-        stroke-width="0.5"
-        fill="rgba(196,149,106,0.03)"
-      />
-    </svg>
-  </div>
-
 </section>
+
+<style>
+  .service-dots {
+    flex: 1;
+    min-width: 2ch;
+    overflow: hidden;
+    white-space: nowrap;
+  }
+  .service-dots::after {
+    content: " ............................................................................";
+    color: var(--color-border);
+  }
+</style>

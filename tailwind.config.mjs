@@ -19,7 +19,7 @@ export default {
         'border-hi':  '#3D332B',
       },
       fontFamily: {
-        display: ['"Playfair Display"', 'Georgia', 'serif'],
+        display: ['"Outfit"', 'sans-serif'],
         body:    ['"Instrument Sans"', 'system-ui', 'sans-serif'],
       },
       fontSize: {
@@ -35,10 +35,6 @@ export default {
       },
       // Custom animation tokens — used sparingly for CSS-only elements
       keyframes: {
-        hexPulse: {
-          '0%, 100%': { opacity: '0.12' },
-          '50%':      { opacity: '0.28' },
-        },
         marquee: {
           from: { transform: 'translateX(0)' },
           to:   { transform: 'translateX(-50%)' },
@@ -53,7 +49,6 @@ export default {
         },
       },
       animation: {
-        'hex-pulse': 'hexPulse 4s ease-in-out infinite',
         'marquee':   'marquee 42s linear infinite',
         'fade-up':   'fadeUp 0.65s cubic-bezier(0.23, 1, 0.32, 1) both',
         'modal-in':  'modalIn 0.2s cubic-bezier(0.23, 1, 0.32, 1) both',
