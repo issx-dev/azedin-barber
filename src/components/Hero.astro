@@ -14,10 +14,11 @@ import { Image } from 'astro:assets';
 import workspaceImg from '../assets/img/barberia-interior-recepcion.jpeg';
 import logoSrc from '../assets/img/logo-azedin-barber-transparente.png';
 import { business } from '../data/content.js';
+import CTA from './CTA.astro';
 
-// Video path — served from public/ after build copy or referenced via import
-// We reference the compiled output path (Astro copies assets/ into _astro/)
+// Video paths — served from public/ after build copy or referenced via import
 const mobileVideoSrc = '/video/instalaciones-mobile.mp4';
+const desktopVideoSrc = '/video/instalaciones-desktop.mp4';
 ---
 
 <section
@@ -25,7 +26,7 @@ const mobileVideoSrc = '/video/instalaciones-mobile.mp4';
   class="relative flex flex-col items-center justify-center min-h-[100dvh] overflow-hidden wood-slats"
   aria-label="Bienvenida"
 >
-  <!-- ── Background: workspace photo with parallax (desktop) ─────────── -->
+  <!-- ── Background: workspace photo with parallax + video (desktop, >= 768px) ─────────── -->
   <div class="hero-bg-desktop absolute inset-0 z-0" aria-hidden="true">
     <Image
       src={workspaceImg}
@@ -41,6 +42,20 @@ const mobileVideoSrc = '/video/instalaciones-mobile.mp4';
       class="w-full h-[115%] object-cover object-center -translate-y-[7.5%]"
       style="filter: sepia(20%) brightness(0.22) contrast(1.1); will-change: transform;"
     />
+    <video
+      id="hero-video-desktop"
+      class="hero-video absolute inset-0 w-full h-[115%] object-cover object-center -translate-y-[7.5%]"
+      autoplay
+      loop
+      muted
+      playsinline
+      preload="none"
+      aria-hidden="true"
+      style="filter: sepia(20%) brightness(0.22) contrast(1.1); will-change: transform;"
+      data-parallax="0.18"
+    >
+      <source src={desktopVideoSrc} type="video/mp4" />
+    </video>
     <!-- Radial glow from center — simulates the studio spotlight feel -->
     <div
       class="absolute inset-0"
@@ -59,7 +74,7 @@ const mobileVideoSrc = '/video/instalaciones-mobile.mp4';
     -->
     <video
       id="hero-video-mobile"
-      class="hero-video w-full h-full object-cover"
+      class="hero-video absolute inset-0 w-full h-full object-cover"
       autoplay
       loop
       muted
@@ -98,7 +113,7 @@ const mobileVideoSrc = '/video/instalaciones-mobile.mp4';
       data-hero-text
       class="text-ink-dim text-[13px] md:text-[14px] tracking-[0.22em] uppercase font-medium mb-10 opacity-0"
     >
-      Berja · Almería · Barbería artesanal
+      {business.tagline}
     </p>
 
     <!-- CTA group -->
@@ -106,13 +121,10 @@ const mobileVideoSrc = '/video/instalaciones-mobile.mp4';
       data-hero-text
       class="flex flex-col sm:flex-row items-center gap-4 opacity-0"
     >
-      <button
-        data-book-trigger
-        class="btn-oak text-[11px] px-8 py-3.5"
-        aria-label="Reservar cita en Booksy"
-      >
-        Reservar cita
-      </button>
+<CTA
+          label="Reservar cita"
+          extraClass="text-[11px] px-8 py-3.5"
+        />
       <a
         href="#lookbook"
         class="btn-ghost text-[11px] px-8 py-3.5"
@@ -132,13 +144,13 @@ const mobileVideoSrc = '/video/instalaciones-mobile.mp4';
     style="opacity:0;"
   >
     <span class="text-ink-faint text-[9px] tracking-[0.3em] uppercase">Scroll</span>
-    <div class="w-px h-10 bg-gradient-to-b from-oak-dim to-transparent opacity-60"></div>
+    <div class="w-px h-10 bg-gradient-to-b from-steel-dim to-transparent opacity-60"></div>
   </div>
 
-  <!-- ── Bottom edge: wood slat separator ───────────────────────────── -->
+  <!-- ── Bottom edge: steel hairline separator ─────────────────────── -->
   <div
     class="absolute bottom-0 left-0 right-0 h-px z-[3]"
-    style="background: linear-gradient(90deg, transparent 0%, rgba(196,149,106,0.3) 30%, rgba(196,149,106,0.5) 50%, rgba(196,149,106,0.3) 70%, transparent 100%);"
+    style="background: linear-gradient(90deg, transparent 0%, rgba(155,163,172,0.3) 30%, rgba(155,163,172,0.5) 50%, rgba(155,163,172,0.3) 70%, transparent 100%);"
     aria-hidden="true"
   ></div>
 
@@ -182,34 +194,39 @@ const mobileVideoSrc = '/video/instalaciones-mobile.mp4';
 </style>
 
 <script>
-  // Dynamically load the video after initial paint to save resources.
-  const video = document.getElementById('hero-video-mobile') as HTMLVideoElement | null;
-  if (video) {
+  // Dynamically load the correct video after initial paint to save resources.
+  const videoMobile = document.getElementById('hero-video-mobile') as HTMLVideoElement | null;
+  const videoDesktop = document.getElementById('hero-video-desktop') as HTMLVideoElement | null;
+  
+  const startVideo = (video: HTMLVideoElement) => {
     const makeReady = () => video.classList.add('ready');
-    
-    // We only load the video on mobile screens
-    if (window.innerWidth < 768) {
-      const startVideo = () => {
-        video.preload = 'auto';
-        video.load();
-        video.play().then(() => {
-          if (video.readyState >= 3) {
-            makeReady();
-          } else {
-            video.addEventListener('canplay', makeReady, { once: true });
-          }
-        }).catch(err => {
-          console.warn("Autoplay was prevented or video load failed:", err);
-          // Safety fallback
-          makeReady();
-        });
-      };
-
-      if (document.readyState === 'complete') {
-        startVideo();
+    video.preload = 'auto';
+    video.load();
+    video.play().then(() => {
+      if (video.readyState >= 3) {
+        makeReady();
       } else {
-        window.addEventListener('load', startVideo, { once: true });
+        video.addEventListener('canplay', makeReady, { once: true });
       }
+    }).catch(err => {
+      console.warn("Autoplay was prevented or video load failed:", err);
+      // Safety fallback
+      makeReady();
+    });
+  };
+
+  const loadTargetVideo = () => {
+    if (window.innerWidth < 768) {
+      if (videoMobile) startVideo(videoMobile);
+    } else {
+      if (videoDesktop) startVideo(videoDesktop);
     }
+  };
+
+  if (document.readyState === 'complete') {
+    loadTargetVideo();
+  } else {
+    window.addEventListener('load', loadTargetVideo, { once: true });
   }
 </script>
+

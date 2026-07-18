@@ -2,7 +2,7 @@
 /**
  * Footer — Minimal typographic block.
  *
- * Outfit 900 wordmark + horizontal social/copyright row.
+ * Bricolage Grotesque wordmark + horizontal social/copyright row.
  * No CTA, no logo image.
  */
 import { business } from '../data/content.js';
@@ -12,7 +12,7 @@ import { business } from '../data/content.js';
   <div class="max-w-6xl mx-auto px-6 md:px-10 py-14 flex flex-col items-center gap-8">
 
     <!-- Wordmark -->
-    <h2 class="footer-wordmark font-display font-black text-[clamp(1.6rem,4vw,2.4rem)] tracking-[-0.04em] text-cream leading-none select-none">
+    <h2 class="footer-wordmark font-black text-[clamp(1.6rem,4vw,2.4rem)] tracking-[-0.04em] text-cream leading-none select-none">
       AZEDIN BARBER
     </h2>
 
@@ -23,17 +23,27 @@ import { business } from '../data/content.js';
           href={business.instagramUrl}
           target="_blank"
           rel="noopener noreferrer"
-          class="uppercase tracking-[0.16em] text-ink-dim hover:text-oak transition-colors duration-180 font-semibold"
+          class="uppercase tracking-[0.16em] text-ink-dim hover:text-steel transition-colors duration-180 font-semibold"
           aria-label="Instagram de Azedin Barber"
         >
           Instagram
         </a>
         <span class="text-border-hi">&middot;</span>
         <a
+          href={business.tiktokUrl}
+          target="_blank"
+          rel="noopener noreferrer"
+          class="uppercase tracking-[0.16em] text-ink-dim hover:text-steel transition-colors duration-180 font-semibold"
+          aria-label="TikTok de Azedin Barber"
+        >
+          TikTok
+        </a>
+        <span class="text-border-hi">&middot;</span>
+        <a
           href={business.booksyUrl}
           target="_blank"
           rel="noopener noreferrer"
-          class="uppercase tracking-[0.16em] text-ink-dim hover:text-oak transition-colors duration-180 font-semibold"
+          class="uppercase tracking-[0.16em] text-ink-dim hover:text-steel transition-colors duration-180 font-semibold"
           aria-label="Reservas en Booksy"
         >
           Booksy
@@ -43,7 +53,7 @@ import { business } from '../data/content.js';
           href="https://maps.app.goo.gl/gvjmsWwo8HRToHvi8"
           target="_blank"
           rel="noopener noreferrer"
-          class="uppercase tracking-[0.16em] text-ink-dim hover:text-oak transition-colors duration-180 font-semibold"
+          class="uppercase tracking-[0.16em] text-ink-dim hover:text-steel transition-colors duration-180 font-semibold"
           aria-label="Cómo llegar"
         >
           Cómo llegar
@@ -51,9 +61,12 @@ import { business } from '../data/content.js';
       </nav>
       <span class="text-border-hi hidden sm:block">&middot;</span>
       <p class="tracking-wide">
-        &copy; {new Date().getFullYear()}
+        &copy; {new Date().getFullYear()} Azedin Barber
       </p>
     </div>
 
   </div>
 </footer>
+
+
+

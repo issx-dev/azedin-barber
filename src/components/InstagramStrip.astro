@@ -1,0 +1,100 @@
+---
+/**
+ * InstagramStrip — Photo grid + permanent social row (IG + TikTok).
+ *
+ * Plan v2 (Sección 5): heading added, hover-only overlay removed,
+ * permanent social icon row below the grid works on touch devices.
+ * Brand logos from react-icons/si (Simple Icons) — real IG/TikTok glyphs,
+ * not hand-drawn SVG.
+ */
+import { Image } from 'astro:assets';
+import { SiInstagram, SiTiktok } from 'react-icons/si';
+import { business } from '../data/content.js';
+
+import img1 from '../assets/img/corte-skin-fade-degradado.jpeg';
+import img2 from '../assets/img/corte-arreglo-barba-perfilado.jpeg';
+import img3 from '../assets/img/corte-crop-top-texturizado.jpeg';
+import img4 from '../assets/img/corte-low-fade-degradado-bajo.jpeg';
+import img5 from '../assets/img/corte-afeitado-clasico-navaja.jpeg';
+import img6 from '../assets/img/corte-mid-fade-degradado-medio.jpeg';
+
+const photos = [
+  { src: img1, alt: "Skin fade degradado" },
+  { src: img2, alt: "Arreglo barba perfilado" },
+  { src: img3, alt: "Crop top texturizado" },
+  { src: img4, alt: "Low fade degradado" },
+  { src: img5, alt: "Afeitado clásico" },
+  { src: img6, alt: "Mid fade degradado" },
+];
+---
+
+<section
+  id="social"
+  class="bg-bg-deep"
+  aria-label="Galería de Instagram y redes sociales de Azedin Barber"
+>
+  <!-- Section header -->
+  <div class="px-6 md:px-10 max-w-6xl mx-auto pt-24 md:pt-28 pb-12">
+    <p
+      data-fade
+      class="text-[10px] tracking-[0.3em] uppercase text-ink-dim font-semibold mb-4 opacity-0"
+    >
+      Síguenos
+    </p>
+    <h2
+      data-reveal
+      class="font-display display-large text-cream opacity-0"
+    >
+      Mira lo que hacemos
+    </h2>
+  </div>
+
+  <!-- Photo grid — 2 cols mobile, 3 tablet, 6 desktop -->
+  <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-0 w-full overflow-hidden" data-fade>
+    {photos.map((photo) => (
+      <a
+        href={business.instagramUrl}
+        target="_blank"
+        rel="noopener noreferrer"
+        class="relative block aspect-[4/5] overflow-hidden group"
+        aria-label={`Ver foto de ${photo.alt} en Instagram`}
+      >
+        <Image
+          src={photo.src}
+          alt={photo.alt}
+          width={400}
+          height={500}
+          class="w-full h-full object-cover photo-preset transition-transform duration-700 ease-out-expo group-hover:scale-105"
+        />
+      </a>
+    ))}
+  </div>
+
+  <!-- Permanent social row — works on touch (no :hover dependency) -->
+  <div class="px-6 md:px-10 max-w-6xl mx-auto py-12 flex flex-col sm:flex-row items-start sm:items-center gap-6 sm:gap-8">
+    <a
+      href={business.instagramUrl}
+      target="_blank"
+      rel="noopener noreferrer"
+      class="group flex items-center gap-3 text-cream hover:text-steel transition-colors duration-180"
+      aria-label="Sigue a Azedin Barber en Instagram"
+    >
+      <span class="w-10 h-10 rounded-full border border-border-hi flex items-center justify-center transition-colors duration-180 group-hover:border-steel">
+        <SiInstagram size={18} aria-hidden="true" />
+      </span>
+      <span class="font-body text-[13px] tracking-wide">@azedinbarber</span>
+    </a>
+    <a
+      href={business.tiktokUrl}
+      target="_blank"
+      rel="noopener noreferrer"
+      class="group flex items-center gap-3 text-cream hover:text-steel transition-colors duration-180"
+      aria-label="Sigue a Azedin Barber en TikTok"
+    >
+      <span class="w-10 h-10 rounded-full border border-border-hi flex items-center justify-center transition-colors duration-180 group-hover:border-steel">
+        <SiTiktok size={18} aria-hidden="true" />
+      </span>
+      <span class="font-body text-[13px] tracking-wide">@azedin.barber</span>
+    </a>
+  </div>
+</section>

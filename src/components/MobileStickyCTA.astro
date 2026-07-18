@@ -1,0 +1,55 @@
+---
+/**
+ * MobileStickyCTA — Floating bottom CTA, visible only on mobile.
+ */
+import CTA from './CTA.astro';
+---
+<div
+  id="mobile-sticky-cta"
+  class="fixed bottom-0 left-0 right-0 p-4 z-[90] md:hidden translate-y-full transition-transform duration-300 ease-out pointer-events-none"
+>
+  <CTA label="Reservar cita" extraClass="w-full shadow-xl pointer-events-auto" />
+</div>
+
+<script>
+  function initMobileCTA() {
+    const cta = document.getElementById('mobile-sticky-cta');
+    const hero = document.getElementById('hero');
+    const locationSection = document.getElementById('ubicacion');
+
+    if (cta) {
+      const handleScroll = () => {
+        if (window.innerWidth >= 768) return;
+        
+        const scrollY = window.scrollY;
+        const windowHeight = window.innerHeight;
+        const heroHeight = hero ? hero.offsetHeight : 500;
+        
+        // Hide if near the footer
+        const docHeight = document.documentElement.scrollHeight;
+        const distanceToBottom = docHeight - (scrollY + windowHeight);
+        const nearBottom = distanceToBottom < 600;
+
+        if (scrollY > heroHeight && !nearBottom) {
+          cta.classList.remove('translate-y-full');
+        } else {
+          cta.classList.add('translate-y-full');
+        }
+      };
+
+      window.addEventListener('scroll', handleScroll, { passive: true });
+      handleScroll();
+      
+      document.addEventListener('astro:before-swap', function() {
+        window.removeEventListener('scroll', handleScroll);
+      }, { once: true });
+    }
+  }
+
+  // Support Astro transitions and direct loads
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initMobileCTA);
+  } else {
+    initMobileCTA();
+  }
+</script>

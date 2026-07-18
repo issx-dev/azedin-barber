@@ -48,10 +48,12 @@ export const reviews = [
 export const business = {
   name: 'Azedin Barber',
   address: 'Avenida José Barrionuevo Peña 14, 04760, Berja, Almería',
+  tagline: 'Berja · Almería · Sin dos cortes iguales',
   rating: '5.0',
   reviewCount: '142 opiniones en Booksy',
   booksyUrl: 'https://booksy.com/es-es/141862_azedin-barber_barberia_26195_castala',
   instagramUrl: 'https://www.instagram.com/azedinbarber/',
+  tiktokUrl: 'https://www.tiktok.com/@azedin.barber',
   hours: [
     { day: 'Lunes', time: '15:30 – 20:30' },
     { day: 'Martes – Sábado', time: '10:00–14:00 · 16:00–20:00' },

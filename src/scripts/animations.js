@@ -162,13 +162,14 @@ function registerGrayscaleReveal() {
         opacity: 0,
       },
       {
-        filter: 'grayscale(0%) sepia(0%) brightness(1)',
+        filter: 'sepia(12%) contrast(1.04) brightness(0.96) saturate(1.03)',
         clipPath: 'inset(0 0 0% 0)',
         scale: 1,
         opacity: 1,
         duration: 1.2,
         ease: EASE_OUT_QUART,
         delay: i * 0.15,
+        clearProps: 'filter',
         scrollTrigger: {
           trigger: el,
           start: 'top 82%',

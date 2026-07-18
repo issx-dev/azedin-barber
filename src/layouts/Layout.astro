@@ -1,5 +1,6 @@
 ---
 import '../styles/global.css';
+import MobileStickyCTA from '../components/MobileStickyCTA.astro';
 
 export interface Props {
   title?: string;
@@ -48,23 +49,24 @@ const {
   <meta name="twitter:title" content={title} />
   <meta name="twitter:description" content={description} />
 
-  <!-- Preconnect and Preload for Critical Fonts (resolved CRIT-5 & WARN-7) -->
+  <!-- Preconnect and Preload for Critical Fonts (Bricolage self-hosted in global.css).
+       Fraunces / Outfit / Instrument Sans — Google Fonts CDN. -->
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link
     rel="preload"
     as="style"
-    href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;700;900&family=Instrument+Sans:wght@400;500;600&display=swap"
+    href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@1,9..144,500&family=Outfit:wght@600;700&family=Instrument+Sans:wght@400;500;600&display=swap"
   />
   <link
-    href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;700;900&family=Instrument+Sans:wght@400;500;600&display=swap"
+    href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@1,9..144,500&family=Outfit:wght@600;700&family=Instrument+Sans:wght@400;500;600&display=swap"
     rel="stylesheet"
     media="print"
     onload="this.media='all'"
   />
   <noscript>
     <link
-      href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;700;900&family=Instrument+Sans:wght@400;500;600&display=swap"
+      href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@1,9..144,500&family=Outfit:wght@600;700&family=Instrument+Sans:wght@400;500;600&display=swap"
       rel="stylesheet"
     />
   </noscript>
@@ -72,6 +74,7 @@ const {
 
 <body class="bg-bg-deep text-ink font-body antialiased overflow-x-hidden">
   <slot />
+  <MobileStickyCTA />
 
   <!-- ─── Global event bus ─────────────────────────────────────────────── -->
   <script is:inline>

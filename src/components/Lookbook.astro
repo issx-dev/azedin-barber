@@ -13,6 +13,7 @@
  */
 import { Image } from 'astro:assets';
 import { galleryItems } from '../data/content.js';
+import CTA from './CTA.astro';
 
 // Use first 9 items for the bento grid
 const items = galleryItems.slice(0, 9);
@@ -27,13 +28,13 @@ const items = galleryItems.slice(0, 9);
   <div class="px-6 md:px-10 pt-24 pb-12 max-w-6xl mx-auto">
     <p
       data-fade
-      class="text-[10px] tracking-[0.3em] uppercase text-oak font-semibold mb-4 opacity-0"
+      class="text-[10px] tracking-[0.3em] uppercase text-ink-dim font-semibold mb-4 opacity-0"
     >
       Nuestro trabajo
     </p>
     <h2
       data-reveal
-      class="font-display text-cream leading-none opacity-0 text-[clamp(2.2rem,5vw,3.8rem)] tracking-[-0.02em]"
+      class="font-display display-large text-cream opacity-0"
     >
       Lookbook
     </h2>
@@ -57,7 +58,7 @@ const items = galleryItems.slice(0, 9);
             sizes={isTall ? "(max-width: 640px) 100vw, 33vw" : "(max-width: 640px) 50vw, 25vw"}
             quality={86}
             format="webp"
-            class="lookbook-img w-full h-full object-cover"
+            class="lookbook-img photo-preset w-full h-full object-cover"
             style={`object-position: ${item.focus}`}
           />
           
@@ -78,17 +79,11 @@ const items = galleryItems.slice(0, 9);
   </div>
 
   <!-- CTA below grid -->
-  <div class="text-center py-16 px-6">
+  <div class="text-center pt-12 pb-4 px-6">
     <p class="text-ink-dim text-[13px] mb-6">
       Cada corte cuenta su propia historia.
     </p>
-    <button
-      data-book-trigger
-      class="btn-oak"
-      aria-label="Reserva tu corte"
-    >
-      Reserva tu corte
-    </button>
+    <CTA label="Reserva tu corte" />
   </div>
 
 </section>
@@ -136,7 +131,7 @@ const items = galleryItems.slice(0, 9);
     letter-spacing: 0.18em;
     text-transform: uppercase;
     font-weight: 600;
-    color: var(--color-oak);
+    color: var(--color-steel-dim);
     display: block;
   }
 

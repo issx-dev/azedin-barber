@@ -1,0 +1,46 @@
+---
+/**
+ * CTA — Reusable booking call-to-action button.
+ *
+ * Single source of truth for the .btn-oak / .btn-ghost + data-book-trigger pattern.
+ * The global click bus in Layout.astro:79-94 listens for `[data-book-trigger]`
+ * clicks and dispatches the `book:open` CustomEvent that opens BookingModal.
+ *
+ * Props:
+ *   label       — visible button text (required)
+ *   ariaLabel?  — accessible name; defaults to `label` when omitted
+ *   barber?     — passes through `data-book-barber` so the modal preselects a barber
+ *   variant?    — 'primary' (default, .btn-oak) | 'ghost' (.btn-ghost, for Lookbook "Ver cortes")
+ *   extraClass? — additional Tailwind utilities appended after the base class
+ *                 (use for section-specific padding, width, visibility, etc.)
+ *
+ * Why no `size` prop: every existing site has bespoke padding that doesn't taxonomize
+ * cleanly into 2-3 buckets. extraClass keeps the component thin and honest.
+ */
+interface Props {
+  label: string;
+  ariaLabel?: string;
+  barber?: string;
+  variant?: 'primary' | 'ghost';
+  extraClass?: string;
+}
+
+const {
+  label,
+  ariaLabel,
+  barber,
+  variant = 'primary',
+  extraClass = '',
+} = Astro.props;
+
+const baseClass = variant === 'ghost' ? 'btn-ghost' : 'btn-oak';
+const className = [baseClass, extraClass].filter(Boolean).join(' ');
+const finalAriaLabel = ariaLabel ?? label;
+---
+
+<button
+  data-book-trigger
+  data-book-barber={barber}
+  class={className}
+  aria-label={finalAriaLabel}
+>{label}</button>

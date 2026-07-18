@@ -7,6 +7,9 @@ export default {
         'bg-deep':    '#0C0A09',
         'bg-panel':   '#151210',
         'bg-surface': '#1E1A17',
+        steel:        '#9BA3AC',
+        'steel-dim':  'rgba(155,163,172,0.35)',
+        'steel-faint':'rgba(155,163,172,0.18)',
         oak:          '#C4956A',
         'oak-light':  '#D4AD82',
         'oak-dim':    '#8B6748',
@@ -19,8 +22,10 @@ export default {
         'border-hi':  '#3D332B',
       },
       fontFamily: {
-        display: ['"Outfit"', 'sans-serif'],
+        display: ['"Bricolage Grotesque"', 'sans-serif'],
         body:    ['"Instrument Sans"', 'system-ui', 'sans-serif'],
+        ui:      ['"Outfit"', 'sans-serif'],
+        quote:   ['"Fraunces"', 'serif'],
       },
       fontSize: {
         'hero':    ['clamp(3.5rem, 8vw, 7rem)',   { lineHeight: '1', letterSpacing: '-0.02em' }],

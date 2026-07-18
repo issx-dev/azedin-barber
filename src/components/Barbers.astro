@@ -14,6 +14,7 @@
 import { Image } from 'astro:assets';
 import personaAzedin from '../assets/img/barbero-azedin-berja.jpeg';
 import personaSamir from '../assets/img/barbero-samir-berja.jpeg';
+import CTA from './CTA.astro';
 
 const barbers = [
   {
@@ -42,15 +43,15 @@ const barbers = [
 >
   <!-- Section header -->
   <div class="px-6 md:px-10 pt-24 pb-16 max-w-6xl mx-auto">
-    <p
-      data-fade
-      class="text-[10px] tracking-[0.3em] uppercase text-oak font-semibold mb-4 opacity-0"
+    <div
+      data-reveal="slide-up"
+      class="text-[10px] tracking-[0.3em] uppercase text-ink-dim font-semibold mb-4 opacity-0"
     >
       El equipo
-    </p>
+    </div>
     <h2
       data-reveal
-      class="font-display text-section text-cream leading-none opacity-0"
+      class="font-display display-large text-cream opacity-0"
     >
       Quién te espera
     </h2>
@@ -72,7 +73,7 @@ const barbers = [
             format="webp"
             loading="lazy"
             data-color-reveal
-            class="w-full h-full object-cover opacity-0"
+            class="photo-preset w-full h-full object-cover opacity-0"
             style="object-position: center 18%; transform-origin: center center;"
           />
           <!-- Gradient overlay -->
@@ -86,8 +87,9 @@ const barbers = [
         <div class="absolute bottom-0 left-0 right-0 p-8 md:p-10 z-[1]">
           <!-- Role badge -->
           <span
-            data-fade
-            class="inline-block text-[9px] tracking-[0.2em] uppercase text-oak font-semibold border border-oak-dim/80 bg-bg-deep/80 backdrop-blur-md px-3.5 py-1.5 mb-4 opacity-0"
+            data-reveal="slide-up"
+            data-reveal-delay="0.1"
+            class="inline-block text-[9px] tracking-[0.2em] uppercase text-ink-dim font-semibold border border-border-hi bg-bg-deep/80 backdrop-blur-md px-3.5 py-1.5 mb-4 opacity-0"
           >
             {barber.role} · {barber.title}
           </span>
@@ -109,14 +111,11 @@ const barbers = [
           </p>
 
           <!-- CTA -->
-          <button
-            data-book-trigger
-            data-book-barber={barber.name}
-            class="btn-oak text-[10px] px-6 py-3"
-            aria-label={`Reservar cita con ${barber.name}`}
-          >
-            Reservar con {barber.name}
-          </button>
+          <CTA
+            label={`Reservar con ${barber.name}`}
+            barber={barber.name}
+            extraClass="text-[10px] px-6 py-3"
+          />
         </div>
 
       </div>

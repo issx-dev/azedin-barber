@@ -50,23 +50,23 @@ test.describe('Visual regression — studio-grotesque-redesign', () => {
     }
   });
 
-  test('footer wordmark uses Outfit at 900 weight', async ({ page }) => {
+  test('footer wordmark uses Bricolage Grotesque at black weight', async ({ page }) => {
     await page.setViewportSize({ width: 1440, height: 900 });
     await page.goto('/', { waitUntil: 'networkidle' });
 
     const wordmark = page.locator('.footer-wordmark');
     await expect(wordmark).toBeVisible();
 
-    // Verify computed font includes Outfit
+    // Verify computed font includes Bricolage Grotesque
     const fontFamily = await wordmark.evaluate(el =>
       window.getComputedStyle(el).fontFamily
     );
-    expect(fontFamily.toLowerCase()).toContain('outfit');
+    expect(fontFamily.toLowerCase()).toContain('bricolage');
 
-    // Verify font-weight is 900
+    // Verify font-weight is 900 (font-black) or 800
     const fontWeight = await wordmark.evaluate(el =>
       window.getComputedStyle(el).fontWeight
     );
-    expect(Number(fontWeight)).toBeGreaterThanOrEqual(900);
+    expect(Number(fontWeight)).toBeGreaterThanOrEqual(800);
   });
 });

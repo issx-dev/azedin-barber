@@ -8,6 +8,8 @@ import Services from '../components/Services.astro';
 import Reviews from '../components/Reviews.astro';
 import Location from '../components/Location.astro';
 import Footer from '../components/Footer.astro';
+import About from '../components/About.astro';
+import InstagramStrip from '../components/InstagramStrip.astro';
 import BookingModal from '../components/BookingModal.jsx';
 import MobileNav from '../components/MobileNav.jsx';
 import StarRating from '../components/StarRating.astro';
@@ -34,7 +36,7 @@ import logoSrc from '../assets/img/logo-azedin-barber-transparente.png';
           href={business.booksyUrl}
           target="_blank"
           rel="noopener noreferrer"
-          class="text-[11px] uppercase tracking-[0.14em] font-semibold text-oak hover:text-oak-light transition-colors duration-180"
+          class="text-[11px] uppercase tracking-[0.14em] font-semibold text-steel/60 hover:text-steel transition-colors duration-180"
           aria-label="Ver perfil en Booksy"
         >
           Booksy
@@ -45,7 +47,9 @@ import logoSrc from '../assets/img/logo-azedin-barber-transparente.png';
     <Lookbook />
     <Services />
     <Reviews />
+    <About />
     <Location />
+    <InstagramStrip />
   </main>
 
   <Footer />

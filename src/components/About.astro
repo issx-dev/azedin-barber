@@ -1,0 +1,43 @@
+---
+import { Image } from 'astro:assets';
+import aboutImg from '../assets/img/barberia-interior-salon.jpeg';
+---
+
+<section id="about" class="bg-cream text-bg-deep py-24 sm:py-32">
+  <div class="mx-auto max-w-[1200px] px-6">
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-12 lg:gap-20 items-center">
+      <!-- Text content -->
+      <div data-reveal="left" class="space-y-8">
+        <h2 class="font-display display-large text-bg-deep">
+          Nuestra historia
+        </h2>
+        <div class="space-y-6 font-sans text-bg-deep/80 text-lg leading-relaxed">
+          <p>
+            Desde el primer día, en Azedin Barber hemos tenido clara nuestra misión: crear un espacio donde la tradición barbera se encuentra con la técnica moderna.
+          </p>
+          <p>
+            Cada corte, cada arreglo de barba es un compromiso con la calidad. No solo somos barberos, somos profesionales dedicados a potenciar tu mejor versión.
+          </p>
+          
+          <div class="mt-10 p-6 border-l-4 border-steel-dim bg-white/50 rounded-r-lg">
+            <p class="font-display font-medium text-xl text-oak italic">
+              "Para ofrecer a las personas el corte que se merecen. Para sacarles una sonrisa."
+            </p>
+          </div>
+        </div>
+      </div>
+      
+      <!-- Image -->
+      <div data-reveal="right" class="relative group">
+        <div class="absolute -inset-2 bg-steel/10 translate-x-3 translate-y-3 rounded-2xl"></div>
+        <Image 
+          src={aboutImg} 
+          alt="Interior de la barbería Azedin" 
+          width={800}
+          height={600}
+          class="relative w-full h-auto object-cover rounded-2xl shadow-xl photo-preset transition-transform duration-500 group-hover:-translate-y-1 group-hover:-translate-x-1"
+        />
+      </div>
+    </div>
+  </div>
+</section>

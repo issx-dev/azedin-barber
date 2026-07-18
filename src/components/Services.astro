@@ -7,13 +7,14 @@
  * Stagger animation via GSAP data-stagger on scroll.
  */
 import { services, business } from '../data/content.js';
+import CTA from './CTA.astro';
 ---
 
 <section
   id="servicios"
-  class="relative overflow-hidden"
+  class="relative overflow-hidden bg-cream"
   aria-labelledby="servicios-heading"
-  style={`padding-block: var(--section-py);`}
+  style={`padding-top: calc(var(--section-py) * 0.4); padding-bottom: var(--section-py); background-color: var(--color-cream);`}
 >
   <div class="max-w-4xl mx-auto px-6 md:px-10">
 
@@ -21,14 +22,14 @@ import { services, business } from '../data/content.js';
     <div class="mb-16">
       <p
         data-fade
-        class="text-[10px] tracking-[0.3em] uppercase text-oak font-semibold mb-4 opacity-0"
+        class="text-[10px] tracking-[0.3em] uppercase text-bg-deep/60 font-semibold mb-4 opacity-0"
       >
         Lo que ofrecemos
       </p>
       <h2
         id="servicios-heading"
         data-reveal
-        class="font-display text-section text-cream leading-none opacity-0"
+        class="font-display display-large text-bg-deep opacity-0"
       >
         Servicios
       </h2>
@@ -43,17 +44,17 @@ import { services, business } from '../data/content.js';
     >
       {services.map((service) => (
         <div class="service-row flex items-baseline gap-3 py-5" role="listitem">
-          <span class="font-display font-bold text-[13px] tracking-[0.08em] text-cream whitespace-nowrap">
+          <span class="font-display font-bold text-[13px] tracking-[0.08em] text-bg-deep whitespace-nowrap">
             {service.name.toUpperCase()}
           </span>
           <span
             class="service-dots"
             aria-hidden="true"
           ></span>
-          <span class="text-oak font-bold text-[15px] whitespace-nowrap">
+          <span class="text-bg-deep font-bold text-[15px] whitespace-nowrap">
             {service.price}
           </span>
-          <span class="text-ink-faint text-[11px] whitespace-nowrap">
+          <span class="text-bg-deep/60 text-[11px] whitespace-nowrap">
             {service.time}
           </span>
         </div>
@@ -62,14 +63,8 @@ import { services, business } from '../data/content.js';
 
     <!-- CTA -->
     <div class="mt-14 flex flex-col sm:flex-row items-start sm:items-center gap-5">
-      <button
-        data-book-trigger
-        class="btn-oak"
-        aria-label="Reservar cita en Booksy"
-      >
-        Reservar cita
-      </button>
-      <p class="text-ink-faint text-[11px] tracking-wide">
+      <CTA label="Reservar cita" />
+      <p class="text-bg-deep/60 text-[11px] tracking-wide">
         Reserva en segundos a través de Booksy
       </p>
     </div>
@@ -86,6 +81,20 @@ import { services, business } from '../data/content.js';
   }
   .service-dots::after {
     content: " ............................................................................";
-    color: var(--color-border);
+    color: var(--color-bg-deep);
+    opacity: 0.15;
+  }
+  @media (hover: hover) and (pointer: fine) {
+    .service-row {
+      transition: background-color 180ms var(--ease-out);
+      border-radius: 4px;
+      padding-left: 0.5rem;
+      padding-right: 0.5rem;
+      margin-left: -0.5rem;
+      margin-right: -0.5rem;
+    }
+    .service-row:hover {
+      background-color: rgba(12, 10, 9, 0.05);
+    }
   }
 </style>

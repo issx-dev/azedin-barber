@@ -8,6 +8,7 @@
  * vectorizing in Astro build is complex.
  */
 import logoSrc from '../assets/img/logo-azedin-barber-transparente.png';
+import CTA from './CTA.astro';
 
 const navLinks = [
   { href: '#lookbook',  label: 'Lookbook'  },
@@ -49,13 +50,10 @@ const navLinks = [
 
     <!-- CTA + hamburger -->
     <div class="flex items-center gap-4">
-      <button
-        data-book-trigger
-        class="btn-oak hidden md:inline-flex text-[10px] px-5 py-2.5"
-        aria-label="Reservar cita"
-      >
-        Reservar cita
-      </button>
+<CTA
+          label="Reservar cita"
+          extraClass="hidden md:inline-flex text-[10px] px-5 py-2.5"
+        />
 
       <!-- Mobile hamburger -->
       <button

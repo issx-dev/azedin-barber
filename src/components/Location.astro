@@ -8,6 +8,7 @@
  * Maps embed iframe provided by user.
  */
 import { business } from '../data/content.js';
+import CTA from './CTA.astro';
 
 const mapsLink = 'https://maps.app.goo.gl/gvjmsWwo8HRToHvi8';
 const mapsEmbed = 'https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3193.049605924067!2d-2.945438799999954!3d36.841288!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0xd7049b3da9d6eed%3A0xa86993085bb7ece!2sAzedin%20Barber!5e0!3m2!1ses!2ses!4v1784059866369!5m2!1ses!2ses';
@@ -23,14 +24,14 @@ const mapsEmbed = 'https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3193.04
   <div class="px-6 md:px-10 max-w-6xl mx-auto pt-[clamp(5rem,10vw,8rem)] pb-12">
     <p
       data-fade
-      class="text-[10px] tracking-[0.3em] uppercase text-oak font-semibold mb-4 opacity-0"
+      class="text-[10px] tracking-[0.3em] uppercase text-ink-dim font-semibold mb-4 opacity-0"
     >
       Nos encontrarás
     </p>
     <h2
       id="location-heading"
       data-reveal
-      class="font-display text-section text-cream leading-none opacity-0"
+      class="font-display display-large text-cream opacity-0"
     >
       Encuéntranos
     </h2>
@@ -52,12 +53,12 @@ const mapsEmbed = 'https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3193.04
           href={mapsLink}
           target="_blank"
           rel="noopener noreferrer"
-          class="inline-flex items-center gap-2 mt-4 text-[11px] text-oak uppercase tracking-[0.14em] font-semibold hover:text-oak-light transition-colors duration-180 underline underline-offset-4 decoration-oak-dim"
+          class="inline-flex items-center gap-2 mt-4 text-[11px] text-steel/60 uppercase tracking-[0.14em] font-semibold hover:text-steel transition-colors duration-180 underline underline-offset-4 decoration-steel-faint"
           aria-label="Cómo llegar a Azedin Barber en Google Maps"
         >
           <svg width="12" height="12" viewBox="0 0 12 12" fill="none" aria-hidden="true">
-            <path d="M6 1a3.5 3.5 0 0 1 3.5 3.5c0 2.5-3.5 6.5-3.5 6.5S2.5 7 2.5 4.5A3.5 3.5 0 0 1 6 1z" stroke="#C4956A" stroke-width="1"/>
-            <circle cx="6" cy="4.5" r="1" fill="#C4956A"/>
+            <path d="M6 1a3.5 3.5 0 0 1 3.5 3.5c0 2.5-3.5 6.5-3.5 6.5S2.5 7 2.5 4.5A3.5 3.5 0 0 1 6 1z" stroke="#9BA3AC" stroke-width="1"/>
+            <circle cx="6" cy="4.5" r="1" fill="#9BA3AC"/>
           </svg>
           Cómo llegar
         </a>
@@ -78,13 +79,7 @@ const mapsEmbed = 'https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3193.04
 
       <!-- CTA -->
       <div data-fade class="opacity-0">
-        <button
-          data-book-trigger
-          class="btn-oak"
-          aria-label="Reservar cita en Booksy"
-        >
-          Reservar cita
-        </button>
+        <CTA label="Reservar cita" />
       </div>
 
     </div>

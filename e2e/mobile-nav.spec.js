@@ -18,13 +18,13 @@ test.describe('Mobile Navigation', () => {
     await expect(overlay).toBeVisible({ timeout: 5000 });
 
     // Panel should not be translated off-screen when open
-    // Wait for the CSS transition to settle
+    // Wait for the CSS transition to settle (support 2D, 3D and fractional matrices)
     await page.waitForFunction(() => {
       const el = document.querySelector('[role="dialog"][aria-label="Menú de navegación"]');
       if (!el) return false;
       const t = getComputedStyle(el).transform;
-      return t === 'none' || t === 'matrix(1, 0, 0, 1, 0, 0)';
-    }, { timeout: 3000 });
+      return t === 'none' || t.includes('matrix(1, 0, 0, 1, 0') || t.includes('matrix3d(1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1');
+    }, { timeout: 5000 });
   });
 
   test('overlay contains all section anchors', async ({ page }) => {

@@ -1,4 +1,6 @@
 import React, { useState, useEffect } from 'react';
+import { SiInstagram, SiTiktok } from 'react-icons/si';
+import { business } from '../data/content.js';
 
 /**
  * MobileNav — Fullscreen overlay panel.
@@ -7,6 +9,7 @@ import React, { useState, useEffect } from 'react';
  * Links stagger via inline animation-delay.
  * Logo displayed at top of panel.
  * Backdrop: blur + dark.
+ * Bottom: divider → social row (IG + TikTok) → Reservar CTA.
  */
 
 const anchors = [
@@ -163,8 +166,57 @@ export default function MobileNav({ logoSrc }) {
               marginBottom: '1.25rem',
             }}
           />
+          {/* Social row — IG + TikTok, visible always on touch */}
+          <div
+            className="flex items-center gap-3 mb-3"
+            style={{
+              opacity: panelReady ? 1 : 0,
+              transform: panelReady ? 'translateY(0)' : 'translateY(16px)',
+              transition: 'opacity 350ms cubic-bezier(0.23, 1, 0.32, 1) 300ms, transform 350ms cubic-bezier(0.23, 1, 0.32, 1) 300ms',
+            }}
+          >
+            <a
+              href={business.instagramUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              aria-label="Sigue a Azedin Barber en Instagram"
+              style={{
+                display: 'inline-flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                width: '2.75rem',
+                height: '2.75rem',
+                borderRadius: '9999px',
+                border: '1px solid var(--color-border-hi)',
+                color: 'var(--color-cream)',
+                transition: 'color 180ms ease-out, border-color 180ms ease-out',
+              }}
+            >
+              <SiInstagram size={22} aria-hidden="true" />
+            </a>
+            <a
+              href={business.tiktokUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              aria-label="Sigue a Azedin Barber en TikTok"
+              style={{
+                display: 'inline-flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                width: '2.75rem',
+                height: '2.75rem',
+                borderRadius: '9999px',
+                border: '1px solid var(--color-border-hi)',
+                color: 'var(--color-cream)',
+                transition: 'color 180ms ease-out, border-color 180ms ease-out',
+              }}
+            >
+              <SiTiktok size={22} aria-hidden="true" />
+            </a>
+          </div>
           <button
-            onClick={() => { close(); window.dispatchEvent(new CustomEvent('book:open')); }}
+            data-book-trigger
+            onClick={close}
             className="btn-oak"
             style={{ width: '100%', justifyContent: 'center', fontSize: '0.75rem' }}
             aria-label="Reservar cita en Booksy"
@@ -179,7 +231,7 @@ export default function MobileNav({ logoSrc }) {
           color: var(--color-cream);
         }
         .mobilenav-anchor-link:hover {
-          color: var(--color-oak) !important;
+          color: var(--color-steel) !important;
         }
       `}} />
     </div>
