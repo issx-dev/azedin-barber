@@ -1,59 +1,84 @@
-# Azedin Barber — proyecto Astro
+# Azedin Barber — Premium Web Experience
 
-Web de una página para Azedin Barber (Berja, Almería), migrada de HTML plano a Astro,
-dividida en componentes reutilizables.
+A high-performance, single-page editorial web application designed for a premium local barbershop in Berja, Almería. This project showcases modern front-end architecture, custom micro-interactions, responsive fluid grids, and optimal Core Web Vitals performance.
 
-## Arrancar en local
+## 🛠️ Technology Stack
 
-```bash
-npm install
-npm run dev
-```
+- **Core Framework**: [Astro](https://astro.build/) (Static Site Generation for sub-second load times)
+- **Styling**: [Tailwind CSS](https://tailwindcss.com/) (Utility-first CSS paired with custom variable design tokens)
+- **Interactions & Islands**: [React](https://react.dev/) (Used selectively for state-driven modal components)
+- **Animation Engine**: [GSAP](https://greensock.com/gsap/) + [Lenis](https://github.com/darkroomengineering/lenis) (Hardware-accelerated scroll reveals and smooth inertia scroll)
+- **End-to-End Testing**: [Playwright](https://playwright.dev/) (Functional & visual regression suites)
 
-Abre `http://localhost:4321`.
+---
 
-## Compilar para producción
+## 📐 Architecture & Core Design Decisions
 
-```bash
-npm run build
-npm run preview   # para probar el build antes de subirlo
-```
+### 1. Minimalist Industrial Nocturno Design System
+The visual architecture is inspired by premium studio aesthetics, utilizing a desaturated color strategy with controlled high-contrast focal points:
+- **`--color-bg-deep` (`#0C0A09`)**: Deep dark marble canvas.
+- **`--color-steel` (`#8A95A5`)**: Desaturated steel-gray for borders, dot-leaders, and metadata.
+- **`--color-oak` (`#C29367`)**: Accent gold/wood tone reserved exclusively for conversion CTAs and active states.
+- **Typography Hierarchy**:
+  - **Display (Headings)**: `Bricolage Grotesque` (Highly geometric display face).
+  - **Body**: `Instrument Sans` (Clean, highly legible body copy).
+  - **Editorial Quotes**: `Fraunces` (Premium serif for human stories).
 
-El resultado estático queda en `dist/` — puedes subir esa carpeta a Netlify, Vercel,
-Cloudflare Pages o cualquier hosting estático.
+### 2. High-Performance & Core Web Vitals Optimization
+- **Image Optimization**: Fully automated using Astro’s native `<Image />` component, converting raw images into WebP, generating responsive `srcset` configurations, and setting explicit aspect ratios to eliminate layout shifts (CLS).
+- **Critical Asset Preloading**: Preconnects for Google Fonts and preloads critical variable font files.
+- **Render Performance**: Conditional JS initialization and static markup representation for non-interactive elements keep initial bundle size near zero.
 
-## Estructura
+---
+
+## 📁 Repository Structure
 
 ```
 src/
-  data/content.js       ← precios, galería, reseñas y datos del negocio (edita aquí)
-  layouts/Layout.astro  ← <head>, fuentes y el script global del modal de reserva
-  styles/global.css     ← todos los estilos
-  components/
-    Header.astro
-    Hero.astro           ← selector Azedin / Samir
-    Trust.astro          ← franja de valoración
-    Lookbook.astro       ← galería filtrable
-    Reviews.astro        ← carrusel de reseñas
-    Services.astro       ← tarifas
-    Location.astro       ← dirección, horario, mapa
-    Footer.astro
-    BookingModal.astro
-  pages/index.astro      ← ensambla todas las secciones
+  assets/img/           # Optimized raw image assets
+  components/           # Modular Astro and React components
+    Hero.astro          # Landing block with parallax and video loop
+    Lookbook.astro      # 2-column mobile / 3-column desktop editorial work showcase
+    BookingModal.jsx    # React state-driven booking overlay with B&W-to-color transitions
+    Services.astro      # Dark services matrix with responsive leader lines
+    About.astro         # Narrative section using unified single-column vertical flow
+    InstagramStrip.astro# Responsive social grid strip
+  data/
+    content.js          # Centralized repository for copy, pricing, and social URLs
+  layouts/
+    Layout.astro        # Base HTML document layout and head metadata
+  styles/
+     global.css         # Styling system base, variable tokens, and keyframes
+  scripts/
+     animations.js      # Custom Lenis + GSAP scroll controller
 ```
 
-## Pendiente antes de publicar
+---
 
-1. **Fotos reales**: el hero y la galería usan fotos de stock de Pexels (barberos
-   genéricos, no Azedin ni Samir). Sustituye las URLs en `src/data/content.js`
-   (`galleryItems`) y en `src/components/Hero.astro` por vuestras fotos reales.
-2. **Reseñas**: las reseñas en `src/data/content.js` están parafraseadas a partir de
-   Booksy y atribuidas a "Cliente verificado · Booksy" porque Booksy no publica el
-   nombre del cliente. Si consigues los nombres reales, cámbialos ahí.
-3. **Precios**: los precios en `services` (13€ / 17€ / 15€ / 8€) vienen del dosier
-   que me diste. El Booksy en vivo mostraba 15€ / 12€ / 10€ / 8€ en el momento de
-   revisarlo — confirma cuál es el correcto antes de publicar.
-4. **Reseñas totales**: "87+ reseñas verificadas en Booksy" es el dato en vivo de
-   Booksy; tu dosier decía 140+ (quizá sumando Google Maps). Confirma la cifra real.
-5. **Mapa**: `Location.astro` usa un mapa decorativo en CSS, no uno real. Si quieres
-   un mapa interactivo de verdad, hay que añadir un embed de Google Maps o Mapbox.
+## 🚀 Local Setup & Build
+
+### Development Server
+Run the local environment:
+```bash
+pnpm install
+pnpm dev
+```
+Open `http://localhost:4321` in your browser.
+
+### Production Build
+Compile and optimize static files for production deployment:
+```bash
+pnpm build
+pnpm preview
+```
+The output directory `dist/` is fully static and ready for direct deployment to Vercel, Netlify, Cloudflare Pages, or static object storage.
+
+---
+
+## 🧪 Automated Testing
+
+This repository includes a full suite of automated Playwright end-to-end (E2E) tests covering responsive navigation overlay events, booking flows, visual font family checks, and layout container stability:
+
+```bash
+pnpm run test:e2e
+```

@@ -22,15 +22,15 @@ const {
   <meta name="description" content={description} />
   <meta name="theme-color" content="#0C0A09" />
 
-  <!-- Favicon (resolved CRIT-13) -->
+  <!-- Favicon -->
   <link rel="icon" type="image/x-icon" href="/favicon.ico" />
   <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png" />
   <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png" />
 
-  <!-- Canonical URL (resolved CRIT-11) -->
+  <!-- Canonical URL -->
   <link rel="canonical" href="https://azedinbarber.com/" />
 
-  <!-- Geo Tags for Local SEO (resolved SUG-7) -->
+  <!-- Geo Tags for Local SEO -->
   <meta name="geo.region" content="ES-AN" />
   <meta name="geo.platename" content="Berja, Almería, España" />
   <meta name="geo.position" content="36.8458;-2.9496" />
@@ -44,7 +44,7 @@ const {
   <meta property="og:locale" content="es_ES" />
   <meta property="og:site_name" content="Azedin Barber" />
 
-  <!-- Twitter Cards (resolved CRIT-12) -->
+  <!-- Twitter Cards -->
   <meta name="twitter:card" content="summary_large_image" />
   <meta name="twitter:title" content={title} />
   <meta name="twitter:description" content={description} />
@@ -94,7 +94,7 @@ const {
       }
     });
 
-    // Header scroll state (unified and safely managed to prevent memory leaks, resolved CRIT-14)
+    // Header scroll state
     (function() {
       var header = document.getElementById('site-header');
       var headerLine = document.getElementById('header-line');
