@@ -37,7 +37,7 @@ const photos = [
   <div class="px-6 md:px-10 max-w-6xl mx-auto pt-24 md:pt-28 pb-12">
     <p
       data-fade
-      class="text-[10px] tracking-[0.3em] uppercase text-ink-dim font-semibold mb-4 opacity-0"
+      class="text-[13px] md:text-[14.5px] tracking-[0.15em] uppercase text-ink-dim font-medium mb-4 opacity-0"
     >
       Síguenos
     </p>
@@ -64,8 +64,11 @@ const photos = [
           alt={photo.alt}
           width={400}
           height={500}
-          class="w-full h-full object-cover photo-preset transition-transform duration-700 ease-out-expo group-hover:scale-105"
+          class="w-full h-full object-cover photo-preset transition-transform duration-700 ease-out group-hover:scale-105"
         />
+        <div class="absolute top-3 right-3 w-8 h-8 rounded-full bg-bg-deep/70 backdrop-blur-sm border border-white/10 flex items-center justify-center text-cream/80 opacity-70 group-hover:opacity-100 transition-opacity">
+          <SiInstagram size={14} aria-hidden="true" />
+        </div>
       </a>
     ))}
   </div>

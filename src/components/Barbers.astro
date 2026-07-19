@@ -38,17 +38,17 @@ const barbers = [
 
 <section
   id="barberos"
-  class="relative"
+  class="relative bg-bg-deep"
   aria-label="Conoce a los barberos"
 >
   <!-- Section header -->
-  <div class="px-6 md:px-10 pt-24 pb-16 max-w-6xl mx-auto">
-    <div
-      data-reveal="slide-up"
-      class="text-[10px] tracking-[0.3em] uppercase text-ink-dim font-semibold mb-4 opacity-0"
+  <div class="px-6 md:px-10 pt-24 pb-12 max-w-6xl mx-auto">
+    <p
+      data-fade
+      class="text-[13px] md:text-[14.5px] tracking-[0.15em] uppercase text-ink-dim font-medium mb-4 opacity-0"
     >
       El equipo
-    </div>
+    </p>
     <h2
       data-reveal
       class="font-display display-large text-cream opacity-0"
@@ -57,69 +57,66 @@ const barbers = [
     </h2>
   </div>
 
-  <!-- Barber columns — asymmetric on desktop (55/45), stacked on mobile -->
-  <div class="grid grid-cols-1 md:grid-cols-2 gap-px bg-border">
-    {barbers.map((barber, i) => (
-      <div class="relative group bg-bg-deep overflow-hidden">
+  <!-- Barber columns — Raven Barbers Inspired Architecture -->
+  <div class="px-6 md:px-10 max-w-6xl mx-auto pb-20">
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-8 md:gap-12">
+      {barbers.map((barber) => (
+        <button
+          type="button"
+          class="barber-card group relative block text-left w-full bg-bg-deep overflow-hidden cursor-pointer border-0 p-0"
+          data-book-trigger
+          data-barber={barber.name}
+          data-book-barber={barber.name}
+          aria-label={`Reservar cita con ${barber.name}`}
+        >
+          <div class="relative aspect-[3/4] overflow-hidden bg-bg-panel border border-steel/15 rounded-sm">
+            <Image
+              src={barber.img}
+              alt={barber.alt}
+              widths={[480, 800, 1200, 1600]}
+              sizes="(max-width: 768px) 100vw, 50vw"
+              quality={90}
+              format="webp"
+              loading="lazy"
+              data-color-reveal
+              class="barber-portrait-img w-full h-full object-cover transition-all duration-500 ease-out"
+              style="object-position: center 18%;"
+            />
+            <!-- Gradient overlay for crisp typographic legibility -->
+            <div
+              class="absolute inset-0 pointer-events-none bg-gradient-to-t from-bg-deep via-bg-deep/20 to-transparent opacity-95"
+            ></div>
 
-        <!-- Photo container with BN→color reveal -->
-        <div class="relative aspect-[4/5] md:aspect-[3/4] overflow-hidden">
-          <Image
-            src={barber.img}
-            alt={barber.alt}
-            widths={[480, 800, 1200, 1600, 2000, barber.img.width]}
-            sizes="(max-width: 768px) 100vw, 50vw"
-            quality={88}
-            format="webp"
-            loading="lazy"
-            data-color-reveal
-            class="photo-preset w-full h-full object-cover opacity-0"
-            style="object-position: center 18%; transform-origin: center center;"
-          />
-          <!-- Gradient overlay -->
-          <div
-            class="absolute inset-0 pointer-events-none"
-            style="background: linear-gradient(0deg, rgba(12,10,9,0.92) 0%, rgba(12,10,9,0.2) 50%, transparent 100%);"
-          ></div>
-        </div>
-
-        <!-- Barber info — layered over photo bottom -->
-        <div class="absolute bottom-0 left-0 right-0 p-8 md:p-10 z-[1]">
-          <!-- Role badge -->
-          <span
-            data-reveal="slide-up"
-            data-reveal-delay="0.1"
-            class="inline-block text-[9px] tracking-[0.2em] uppercase text-ink-dim font-semibold border border-border-hi bg-bg-deep/80 backdrop-blur-md px-3.5 py-1.5 mb-4 opacity-0"
-          >
-            {barber.role} · {barber.title}
-          </span>
-
-          <!-- Name -->
-          <h3
-            data-fade
-            class="font-display text-[clamp(2.5rem,5vw,4rem)] text-cream leading-none mb-3 opacity-0"
-          >
-            {barber.name}
-          </h3>
-
-          <!-- Description -->
-          <p
-            data-fade
-            class="text-ink-dim text-[13px] leading-relaxed max-w-[280px] mb-6 opacity-0"
-          >
-            {barber.desc}
-          </p>
-
-          <!-- CTA -->
-          <CTA
-            label={`Reservar con ${barber.name}`}
-            barber={barber.name}
-            extraClass="text-[10px] px-6 py-3"
-          />
-        </div>
-
-      </div>
-    ))}
+            <!-- Barber Raven-style trigger overlay at bottom -->
+            <div class="absolute bottom-0 left-0 right-0 p-6 md:p-8 z-10">
+              <div class="flex flex-col gap-1 border-b border-steel/30 pb-3">
+                <span class="text-[10px] tracking-[0.25em] text-steel uppercase font-medium">
+                  RESERVAR CON
+                </span>
+                <div class="flex items-center justify-between">
+                  <h3 class="font-display text-3xl sm:text-4xl text-cream font-bold group-hover:text-oak transition-colors duration-300">
+                    {barber.name}
+                  </h3>
+                  <span class="text-cream text-2xl group-hover:translate-x-1.5 transition-transform duration-300">
+                    ›
+                  </span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </button>
+      ))}
+    </div>
   </div>
-
 </section>
+
+<style>
+  .barber-portrait-img {
+    filter: grayscale(100%) contrast(1.1) brightness(0.9);
+  }
+  @media (hover: hover) and (pointer: fine) {
+    .group:hover .barber-portrait-img {
+      filter: grayscale(0%) saturate(0.85) contrast(1.05) brightness(0.95);
+    }
+  }
+</style>

@@ -52,18 +52,21 @@ export default function BookingModal({ booksyUrl, barbers = [] }) {
       role="dialog"
       aria-modal="true"
       aria-label="Reservar cita"
-      className="fixed inset-0 z-[500] flex items-center justify-center p-5 modal-backdrop"
+      className="fixed inset-0 z-[500] flex items-center justify-center p-4 sm:p-6 modal-backdrop"
       onClick={(e) => { if (e.target === e.currentTarget) setIsOpen(false); }}
-      style={{ backgroundColor: 'rgba(12,10,9,0.85)', backdropFilter: 'blur(8px)' }}
+      style={{ backgroundColor: 'rgba(12,10,9,0.88)', backdropFilter: 'blur(16px)' }}
     >
       <div
-        className="w-full max-w-[420px] sm:max-w-[500px] relative p-8 sm:p-12 modal-content"
+        className="w-full max-w-[400px] sm:max-w-[460px] relative p-6 sm:p-9 modal-content shadow-2xl"
         style={{
-          backgroundColor: 'var(--color-bg-surface)',
-          border: '1px solid var(--color-border-hi)',
+          backgroundColor: '#0C0A09',
+          border: '1px solid rgba(138, 149, 165, 0.2)',
           borderRadius: '4px',
         }}
       >
+        {/* Top subtle oak accent bar */}
+        <div className="absolute top-0 left-0 right-0 h-[2px] bg-gradient-to-r from-transparent via-oak to-transparent opacity-80" />
+
         {/* Close button */}
         <button
           onClick={() => setIsOpen(false)}
@@ -71,16 +74,16 @@ export default function BookingModal({ booksyUrl, barbers = [] }) {
           className="modal-close-btn"
           style={{
             position: 'absolute',
-            top: '1rem',
-            right: '1.125rem',
+            top: '1.25rem',
+            right: '1.25rem',
             background: 'none',
             border: 'none',
             cursor: 'pointer',
-            color: 'var(--color-ink-faint)',
-            fontSize: '1.2rem',
+            color: 'var(--color-steel)',
+            fontSize: '1.25rem',
             lineHeight: '1',
             padding: '0.25rem',
-            transition: 'color 150ms ease-out',
+            transition: 'color 180ms ease-out',
           }}
         >
           ✕
@@ -88,64 +91,75 @@ export default function BookingModal({ booksyUrl, barbers = [] }) {
 
         {/* Heading */}
         <h3
-          className="font-display text-cream font-bold leading-none mb-2 text-[1.6rem] sm:text-[2.1rem] tracking-tight"
+          className="font-display text-cream font-bold leading-none mb-2 text-2xl sm:text-3xl tracking-tight uppercase"
         >
           Reserva tu cita
         </h3>
-        <p className="text-ink-dim text-[0.8rem] sm:text-[0.9rem] leading-relaxed mb-8">
-          Elige barbero y abrimos Booksy directamente en tu horario.
+        <p className="text-steel text-[12px] sm:text-[13px] leading-relaxed mb-6 tracking-wide">
+          Elige a tu barbero para abrir Booksy en tu horario.
         </p>
 
-        {/* Barber selector */}
+        {/* Barber selector grid */}
         <div
-          className="flex gap-3 mb-8"
+          className="grid grid-cols-2 gap-3 mb-6"
           role="group"
           aria-label="Elegir barbero"
         >
           {barbers.map((barber) => {
             const isSelected = selectedBarber === barber.name;
+            const role = barber.name === 'Azedin' ? 'FUNDADOR' : 'ESPECIALISTA';
+
             return (
               <button
                 key={barber.name}
                 onClick={() => setSelectedBarber(barber.name)}
                 aria-pressed={isSelected}
-                className={`flex-1 flex flex-col items-center py-5 sm:py-7 px-2 barber-option-btn ${isSelected ? 'selected' : ''}`}
+                className={`flex flex-col items-center py-5 px-3 rounded-sm barber-option-btn transition-all duration-200 ${isSelected ? 'selected' : ''}`}
                 style={{
-                  background: isSelected ? 'rgba(196,149,106,0.1)' : 'transparent',
-                  border: `1px solid ${isSelected ? 'var(--color-oak)' : 'var(--color-border-hi)'}`,
-                  borderRadius: '4px',
+                  background: isSelected ? '#151210' : 'rgba(21, 18, 16, 0.5)',
+                  border: `1px solid ${isSelected ? 'var(--color-oak)' : 'rgba(138, 149, 165, 0.18)'}`,
                   cursor: 'pointer',
-                  transition: 'background 180ms ease-out, border-color 180ms ease-out, transform 160ms ease-out',
+                  transform: isSelected ? 'scale(1.02)' : 'scale(1)',
                 }}
               >
-                {/* Barber Avatar Thumbnail */}
+                {/* Avatar Thumbnail with B&W -> Color filter */}
                 <div
-                  className="w-[60px] h-[60px] sm:w-[76px] sm:h-[76px] rounded-full overflow-hidden mb-3 transition-all duration-180 barber-avatar-container"
+                  className="w-[64px] h-[64px] sm:w-[72px] sm:h-[72px] rounded-full overflow-hidden mb-3 transition-all duration-300 border"
                   style={{
-                    border: `2px solid ${isSelected ? 'var(--color-oak)' : 'transparent'}`,
-                    boxShadow: isSelected ? '0 0 15px rgba(196,149,106,0.25)' : 'none',
-                    transform: isSelected ? 'scale(1.05)' : 'scale(1)',
+                    borderColor: isSelected ? 'var(--color-oak)' : 'rgba(138, 149, 165, 0.25)',
+                    boxShadow: isSelected ? '0 0 16px rgba(194, 147, 103, 0.25)' : 'none',
                   }}
                 >
                   <img
                     src={barber.img}
                     alt={barber.name}
+                    className="w-full h-full object-cover transition-all duration-300"
                     style={{
-                      width: '100%',
-                      height: '100%',
-                      objectFit: 'cover',
+                      filter: isSelected
+                        ? 'grayscale(0%) saturate(0.9) contrast(1.05)'
+                        : 'grayscale(100%) brightness(0.8)',
                     }}
                   />
                 </div>
 
                 {/* Barber Name */}
                 <span
-                  className="font-body text-[0.7rem] sm:text-[0.78rem] font-semibold tracking-wider uppercase transition-colors duration-180 barber-name"
+                  className="font-display text-[14px] sm:text-[15px] font-bold tracking-wider uppercase transition-colors duration-180 mb-0.5"
                   style={{
-                    color: isSelected ? 'var(--color-oak)' : 'var(--color-ink-dim)',
+                    color: isSelected ? 'var(--color-cream)' : 'var(--color-steel)',
                   }}
                 >
                   {barber.name}
+                </span>
+
+                {/* Role badge */}
+                <span
+                  className="text-[9px] font-mono tracking-widest uppercase"
+                  style={{
+                    color: isSelected ? 'var(--color-oak)' : 'rgba(138, 149, 165, 0.6)',
+                  }}
+                >
+                  {role}
                 </span>
               </button>
             );
@@ -157,19 +171,16 @@ export default function BookingModal({ booksyUrl, barbers = [] }) {
           href={booksyUrl}
           target="_blank"
           rel="noopener noreferrer"
-          className="btn-oak"
-          style={{ width: '100%', justifyContent: 'center', display: 'flex' }}
+          className="btn-oak w-full flex items-center justify-center gap-2 py-3.5 text-[11px] font-semibold tracking-[0.18em] uppercase rounded-sm shadow-lg transition-transform"
           aria-label={`Continuar en Booksy para reservar con ${selectedBarber}`}
         >
-          Continuar en Booksy
-          <svg width="14" height="14" viewBox="0 0 14 14" fill="none" style={{ marginLeft: '0.5rem' }} aria-hidden="true">
-            <path d="M2.5 7h9M8 3.5L11.5 7 8 10.5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
-          </svg>
+          <span>CONTINUAR EN BOOKSY</span>
+          <span className="text-base font-normal">›</span>
         </a>
 
         {/* Disclaimer */}
-        <p className="mt-4 text-[0.68rem] text-ink-faint text-center leading-relaxed">
-          Se abrirá Booksy en una nueva pestaña
+        <p className="mt-3.5 text-[11px] text-steel/60 text-center tracking-wide">
+          Se abrirá la agenda de Booksy en una nueva pestaña
         </p>
       </div>
 
@@ -184,10 +195,8 @@ export default function BookingModal({ booksyUrl, barbers = [] }) {
           color: var(--color-cream) !important;
         }
         .barber-option-btn:not(.selected):hover {
-          border-color: var(--color-oak-dim) !important;
-        }
-        .barber-option-btn:active {
-          transform: scale(0.97);
+          border-color: rgba(138, 149, 165, 0.4) !important;
+          background: rgba(21, 18, 16, 0.8) !important;
         }
 
         @keyframes fadeIn {

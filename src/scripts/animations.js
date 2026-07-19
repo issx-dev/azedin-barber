@@ -141,35 +141,32 @@ function registerStagger() {
   });
 }
 
-// ─── BN → Color on scroll (barber photos) ───────────────────────────────────
+// ─── Smooth Curtain Reveal on scroll (barber photos & editorial media) ──────
 function registerGrayscaleReveal() {
   const els = document.querySelectorAll('[data-color-reveal]');
   if (!els.length) return;
 
   els.forEach((el, i) => {
     if (prefersReduced) {
-      el.style.filter = 'none';
       el.style.opacity = '1';
       return;
     }
 
-    // Start: grayscale with warm sepia tint (matching barbershop mood)
+    // Smooth curtain reveal — clip-path + scale + opacity (no filter jump)
     gsap.fromTo(el,
       {
-        filter: 'grayscale(100%) sepia(15%) brightness(0.8)',
         clipPath: 'inset(0 0 100% 0)',
         scale: 1.04,
         opacity: 0,
       },
       {
-        filter: 'sepia(12%) contrast(1.04) brightness(0.96) saturate(1.03)',
         clipPath: 'inset(0 0 0% 0)',
         scale: 1,
         opacity: 1,
-        duration: 1.2,
+        duration: 1.1,
         ease: EASE_OUT_QUART,
-        delay: i * 0.15,
-        clearProps: 'filter',
+        delay: i * 0.12,
+        clearProps: 'clipPath,scale',
         scrollTrigger: {
           trigger: el,
           start: 'top 82%',

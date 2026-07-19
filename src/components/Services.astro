@@ -1,100 +1,77 @@
 ---
 /**
- * Services — Editorial dot-leader price menu.
+ * Services — Architectural 1px Steel Matrix on Dark Marble (#0C0A09).
  *
- * Minimal typographic list: NAME ······· PRICE (DURATION).
- * No cards, no row borders. Flex-based dot leader fills available width.
- * Stagger animation via GSAP data-stagger on scroll.
+ * Clean architectural list: NAME + TIME stacked on left, PRICE on right.
+ * Separated by edge-to-edge 1px steel borders (border-steel-faint).
  */
-import { services, business } from '../data/content.js';
+import { services } from '../data/content.js';
 import CTA from './CTA.astro';
 ---
 
 <section
   id="servicios"
-  class="relative overflow-hidden bg-cream"
+  class="relative overflow-hidden bg-bg-deep text-cream border-t border-steel-faint py-24 sm:py-32"
   aria-labelledby="servicios-heading"
-  style={`padding-top: calc(var(--section-py) * 0.4); padding-bottom: var(--section-py); background-color: var(--color-cream);`}
 >
   <div class="max-w-4xl mx-auto px-6 md:px-10">
 
     <!-- Header -->
-    <div class="mb-16">
+    <div class="mb-14">
       <p
         data-fade
-        class="text-[10px] tracking-[0.3em] uppercase text-bg-deep/60 font-semibold mb-4 opacity-0"
+        class="text-[13px] md:text-[14.5px] tracking-[0.15em] uppercase text-ink-dim font-medium mb-4 opacity-0"
       >
         Lo que ofrecemos
       </p>
       <h2
         id="servicios-heading"
         data-reveal
-        class="font-display display-large text-bg-deep opacity-0"
+        class="font-display display-large text-cream opacity-0"
       >
         Servicios
       </h2>
     </div>
 
-    <!-- Service list — dot-leader menu -->
+    <!-- Service list — 1px steel matrix -->
     <div
       data-stagger
       role="list"
       aria-label="Lista de servicios y precios"
-      class="flex flex-col gap-0"
+      class="flex flex-col border-t border-steel-faint"
     >
       {services.map((service) => (
-        <div class="service-row flex items-baseline gap-3 py-5" role="listitem">
-          <span class="font-display font-bold text-[13px] tracking-[0.08em] text-bg-deep whitespace-nowrap">
-            {service.name.toUpperCase()}
-          </span>
-          <span
-            class="service-dots"
-            aria-hidden="true"
-          ></span>
-          <span class="text-bg-deep font-bold text-[15px] whitespace-nowrap">
-            {service.price}
-          </span>
-          <span class="text-bg-deep/60 text-[11px] whitespace-nowrap">
-            {service.time}
-          </span>
+        <div
+          class="service-row flex items-center justify-between py-6 border-b border-steel-faint group transition-colors duration-200"
+          role="listitem"
+        >
+          <!-- Left: Name + Duration stacked -->
+          <div class="flex flex-col gap-1">
+            <span class="font-display font-bold text-lg md:text-xl tracking-tight text-cream group-hover:text-oak transition-colors duration-200">
+              {service.name}
+            </span>
+            <span class="text-steel/70 text-[12px] font-mono tracking-wider">
+              {service.time}
+            </span>
+          </div>
+
+          <!-- Right: Price -->
+          <div class="flex items-center gap-6">
+            <span class="font-display font-light text-2xl md:text-3xl text-cream tracking-tight">
+              {service.price}
+            </span>
+          </div>
         </div>
       ))}
     </div>
 
-    <!-- CTA -->
-    <div class="mt-14 flex flex-col sm:flex-row items-start sm:items-center gap-5">
+    <!-- CTA (hidden on mobile to maintain single bottom conversion shell) -->
+    <div class="mt-14 hidden md:flex items-center gap-6">
       <CTA label="Reservar cita" />
-      <p class="text-bg-deep/60 text-[11px] tracking-wide">
+      <p class="text-steel/70 text-[11px] tracking-wide">
         Reserva en segundos a través de Booksy
       </p>
     </div>
 
   </div>
 </section>
-
-<style>
-  .service-dots {
-    flex: 1;
-    min-width: 2ch;
-    overflow: hidden;
-    white-space: nowrap;
-  }
-  .service-dots::after {
-    content: " ............................................................................";
-    color: var(--color-bg-deep);
-    opacity: 0.15;
-  }
-  @media (hover: hover) and (pointer: fine) {
-    .service-row {
-      transition: background-color 180ms var(--ease-out);
-      border-radius: 4px;
-      padding-left: 0.5rem;
-      padding-right: 0.5rem;
-      margin-left: -0.5rem;
-      margin-right: -0.5rem;
-    }
-    .service-row:hover {
-      background-color: rgba(12, 10, 9, 0.05);
-    }
-  }
-</style>

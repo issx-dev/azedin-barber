@@ -1,34 +1,28 @@
 ---
 /**
- * Lookbook — Premium Portrait-Native Bento Grid.
+ * Lookbook — Winston Studio Inspired Editorial Catalog.
  *
- * Designed around portrait photos (all cuts in the collection are portrait):
- *   - Desktop: 4 equal columns. Row height matches the column width precisely
- *     using a clamp() on viewport width.
- *   - Grid uses ONLY 1x1 (squares) and 1x2 (tall) celdas. No 2x1 landscape (wide) celdas.
- *     This locks the aspect ratios to portrait-friendly shapes, preventing
- *     any wide letterbox cropping that cuts off heads.
- *   - Full-bleed design fills the screen with no margins for high visual impact.
- *   - Per-image `focus` ensures the haircut sits exactly centered in every cell.
+ * Spacious 3-column portrait grid with clean external captions below each image.
+ * Zero overlays covering the haircuts.
  */
 import { Image } from 'astro:assets';
 import { galleryItems } from '../data/content.js';
 import CTA from './CTA.astro';
 
-// Use first 9 items for the bento grid
-const items = galleryItems.slice(0, 9);
+// Use first 6 curated haircuts for the editorial catalog
+const items = galleryItems.slice(0, 6);
 ---
 
 <section
   id="lookbook"
-  class="py-0"
+  class="bg-bg-deep py-0"
   aria-label="Galería de cortes — Lookbook"
 >
   <!-- Section header -->
-  <div class="px-6 md:px-10 pt-24 pb-12 max-w-6xl mx-auto">
+  <div class="px-6 md:px-10 pt-24 pb-14 max-w-6xl mx-auto">
     <p
       data-fade
-      class="text-[10px] tracking-[0.3em] uppercase text-ink-dim font-semibold mb-4 opacity-0"
+      class="text-[13px] md:text-[14.5px] tracking-[0.15em] uppercase text-ink-dim font-medium mb-4 opacity-0"
     >
       Nuestro trabajo
     </p>
@@ -40,46 +34,58 @@ const items = galleryItems.slice(0, 9);
     </h2>
   </div>
 
-  <!-- Bento Grid — Full screen width -->
-  <div class="lookbook-grid">
-    {items.map((item) => {
-      const isTall = item.area === 'tall';
+  <!-- Editorial Catalog Grid -->
+  <div class="px-5 sm:px-8 md:px-10 max-w-6xl mx-auto pb-8 md:pb-16">
+    <div class="grid grid-cols-2 lg:grid-cols-3 gap-3.5 sm:gap-8 lg:gap-14">
+      {items.map((item, index) => {
+        const isExtra = index >= 4;
+        return (
+          <div 
+            data-fade 
+            class={`lookbook-item group flex flex-col ${isExtra ? 'lookbook-extra hidden md:flex' : ''}`}
+          >
+            <!-- Portrait photo card -->
+            <div class="relative aspect-[3/4] overflow-hidden bg-bg-panel border border-steel/15 rounded-sm">
+              <Image
+                src={item.src}
+                alt={item.alt}
+                widths={[320, 480, 640, 960]}
+                sizes="(max-width: 640px) 50vw, (max-width: 1024px) 50vw, 33vw"
+                quality={88}
+                format="webp"
+                class="lookbook-img photo-preset w-full h-full object-cover transition-transform duration-700 ease-out group-hover:scale-105"
+                style={`object-position: ${item.focus}`}
+              />
+            </div>
 
-      return (
-        <div
-          data-reveal="up"
-          class={`lookbook-tile relative overflow-hidden opacity-0 ${isTall ? 'tall' : ''}`}
-        >
-          {/* Astro Image Optimization with per-image custom focus alignment */}
-          <Image
-            src={item.src}
-            alt={item.alt}
-            widths={[320, 480, 640, 960, 1200]}
-            sizes={isTall ? "(max-width: 640px) 100vw, 33vw" : "(max-width: 640px) 50vw, 25vw"}
-            quality={86}
-            format="webp"
-            class="lookbook-img photo-preset w-full h-full object-cover"
-            style={`object-position: ${item.focus}`}
-          />
-          
-          <!-- Label overlay: always visible on touch, hover-reveal on desktop -->
-          <div class="lookbook-overlay absolute inset-0 flex flex-col justify-end pointer-events-none">
-            <div class="lookbook-label">
-              <span class="lookbook-barber">
-                {item.barber}
+            <!-- Clean external caption below image (Winston Studio pattern) -->
+            <div class="mt-2.5 sm:mt-4 flex items-center justify-between border-b border-steel/20 pb-2">
+              <span class="font-display font-semibold text-[11px] sm:text-[14px] text-cream uppercase tracking-wide truncate pr-1">
+                {String(index + 1).padStart(2, '0')} / {item.label}
               </span>
-              <span class="lookbook-name">
-                {item.label}
+              <span class="text-steel/70 text-[9px] sm:text-[11px] font-mono tracking-wider shrink-0">
+                {item.barber}
               </span>
             </div>
           </div>
-        </div>
-      );
-    })}
+        );
+      })}
+    </div>
+
+    <!-- Mobile Progressive Expander Button (visible on mobile < 768px) -->
+    <div class="text-center pt-8 block md:hidden">
+      <button
+        id="lookbook-toggle-btn"
+        class="btn-outline-thin text-[11px] px-8 py-3.5"
+        aria-expanded="false"
+      >
+        VER MÁS CORTES ›
+      </button>
+    </div>
   </div>
 
-  <!-- CTA below grid -->
-  <div class="text-center pt-12 pb-4 px-6">
+  <!-- CTA below grid (hidden on mobile to prevent conversion clutter) -->
+  <div class="text-center pt-8 pb-16 px-6 hidden md:block">
     <p class="text-ink-dim text-[13px] mb-6">
       Cada corte cuenta su propia historia.
     </p>
@@ -88,121 +94,23 @@ const items = galleryItems.slice(0, 9);
 
 </section>
 
-<style>
-  /* ── Desktop: 4 Columns Bento ───────────────────────────────────────────
-   *
-   * We calculate row height using calc() based on viewport width to maintain
-   * mathematically perfect 1:1 squares (sq) and 1:2 rectangles (tall).
-   * We clamp the height to prevent tiles from becoming excessively large on
-   * ultra-wide 4K screens.
-   */
-  .lookbook-grid {
-    display: grid;
-    grid-template-columns: repeat(4, 1fr);
-    grid-auto-rows: clamp(250px, calc((100vw - 12px) / 4), 380px);
-    grid-auto-flow: dense;
-    gap: 4px;
+<script>
+  const toggleBtn = document.getElementById('lookbook-toggle-btn');
+  if (toggleBtn) {
+    toggleBtn.addEventListener('click', () => {
+      const extraItems = document.querySelectorAll('.lookbook-extra');
+      const isExpanded = toggleBtn.getAttribute('aria-expanded') === 'true';
+
+      extraItems.forEach((item) => {
+        if (isExpanded) {
+          item.classList.add('hidden');
+        } else {
+          item.classList.remove('hidden');
+        }
+      });
+
+      toggleBtn.setAttribute('aria-expanded', isExpanded ? 'false' : 'true');
+      toggleBtn.textContent = isExpanded ? 'VER MÁS CORTES ›' : 'VER MENOS ‹';
+    });
   }
-
-  .lookbook-grid > .tall {
-    grid-row: span 2;
-  }
-
-  /* ── Gradient overlay ─────────────────────────────────────────────────── */
-  .lookbook-overlay {
-    background: linear-gradient(
-      0deg,
-      rgba(12, 10, 9, 0.9) 0%,
-      rgba(12, 10, 9, 0.2) 50%,
-      transparent 100%
-    );
-  }
-
-  /* ── Label typography ─────────────────────────────────────────────────── */
-  .lookbook-label {
-    padding: clamp(0.75rem, 1.5vw, 1.5rem);
-    display: flex;
-    flex-direction: column;
-    gap: 0.15rem;
-  }
-
-  .lookbook-barber {
-    font-size: clamp(0.5rem, 0.8vw, 0.6875rem); /* 8px – 11px */
-    letter-spacing: 0.18em;
-    text-transform: uppercase;
-    font-weight: 600;
-    color: var(--color-steel-dim);
-    display: block;
-  }
-
-  .lookbook-name {
-    font-family: var(--font-display);
-    font-size: clamp(1rem, 1.3vw, 1.375rem); /* 16px – 22px */
-    color: var(--color-cream);
-    display: block;
-    line-height: 1.2;
-  }
-
-  /* ── Tablet (541px – 900px) ───────────────────────────────────────────── */
-  @media (max-width: 900px) {
-    .lookbook-grid {
-      grid-template-columns: repeat(2, 1fr);
-      grid-auto-rows: clamp(220px, calc((100vw - 4px) / 2), 300px);
-      gap: 3px;
-    }
-    
-    .lookbook-label {
-      padding: 0.75rem 0.875rem;
-    }
-
-    .lookbook-barber {
-      font-size: 0.5rem; /* 8px */
-    }
-    
-    .lookbook-name {
-      font-size: 0.875rem; /* 14px */
-    }
-  }
-
-  /* ── Phone (≤540px) ──────────────────────────────────────────────────── */
-  @media (max-width: 540px) {
-    .lookbook-grid {
-      grid-template-columns: repeat(2, 1fr);
-      grid-auto-rows: 200px; /* Force compact tiles on smaller viewports */
-      gap: 2px;
-    }
-
-    .lookbook-overlay {
-      background: linear-gradient(
-        0deg,
-        rgba(12, 10, 9, 0.82) 0%,
-        rgba(12, 10, 9, 0.08) 38%,
-        transparent 100%
-      );
-    }
-
-    .lookbook-label {
-      padding: 0.5rem 0.625rem;
-    }
-
-    .lookbook-barber {
-      font-size: 0.4375rem; /* 7px */
-    }
-    
-    .lookbook-name {
-      font-size: 0.75rem; /* 12px */
-    }
-  }
-
-  /* ── Very small phone (≤360px) ───────────────────────────────────────── */
-  @media (max-width: 360px) {
-    .lookbook-grid {
-      grid-template-columns: 1fr;
-      grid-auto-rows: 300px;
-      gap: 2px;
-    }
-    .lookbook-grid > .tall {
-      grid-row: span 1;
-    }
-  }
-</style>
+</script>
