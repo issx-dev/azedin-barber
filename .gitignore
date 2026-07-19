@@ -16,3 +16,15 @@ test-results/
 *.swp
 *.swo
 *~
+
+# Agent & Tool directories
+.agents/
+.audit/
+.claude/
+.playwright-cli/
+skills-lock.json
+
+# Local raw resources
+azedin-images/
+azedin-resources/
+e2e/screenshots/
