@@ -22,13 +22,13 @@ const items = galleryItems.slice(0, 6);
   <div class="px-6 md:px-10 pt-24 pb-14 max-w-6xl mx-auto">
     <p
       data-fade
-      class="text-[13px] md:text-[14.5px] tracking-[0.15em] uppercase text-ink-dim font-medium mb-4 opacity-0"
+      class="text-[13px] md:text-[14.5px] tracking-[0.15em] uppercase text-ink-dim font-medium mb-4"
     >
       Nuestro trabajo
     </p>
     <h2
       data-reveal
-      class="font-display display-large text-cream opacity-0"
+      class="font-display display-large text-cream"
     >
       Lookbook
     </h2>
@@ -111,6 +111,12 @@ const items = galleryItems.slice(0, 6);
 
       toggleBtn.setAttribute('aria-expanded', isExpanded ? 'false' : 'true');
       toggleBtn.textContent = isExpanded ? 'VER MÁS CORTES ›' : 'VER MENOS ‹';
+
+      setTimeout(() => {
+        if (window.gsap && window.gsap.ScrollTrigger) {
+          window.gsap.ScrollTrigger.refresh();
+        }
+      }, 0);
     });
   }
 </script>

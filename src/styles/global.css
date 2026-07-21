@@ -37,7 +37,7 @@
     --color-cream:      #F4EFEA;   /* off-white para texto primario */
     --color-ink:        #F0E6D8;   /* texto de cuerpo */
     --color-ink-dim:    #9E8E7E;   /* texto secundario */
-    --color-ink-faint:  #5E5248;   /* texto muy dim */
+    --color-ink-faint:  #8E7E70;   /* texto muy dim (WCAG AA) */
     --color-border:     #2A2420;   /* borde sutil */
     --color-border-hi:  #3D332B;   /* borde visible */
 
@@ -155,7 +155,6 @@
       background-color 180ms var(--ease-out),
       border-color 180ms var(--ease-out),
       transform 160ms var(--ease-out);
-    will-change: transform;
   }
 
   .btn-oak:hover {
@@ -190,7 +189,6 @@
       border-color 180ms var(--ease-out),
       color 180ms var(--ease-out),
       transform 160ms var(--ease-out);
-    will-change: transform;
   }
 
   .btn-outline-thin:hover {
@@ -225,7 +223,6 @@
       border-color 180ms var(--ease-out),
       color 180ms var(--ease-out),
       transform 160ms var(--ease-out);
-    will-change: transform;
   }
 
   @media (hover: hover) and (pointer: fine) {
@@ -323,8 +320,11 @@
     -webkit-backdrop-filter: blur(14px);
   }
 
+  [data-reveal], [data-fade], [data-stagger] { opacity: 0; }
+
   /* ── prefers-reduced-motion overrides ──────────────────────────────────── */
   @media (prefers-reduced-motion: reduce) {
+    [data-reveal], [data-fade], [data-stagger] { opacity: 1 !important; }
     .marquee-track { animation: none; }
     .lookbook-img { transition: none; }
     .service-row  { transition: none; }
