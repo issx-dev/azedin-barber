@@ -32,6 +32,8 @@ const navLinks = [
         alt="Azedin Barber"
         class="nav-logo-img"
         loading="eager"
+        width="500"
+        height="333"
       />
     </a>
 
@@ -58,9 +60,10 @@ const navLinks = [
       <!-- Mobile hamburger -->
       <button
         data-nav-trigger
-        class="md:hidden flex flex-col gap-[5px] p-2 cursor-pointer bg-transparent border-none"
+        class="md:hidden flex flex-col gap-[5px] min-w-[44px] min-h-[44px] items-center justify-center cursor-pointer bg-transparent border-none"
         aria-label="Abrir menú"
         aria-expanded="false"
+        aria-controls="mobile-nav"
       >
         <span class="block w-5 h-[1.5px] bg-cream transition-transform duration-200"></span>
         <span class="block w-5 h-[1.5px] bg-cream transition-transform duration-200"></span>
@@ -75,6 +78,19 @@ const navLinks = [
 </header>
 
 
+
+<script>
+  document.addEventListener('DOMContentLoaded', () => {
+    const trigger = document.querySelector('[data-nav-trigger]');
+    if (!trigger) return;
+    window.addEventListener('nav:open', () => {
+      trigger.setAttribute('aria-expanded', 'true');
+    });
+    window.addEventListener('nav:close', () => {
+      trigger.setAttribute('aria-expanded', 'false');
+    });
+  });
+</script>
 
 <style>
   .nav-logo-img {
