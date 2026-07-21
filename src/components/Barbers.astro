@@ -45,13 +45,13 @@ const barbers = [
   <div class="px-6 md:px-10 pt-24 pb-12 max-w-6xl mx-auto">
     <p
       data-fade
-      class="text-[13px] md:text-[14.5px] tracking-[0.15em] uppercase text-ink-dim font-medium mb-4 opacity-0"
+      class="text-[13px] md:text-[14.5px] tracking-[0.15em] uppercase text-ink-dim font-medium mb-4"
     >
       El equipo
     </p>
     <h2
       data-reveal
-      class="font-display display-large text-cream opacity-0"
+      class="font-display display-large text-cream"
     >
       Quién te espera
     </h2>
@@ -65,9 +65,8 @@ const barbers = [
           type="button"
           class="barber-card group relative block text-left w-full bg-bg-deep overflow-hidden cursor-pointer border-0 p-0"
           data-book-trigger
-          data-barber={barber.name}
           data-book-barber={barber.name}
-          aria-label={`Reservar cita con ${barber.name}`}
+          aria-label={`RESERVAR CON ${barber.name}`}
         >
           <div class="relative aspect-[3/4] overflow-hidden bg-bg-panel border border-steel/15 rounded-sm">
             <Image
