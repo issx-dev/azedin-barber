@@ -17,6 +17,7 @@ const {
 <html lang="es">
 <head>
   <meta charset="UTF-8" />
+  <link rel="preload" as="font" type="font/woff2" crossorigin href="/fonts/bricolage-grotesque-latin-wght-normal.woff2">
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>{title}</title>
   <meta name="description" content={description} />
@@ -43,11 +44,16 @@ const {
   <meta property="og:url" content="https://azedinbarber.com/" />
   <meta property="og:locale" content="es_ES" />
   <meta property="og:site_name" content="Azedin Barber" />
+  <meta property="og:image" content="https://azedinbarber.com/og-image.jpg" />
+  <meta property="og:image:width" content="1200" />
+  <meta property="og:image:height" content="630" />
+  <meta property="og:image:alt" content="Azedin Barber — Berja, Almería" />
 
   <!-- Twitter Cards -->
   <meta name="twitter:card" content="summary_large_image" />
   <meta name="twitter:title" content={title} />
   <meta name="twitter:description" content={description} />
+  <meta name="twitter:image" content="https://azedinbarber.com/og-image.jpg" />
 
   <!-- Preconnect and Preload for Critical Fonts (Bricolage self-hosted in global.css).
        Fraunces / Outfit / Instrument Sans — Google Fonts CDN. -->
@@ -56,23 +62,62 @@ const {
   <link
     rel="preload"
     as="style"
-    href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,700;12..96,800&family=Fraunces:ital,opsz,wght@1,9..144,500&family=Instrument+Sans:wght@400;500;600&display=swap"
+    href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@1,9..144,500&family=Instrument+Sans:wght@400;500;600&display=swap"
   />
   <link
-    href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,700;12..96,800&family=Fraunces:ital,opsz,wght@1,9..144,500&family=Instrument+Sans:wght@400;500;600&display=swap"
+    href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@1,9..144,500&family=Instrument+Sans:wght@400;500;600&display=swap"
     rel="stylesheet"
     media="print"
     onload="this.media='all'"
   />
   <noscript>
     <link
-      href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,700;12..96,800&family=Fraunces:ital,opsz,wght@1,9..144,500&family=Instrument+Sans:wght@400;500;600&display=swap"
+      href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@1,9..144,500&family=Instrument+Sans:wght@400;500;600&display=swap"
       rel="stylesheet"
     />
   </noscript>
+  <noscript>
+    <style>
+      [data-reveal], [data-fade], [data-stagger] { opacity: 1 !important; }
+    </style>
+  </noscript>
+  <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "BarberShop",
+      "name": "Azedin Barber",
+      "image": "https://azedinbarber.com/og-image.jpg",
+      "url": "https://azedinbarber.com/",
+      "priceRange": "€8-€17",
+      "address": {
+        "@type": "PostalAddress",
+        "streetAddress": "Avenida José Barrionuevo Peña 14",
+        "addressLocality": "Berja",
+        "addressRegion": "Almería",
+        "postalCode": "04760",
+        "addressCountry": "ES"
+      },
+      "geo": {
+        "@type": "GeoCoordinates",
+        "latitude": 36.8458,
+        "longitude": -2.9496
+      },
+      "aggregateRating": {
+        "@type": "AggregateRating",
+        "ratingValue": "5.0",
+        "reviewCount": "87"
+      },
+      "sameAs": [
+        "https://www.instagram.com/azedinbarber/",
+        "https://www.tiktok.com/@azedin.barber",
+        "https://booksy.com/es-es/141862_azedin-barber_barberia_26195_castala"
+      ]
+    }
+  </script>
 </head>
 
 <body class="bg-bg-deep text-ink font-body antialiased overflow-x-hidden">
+  <a href="#main-content" class="sr-only focus:not-sr-only focus:fixed focus:top-4 focus:left-4 focus:z-[1000] focus:bg-oak focus:text-bg-deep focus:px-4 focus:py-2 focus:rounded">Saltar al contenido</a>
   <slot />
   <MobileStickyCTA />
 

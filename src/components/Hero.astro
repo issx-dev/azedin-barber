@@ -26,7 +26,7 @@ const desktopVideoSrc = '/video/instalaciones-desktop.mp4';
   class="relative flex flex-col items-center justify-center min-h-[100dvh] overflow-hidden wood-slats"
   aria-label="Bienvenida"
 >
-  <!-- ── Background: workspace photo with parallax + video (desktop, >= 768px) ─────────── -->
+  <!-- ── Background ────────────────────────────────────────────────────── -->
   <div class="hero-bg-desktop absolute inset-0 z-0" aria-hidden="true">
     <Image
       src={workspaceImg}
@@ -39,56 +39,28 @@ const desktopVideoSrc = '/video/instalaciones-desktop.mp4';
       decoding="sync"
       fetchpriority="high"
       data-parallax="0.18"
-      class="w-full h-[115%] object-cover object-center -translate-y-[7.5%]"
+      class="hidden md:block w-full h-[115%] object-cover object-center -translate-y-[7.5%]"
       style="filter: sepia(20%) brightness(0.22) contrast(1.1); will-change: transform;"
     />
     <video
-      id="hero-video-desktop"
-      class="hero-video absolute inset-0 w-full h-[115%] object-cover object-center -translate-y-[7.5%]"
-      autoplay
-      loop
+      id="hero-video"
+      class="hero-video absolute inset-0 w-full h-full md:h-[115%] object-cover md:object-center md:-translate-y-[7.5%]"
       muted
+      loop
       playsinline
-      preload="none"
+      autoplay
+      preload="metadata"
       aria-hidden="true"
       style="filter: sepia(20%) brightness(0.22) contrast(1.1); will-change: transform;"
       data-parallax="0.18"
     >
-      <source src={desktopVideoSrc} type="video/mp4" />
+      <source src="/video/instalaciones-mobile.mp4" type="video/mp4" media="(max-width: 767px)" />
+      <source src="/video/instalaciones-desktop.mp4" type="video/mp4" media="(min-width: 768px)" />
     </video>
     <!-- Radial glow from center — simulates the studio spotlight feel -->
     <div
       class="absolute inset-0"
       style="background: radial-gradient(ellipse 70% 60% at 50% 40%, rgba(196,149,106,0.06) 0%, transparent 70%), linear-gradient(to bottom, rgba(12,10,9,0.5) 0%, rgba(12,10,9,0.1) 40%, rgba(12,10,9,0.7) 80%, rgba(12,10,9,1) 100%);"
-    ></div>
-  </div>
-
-  <!-- ── Background: video loop (mobile only, < 768px) ────────────────── -->
-  <div class="hero-bg-mobile absolute inset-0 z-0" aria-hidden="true">
-    <!--
-      poster= uses the static JPEG as placeholder — ensures LCP fires on the image
-      BEFORE the video loads, preventing layout shifts.
-      autoplay + muted + playsinline = required by browsers for auto-playback.
-      preload="none" = video bytes are NOT fetched until JS initiates; keeps initial
-      page load fast. We switch to "auto" on mobile via JS after page load.
-    -->
-    <video
-      id="hero-video-mobile"
-      class="hero-video absolute inset-0 w-full h-full object-cover"
-      autoplay
-      loop
-      muted
-      playsinline
-      preload="none"
-      aria-hidden="true"
-      style="filter: sepia(15%) brightness(0.2) contrast(1.15);"
-    >
-      <source src={mobileVideoSrc} type="video/mp4" />
-    </video>
-    <!-- Gradient overlay — same as desktop for consistent CTA legibility -->
-    <div
-      class="absolute inset-0"
-      style="background: radial-gradient(ellipse 70% 60% at 50% 40%, rgba(196,149,106,0.07) 0%, transparent 70%), linear-gradient(to bottom, rgba(12,10,9,0.45) 0%, rgba(12,10,9,0.05) 40%, rgba(12,10,9,0.72) 80%, rgba(12,10,9,1) 100%);"
     ></div>
   </div>
 
@@ -98,20 +70,25 @@ const desktopVideoSrc = '/video/instalaciones-desktop.mp4';
     <!-- Logo / Heading -->
     <h1
       data-hero-text
-      class="mb-6 opacity-0"
+      class="mb-6"
     >
       <img
         src={logoSrc.src}
-        alt="Azedin Barber"
+        alt=""
         class="hero-logo-img mx-auto"
         loading="eager"
+        fetchpriority="high"
+        width="500"
+        height="333"
+        aria-hidden="true"
       />
+      <span class="sr-only">Azedin Barber — Barbería en Berja, Almería</span>
     </h1>
 
     <!-- Tagline -->
     <p
       data-hero-text
-      class="text-ink-dim text-[13px] md:text-[14px] tracking-[0.22em] uppercase font-medium mb-10 opacity-0"
+      class="text-ink-dim text-[13px] md:text-[14px] tracking-[0.22em] uppercase font-medium mb-10"
     >
       {business.tagline}
     </p>
@@ -119,7 +96,7 @@ const desktopVideoSrc = '/video/instalaciones-desktop.mp4';
     <!-- CTA group -->
     <div
       data-hero-text
-      class="flex flex-col sm:flex-row items-center gap-4 opacity-0"
+      class="flex flex-col sm:flex-row items-center gap-4"
     >
 <CTA
           label="Reservar cita"
@@ -128,7 +105,6 @@ const desktopVideoSrc = '/video/instalaciones-desktop.mp4';
       <a
         href="#lookbook"
         class="btn-outline-thin text-[11px] px-8 py-3.5"
-        aria-label="Ver lookbook de cortes"
       >
         Ver cortes
       </a>
@@ -141,7 +117,7 @@ const desktopVideoSrc = '/video/instalaciones-desktop.mp4';
     class="absolute bottom-10 left-1/2 -translate-x-1/2 z-[2] flex flex-col items-center gap-2"
     aria-hidden="true"
     data-hero-text
-    style="opacity:0;"
+    data-hero-text
   >
     <span class="text-ink-faint text-[9px] tracking-[0.3em] uppercase">Scroll</span>
     <div class="w-px h-10 bg-gradient-to-b from-steel-dim to-transparent opacity-60"></div>
@@ -172,61 +148,10 @@ const desktopVideoSrc = '/video/instalaciones-desktop.mp4';
     transform: scale(1.02);
   }
 
-  /* ── Responsive background switching ──────────────────────────────── */
-  /* Mobile: show video, hide desktop photo */
-  .hero-bg-mobile  { display: block; }
-  .hero-bg-desktop { display: none; }
 
-  /* Desktop (≥ 768px): hide video, show static photo */
-  @media (min-width: 768px) {
-    .hero-bg-mobile  { display: none; }
-    .hero-bg-desktop { display: block; }
-  }
 
-  /* Fade-in animation for the video — prevents hard cut when it starts */
-  .hero-video {
-    opacity: 0;
-    transition: opacity 0.8s ease;
-  }
-  .hero-video.ready {
-    opacity: 1;
-  }
+
 </style>
 
-<script>
-  // Dynamically load the correct video after initial paint to save resources.
-  const videoMobile = document.getElementById('hero-video-mobile') as HTMLVideoElement | null;
-  const videoDesktop = document.getElementById('hero-video-desktop') as HTMLVideoElement | null;
-  
-  const startVideo = (video: HTMLVideoElement) => {
-    const makeReady = () => video.classList.add('ready');
-    video.preload = 'auto';
-    video.load();
-    video.play().then(() => {
-      if (video.readyState >= 3) {
-        makeReady();
-      } else {
-        video.addEventListener('canplay', makeReady, { once: true });
-      }
-    }).catch(err => {
-      console.warn("Autoplay was prevented or video load failed:", err);
-      // Safety fallback
-      makeReady();
-    });
-  };
 
-  const loadTargetVideo = () => {
-    if (window.innerWidth < 768) {
-      if (videoMobile) startVideo(videoMobile);
-    } else {
-      if (videoDesktop) startVideo(videoDesktop);
-    }
-  };
-
-  if (document.readyState === 'complete') {
-    loadTargetVideo();
-  } else {
-    window.addEventListener('load', loadTargetVideo, { once: true });
-  }
-</script>
 

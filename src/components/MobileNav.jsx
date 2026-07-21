@@ -37,13 +37,13 @@ export default function MobileNav({ logoSrc }) {
       return;
     }
     const handleEscape = (e) => { if (e.key === 'Escape') close(); };
-    document.addEventListener('keydown', handleEscape);
+    window.addEventListener('keydown', handleEscape);
     document.body.style.overflow = 'hidden';
     
     // Stagger trigger after panel enters
     const t = setTimeout(() => setPanelReady(true), 50);
     return () => {
-      document.removeEventListener('keydown', handleEscape);
+      window.removeEventListener('keydown', handleEscape);
       document.body.style.overflow = '';
       clearTimeout(t);
     };
@@ -52,15 +52,17 @@ export default function MobileNav({ logoSrc }) {
   const close = () => {
     setPanelReady(false);
     setIsOpen(false);
+    window.dispatchEvent(new CustomEvent('nav:close'));
   };
 
   const handleAnchor = () => close();
 
   return (
     <div
+      id="mobile-nav"
       className="fixed inset-0 z-[300] pointer-events-none"
       style={{ pointerEvents: isOpen ? 'auto' : 'none' }}
-      aria-hidden={!isOpen}
+      inert={!isOpen || undefined}
     >
       {/* Backdrop */}
       <div
@@ -93,6 +95,8 @@ export default function MobileNav({ logoSrc }) {
             <img
               src={logoSrc}
               alt="Azedin Barber"
+              width={500}
+              height={333}
               style={{
                 width: '100px',
                 height: 'auto',
