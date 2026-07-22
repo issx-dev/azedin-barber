@@ -1,6 +1,7 @@
 ---
 import '../styles/global.css';
 import MobileStickyCTA from '../components/MobileStickyCTA.astro';
+import { business } from '../data/content.js';
 
 export interface Props {
   title?: string;
@@ -11,6 +12,8 @@ const {
   title = 'Azedin Barber — Barbería en Berja, Almería',
   description = 'Reserva tu corte con Azedin o Samir. Fades, cortes de tendencia y arreglo de barba. 5.0★ en Booksy. Berja, Almería.',
 } = Astro.props;
+
+const canonicalUrl = new URL(Astro.url.pathname, 'https://azedinbarber.com').href;
 ---
 
 <!DOCTYPE html>
@@ -29,7 +32,7 @@ const {
   <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png" />
 
   <!-- Canonical URL -->
-  <link rel="canonical" href="https://azedinbarber.com/" />
+  <link rel="canonical" href={canonicalUrl} />
 
   <!-- Geo Tags for Local SEO -->
   <meta name="geo.region" content="ES-AN" />
@@ -41,13 +44,13 @@ const {
   <meta property="og:title" content={title} />
   <meta property="og:description" content={description} />
   <meta property="og:type" content="website" />
-  <meta property="og:url" content="https://azedinbarber.com/" />
+  <meta property="og:url" content={canonicalUrl} />
   <meta property="og:locale" content="es_ES" />
   <meta property="og:site_name" content="Azedin Barber" />
   <meta property="og:image" content="https://azedinbarber.com/og-image.jpg" />
   <meta property="og:image:width" content="1200" />
   <meta property="og:image:height" content="630" />
-  <meta property="og:image:alt" content="Azedin Barber — Berja, Almería" />
+  <meta property="og:image:alt" content="Azedin Barber — Barbería en Berja, Almería" />
 
   <!-- Twitter Cards -->
   <meta name="twitter:card" content="summary_large_image" />
@@ -105,7 +108,7 @@ const {
       "aggregateRating": {
         "@type": "AggregateRating",
         "ratingValue": "5.0",
-        "reviewCount": "87"
+        "reviewCount": "142"
       },
       "sameAs": [
         "https://www.instagram.com/azedinbarber/",

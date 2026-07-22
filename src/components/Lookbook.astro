@@ -53,7 +53,7 @@ const items = galleryItems.slice(0, 6);
                 sizes="(max-width: 640px) 50vw, (max-width: 1024px) 50vw, 33vw"
                 quality={88}
                 format="webp"
-                class="lookbook-img photo-preset w-full h-full object-cover transition-transform duration-700 ease-out group-hover:scale-105"
+                class="lookbook-img photo-preset w-full h-full object-cover transition-transform duration-300 ease-out group-hover:scale-105"
                 style={`object-position: ${item.focus}`}
               />
             </div>
@@ -113,8 +113,8 @@ const items = galleryItems.slice(0, 6);
       toggleBtn.textContent = isExpanded ? 'VER MÁS CORTES ›' : 'VER MENOS ‹';
 
       setTimeout(() => {
-        if (window.gsap && window.gsap.ScrollTrigger) {
-          window.gsap.ScrollTrigger.refresh();
+        if (window.__ScrollTrigger) {
+          window.__ScrollTrigger.refresh();
         }
       }, 0);
     });

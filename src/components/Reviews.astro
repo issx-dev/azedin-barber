@@ -86,7 +86,7 @@ const track = [...reviews, ...reviews];
           aria-label={`Ver reseña ${i + 1}`}
           aria-controls="reviews-scroll"
         >
-          <span class="reviews-dot h-1.5 w-1.5 rounded-full bg-ink-faint transition-transform transition-colors duration-300 ease-out group-hover:bg-steel-dim group-focus-visible:outline-none group-focus-visible:ring-2 group-focus-visible:ring-steel"></span>
+          <span class="reviews-dot h-1.5 w-1.5 rounded-full bg-ink-faint transition-all duration-300 ease-out group-hover:bg-steel-dim group-focus-visible:outline-none group-focus-visible:ring-2 group-focus-visible:ring-steel"></span>
         </button>
       ))}
     </div>
@@ -170,11 +170,12 @@ const track = [...reviews, ...reviews];
     display: none;
   }
 
-  /* Active dot — wider + steel */
+  /* Active dot — wider capsule + steel */
   .min-w-\[44px\][data-active="true"] .reviews-dot,
   .reviews-dot[data-active="true"] {
     background-color: var(--color-steel);
-    transform: scaleX(4);
+    width: 1.5rem;
+    border-radius: 9999px;
   }
 </style>
 

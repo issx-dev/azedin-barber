@@ -51,6 +51,7 @@ test.describe('Visual regression — studio-grotesque-redesign', () => {
     await page.goto('/', { waitUntil: 'networkidle' });
 
     const wordmark = page.locator('.footer-wordmark');
+    await wordmark.scrollIntoViewIfNeeded();
     await expect(wordmark).toBeVisible();
 
     // Verify computed font includes Bricolage Grotesque

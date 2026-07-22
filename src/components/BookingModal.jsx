@@ -139,7 +139,7 @@ export default function BookingModal({ booksyUrl, barbers = [] }) {
                 key={barber.name}
                 onClick={() => setSelectedBarber(barber.name)}
                 aria-pressed={isSelected}
-                className={`flex flex-col items-center py-5 px-3 rounded-sm barber-option-btn transition-all duration-200 ${isSelected ? 'selected' : ''}`}
+                className={`flex flex-col items-center py-5 px-3 rounded-sm barber-option-btn transition-[background-color,border-color,transform] duration-200 ${isSelected ? 'selected' : ''}`}
                 style={{
                   background: isSelected ? '#151210' : 'rgba(21, 18, 16, 0.5)',
                   border: `1px solid ${isSelected ? 'var(--color-oak)' : 'rgba(138, 149, 165, 0.18)'}`,
@@ -149,7 +149,7 @@ export default function BookingModal({ booksyUrl, barbers = [] }) {
               >
                 {/* Avatar Thumbnail with B&W -> Color filter */}
                 <div
-                  className="w-[64px] h-[64px] sm:w-[72px] sm:h-[72px] rounded-full overflow-hidden mb-3 transition-all duration-300 border"
+                  className="w-[64px] h-[64px] sm:w-[72px] sm:h-[72px] rounded-full overflow-hidden mb-3 transition-[border-color,box-shadow] duration-300 border"
                   style={{
                     borderColor: isSelected ? 'var(--color-oak)' : 'rgba(138, 149, 165, 0.25)',
                     boxShadow: isSelected ? '0 0 16px rgba(194, 147, 103, 0.25)' : 'none',
@@ -158,7 +158,7 @@ export default function BookingModal({ booksyUrl, barbers = [] }) {
                   <img
                     src={barber.img}
                     alt={barber.name}
-                    className="w-full h-full object-cover transition-all duration-300"
+                    className="w-full h-full object-cover transition-[filter] duration-300"
                     style={{
                       filter: isSelected
                         ? 'grayscale(0%) saturate(0.9) contrast(1.05)'
