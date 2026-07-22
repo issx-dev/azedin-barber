@@ -6,8 +6,8 @@ test('booking modal opens and closes via React state', async ({ page }) => {
   // Click a data-book-trigger button (the main CTA)
   const reservarBtn = page.locator('[data-book-trigger]').first();
   await expect(reservarBtn).toBeVisible({ timeout: 5000 });
-  await page.waitForTimeout(1000);
   await reservarBtn.click();
+  await page.locator('[role="dialog"][aria-label="Reservar cita"]').waitFor();
 
   // Modal should be visible — check for the title
   await expect(page.locator('h3', { hasText: 'Reserva tu cita' })).toBeVisible({ timeout: 10000 });
@@ -42,12 +42,12 @@ test('booking modal opens with specific barber from hero', async ({ page }) => {
   await page.evaluate(() => {
     document.querySelector('#barberos')?.scrollIntoView();
   });
-  await page.waitForTimeout(1000);
 
   // Click on Samir's button in the Barbers section
   const samirChooser = page.locator('[data-book-barber="Samir"]').first();
   await expect(samirChooser).toBeVisible({ timeout: 5000 });
   await samirChooser.click();
+  await page.locator('[role="dialog"][aria-label="Reservar cita"]').waitFor();
 
   // Modal should open
   await expect(page.locator('h3', { hasText: 'Reserva tu cita' })).toBeVisible({ timeout: 5000 });

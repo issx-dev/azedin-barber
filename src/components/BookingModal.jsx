@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 
 /**
  * BookingModal — Barber selection + Booksy redirect.
@@ -12,13 +12,8 @@ export default function BookingModal({ booksyUrl, barbers = [] }) {
   const [isOpen, setIsOpen] = useState(false);
   const [selectedBarber, setSelectedBarber] = useState('Azedin');
 
-  // Set default selected barber once barbers prop loads
-  useEffect(() => {
-    if (barbers.length > 0 && !selectedBarber) {
-      setSelectedBarber(barbers[0].name);
-    }
-  }, [barbers]);
-
+  const closeRef = useRef(null);
+  const triggerRef = useRef(null);
   // Listen for book:open event
   useEffect(() => {
     const handleOpen = (e) => {
@@ -31,11 +26,38 @@ export default function BookingModal({ booksyUrl, barbers = [] }) {
     return () => window.removeEventListener('book:open', handleOpen);
   }, [barbers]);
 
-  // Escape key + Body Scroll Lock
+  // Escape key + Body Scroll Lock + Focus Trap
   useEffect(() => {
-    if (!isOpen) return;
+    if (!isOpen) {
+      triggerRef.current?.focus();
+      return;
+    }
+    
+    triggerRef.current = document.activeElement;
+    setTimeout(() => closeRef.current?.focus(), 0);
+
     const handleKeyDown = (e) => {
       if (e.key === 'Escape') setIsOpen(false);
+      if (e.key === 'Tab') {
+        const modalElement = document.querySelector('.modal-content');
+        if (!modalElement) return;
+        const focusable = Array.from(modalElement.querySelectorAll('a[href], button:not([disabled]), input:not([disabled]), select:not([disabled]), textarea:not([disabled]), [tabindex]:not([tabindex="-1"])'));
+        if (focusable.length === 0) return;
+        const first = focusable[0];
+        const last = focusable[focusable.length - 1];
+        
+        if (e.shiftKey) {
+          if (document.activeElement === first) {
+            e.preventDefault();
+            last.focus();
+          }
+        } else {
+          if (document.activeElement === last) {
+            e.preventDefault();
+            first.focus();
+          }
+        }
+      }
     };
     window.addEventListener('keydown', handleKeyDown);
     document.body.style.overflow = 'hidden';
@@ -57,6 +79,7 @@ export default function BookingModal({ booksyUrl, barbers = [] }) {
       style={{ backgroundColor: 'rgba(12,10,9,0.88)', backdropFilter: 'blur(16px)' }}
     >
       <div
+        aria-labelledby="booking-modal-heading"
         className="w-full max-w-[400px] sm:max-w-[460px] relative p-6 sm:p-9 modal-content shadow-2xl"
         style={{
           backgroundColor: '#0C0A09',
@@ -69,6 +92,7 @@ export default function BookingModal({ booksyUrl, barbers = [] }) {
 
         {/* Close button */}
         <button
+          ref={closeRef}
           onClick={() => setIsOpen(false)}
           aria-label="Cerrar"
           className="modal-close-btn"
@@ -91,6 +115,7 @@ export default function BookingModal({ booksyUrl, barbers = [] }) {
 
         {/* Heading */}
         <h3
+          id="booking-modal-heading"
           className="font-display text-cream font-bold leading-none mb-2 text-2xl sm:text-3xl tracking-tight uppercase"
         >
           Reserva tu cita

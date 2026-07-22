@@ -14,8 +14,6 @@ test.describe('Visual regression — studio-grotesque-redesign', () => {
     const innerWidth = await page.evaluate(() => window.innerWidth);
     expect(scrollWidth).toBeLessThanOrEqual(innerWidth);
 
-    // Full-page screenshot
-    await page.screenshot({ path: 'e2e/screenshots/desktop-1440x900.png', fullPage: true });
   });
 
   test('mobile 390×844 — full page snapshot + overflow guard', async ({ page }) => {
@@ -27,8 +25,6 @@ test.describe('Visual regression — studio-grotesque-redesign', () => {
     const innerWidth = await page.evaluate(() => window.innerWidth);
     expect(scrollWidth).toBeLessThanOrEqual(innerWidth);
 
-    // Full-page screenshot
-    await page.screenshot({ path: 'e2e/screenshots/mobile-390x844.png', fullPage: true });
   });
 
   test('services dot-leader renders without overflow at 390px', async ({ page }) => {

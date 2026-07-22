@@ -20,7 +20,7 @@ interface Props {
 const { count = 5, size = 13, class: className = '' } = Astro.props;
 ---
 
-<div class={`flex items-center gap-1 ${className}`} aria-label={`${count} estrellas`}>
+<div class={`flex items-center gap-1 ${className}`} role="img" aria-label={`${count} estrellas`}>
   {Array.from({ length: count }).map(() => (
     <svg 
       width={size} 

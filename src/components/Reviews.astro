@@ -26,15 +26,15 @@ const track = [...reviews, ...reviews];
   <!-- Header -->
   <div class="px-6 md:px-10 max-w-4xl mx-auto mb-16">
     <p
-      data-reveal="slide-up"
-      class="text-[10px] tracking-[0.3em] uppercase text-ink-dim font-semibold mb-4 opacity-0"
+      data-reveal="up"
+      class="text-[10px] tracking-[0.3em] uppercase text-ink-dim font-semibold mb-4"
     >
       Lo que dicen
     </p>
     <h2
       id="reviews-heading"
       data-reveal
-      class="font-display display-large text-cream opacity-0"
+      class="font-display display-large text-cream"
     >
       Reseñas
     </h2>
@@ -75,17 +75,19 @@ const track = [...reviews, ...reviews];
     <!-- Mobile dots indicator -->
     <div
       class="flex items-center justify-center gap-2 mt-8"
-      role="tablist"
+      role="group"
       aria-label="Navegación de reseñas"
     >
       {reviews.map((review, i) => (
         <button
           data-reviews-dot
           data-dot-index={i}
-          class="reviews-dot h-1.5 w-1.5 rounded-full bg-ink-faint transition-all duration-300 ease-out hover:bg-steel-dim focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-steel"
+          class="min-w-[44px] min-h-[44px] flex items-center justify-center group"
           aria-label={`Ver reseña ${i + 1}`}
           aria-controls="reviews-scroll"
-        />
+        >
+          <span class="reviews-dot h-1.5 w-1.5 rounded-full bg-ink-faint transition-transform transition-colors duration-300 ease-out group-hover:bg-steel-dim group-focus-visible:outline-none group-focus-visible:ring-2 group-focus-visible:ring-steel"></span>
+        </button>
       ))}
     </div>
   </div>
@@ -139,7 +141,7 @@ const track = [...reviews, ...reviews];
   <div class="px-6 md:px-10 max-w-4xl mx-auto mt-16">
     <div
       data-fade
-      class="flex flex-col sm:flex-row items-start sm:items-center gap-5 opacity-0"
+      class="flex flex-col sm:flex-row items-start sm:items-center gap-5"
     >
       <StarRating count={5} size={16} />
       <span class="font-display text-cream text-2xl font-bold">{business.rating}</span>
@@ -169,9 +171,10 @@ const track = [...reviews, ...reviews];
   }
 
   /* Active dot — wider + steel */
+  .min-w-\[44px\][data-active="true"] .reviews-dot,
   .reviews-dot[data-active="true"] {
     background-color: var(--color-steel);
-    width: 1.5rem;
+    transform: scaleX(4);
   }
 </style>
 

@@ -25,6 +25,8 @@ test.describe('Mobile Navigation', () => {
       const t = getComputedStyle(el).transform;
       return t === 'none' || t.includes('matrix(1, 0, 0, 1, 0') || t.includes('matrix3d(1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1');
     }, { timeout: 5000 });
+
+    expect(await hamburger.getAttribute('aria-expanded')).toBe('true');
   });
 
   test('overlay contains all section anchors', async ({ page }) => {
@@ -63,6 +65,7 @@ test.describe('Mobile Navigation', () => {
     await expect(async () => {
       const transform = await overlay.evaluate((el) => getComputedStyle(el).transform);
       expect(transform).not.toBe('none');
+      expect(await hamburger.getAttribute('aria-expanded')).toBe('false');
     }).toPass({ timeout: 5000 });
   });
 
@@ -77,13 +80,22 @@ test.describe('Mobile Navigation', () => {
     const overlay = page.locator('[role="dialog"][aria-label="Menú de navegación"]');
     await expect(overlay).toBeVisible({ timeout: 5000 });
 
+    // Wait for transition to settle (ensures React effect registers keydown listener)
+    await page.waitForFunction(() => {
+      const el = document.querySelector('[role="dialog"][aria-label="Menú de navegación"]');
+      if (!el) return false;
+      const t = getComputedStyle(el).transform;
+      return t === 'none' || t.includes('matrix(1, 0, 0, 1, 0') || t.includes('matrix3d(1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1');
+    }, { timeout: 5000 });
+
     // Press Escape
-    await page.keyboard.press('Escape');
+    await page.locator('[aria-label="Cerrar menú"]').press('Escape');
 
     // Panel should slide out
     await expect(async () => {
       const transform = await overlay.evaluate((el) => getComputedStyle(el).transform);
       expect(transform).not.toBe('none');
+      expect(await hamburger.getAttribute('aria-expanded')).toBe('false');
     }).toPass({ timeout: 5000 });
   });
 
@@ -105,6 +117,7 @@ test.describe('Mobile Navigation', () => {
     await expect(async () => {
       const transform = await overlay.evaluate((el) => getComputedStyle(el).transform);
       expect(transform).not.toBe('none');
+      expect(await hamburger.getAttribute('aria-expanded')).toBe('false');
     }).toPass({ timeout: 5000 });
   });
 });
