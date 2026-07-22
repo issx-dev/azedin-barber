@@ -3,6 +3,7 @@
   "type": "module",
   "version": "0.1.0",
   "private": true,
+  "packageManager": "pnpm@10.11.0",
   "scripts": {
     "dev": "astro dev",
     "build": "astro build",
@@ -11,6 +12,7 @@
   },
   "dependencies": {
     "@astrojs/react": "^3.6.3",
+    "@astrojs/sitemap": "^3.6.0",
     "@astrojs/tailwind": "^5.1.5",
     "@fontsource-variable/bricolage-grotesque": "^5.2.10",
     "astro": "^4.16.0",
@@ -24,11 +26,5 @@
   },
   "devDependencies": {
     "@playwright/test": "^1.61.1"
-  },
-  "pnpm": {
-    "onlyBuiltDependencies": [
-      "sharp",
-      "esbuild"
-    ]
   }
 }
