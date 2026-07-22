@@ -36,14 +36,34 @@ export default function MobileNav({ logoSrc }) {
       setPanelReady(false);
       return;
     }
-    const handleEscape = (e) => { if (e.key === 'Escape') close(); };
-    window.addEventListener('keydown', handleEscape);
+    const handleKeyDown = (e) => {
+      if (e.key === 'Escape') {
+        close();
+        return;
+      }
+      if (e.key === 'Tab') {
+        const panel = document.getElementById('mobile-nav');
+        if (!panel) return;
+        const focusables = panel.querySelectorAll('a[href], button:not([disabled])');
+        if (!focusables.length) return;
+        const first = focusables[0];
+        const last = focusables[focusables.length - 1];
+        if (e.shiftKey && document.activeElement === first) {
+          e.preventDefault();
+          last.focus();
+        } else if (!e.shiftKey && document.activeElement === last) {
+          e.preventDefault();
+          first.focus();
+        }
+      }
+    };
+    window.addEventListener('keydown', handleKeyDown);
     document.body.style.overflow = 'hidden';
     
     // Stagger trigger after panel enters
     const t = setTimeout(() => setPanelReady(true), 50);
     return () => {
-      window.removeEventListener('keydown', handleEscape);
+      window.removeEventListener('keydown', handleKeyDown);
       document.body.style.overflow = '';
       clearTimeout(t);
     };
@@ -108,18 +128,9 @@ export default function MobileNav({ logoSrc }) {
           <button
             onClick={close}
             aria-label="Cerrar menú"
-            style={{
-              background: 'none',
-              border: 'none',
-              cursor: 'pointer',
-              color: 'var(--color-ink-dim)',
-              fontSize: '1.3rem',
-              padding: '0.5rem',
-              lineHeight: 1,
-              transition: 'color 150ms ease-out',
-            }}
+            className="flex items-center justify-center w-[44px] h-[44px] text-cream hover:text-oak transition-colors duration-200 bg-transparent border-none cursor-pointer"
           >
-            ✕
+            <span className="text-xl leading-none">✕</span>
           </button>
         </div>
 
