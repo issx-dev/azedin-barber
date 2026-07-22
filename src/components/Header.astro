@@ -95,12 +95,10 @@ const navLinks = [
 <style>
   .nav-logo-img {
     width: 110px;
-    height: auto;
+    height: 44px;
+    object-fit: contain;
     
-    /* Invert black text on white bg to white text on black, then make black transparent */
     filter: invert(1);
-    mix-blend-mode: screen;
-    
     opacity: 0.94;
     transition: opacity 200ms var(--ease-out), transform 200ms var(--ease-out);
   }

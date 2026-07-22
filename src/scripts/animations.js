@@ -119,6 +119,9 @@ function registerStagger() {
   if (!parents.length) return;
 
   parents.forEach((parent) => {
+    // Make parent visible (global CSS sets [data-stagger] opacity to 0)
+    gsap.set(parent, { opacity: 1 });
+
     const children = parent.children;
     if (!children.length) return;
 
@@ -247,6 +250,9 @@ function registerAnchorSmoothScroll() {
 
 // ─── Init all ────────────────────────────────────────────────────────────────
 function init() {
+  window.__gsap = gsap;
+  window.__ScrollTrigger = ScrollTrigger;
+
   registerHeroEntrance();
   registerClipReveal();
   registerFadeReveal();

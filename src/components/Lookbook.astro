@@ -113,8 +113,8 @@ const items = galleryItems.slice(0, 6);
       toggleBtn.textContent = isExpanded ? 'VER MÁS CORTES ›' : 'VER MENOS ‹';
 
       setTimeout(() => {
-        if (window.gsap && window.gsap.ScrollTrigger) {
-          window.gsap.ScrollTrigger.refresh();
+        if (window.__ScrollTrigger) {
+          window.__ScrollTrigger.refresh();
         }
       }, 0);
     });

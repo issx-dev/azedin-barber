@@ -101,7 +101,6 @@ export default function MobileNav({ logoSrc }) {
                 width: '100px',
                 height: 'auto',
                 filter: 'invert(1)',
-                mixBlendMode: 'screen',
                 opacity: 0.94,
               }}
             />
