@@ -4,6 +4,6 @@ import react from '@astrojs/react';
 import sitemap from '@astrojs/sitemap';
 
 export default defineConfig({
-  site: 'https://azedinbarber.com',
+  site: process.env.URL || 'https://azedinbarber.com',
   integrations: [tailwind(), react(), sitemap()],
 });
