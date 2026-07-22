@@ -1,6 +1,6 @@
 ---
 /**
- * Location — Split layout 60/40.
+ * Location — Split layout 50/50.
  * Left: address, hours, CTA.
  * Right: Google Maps embed (iframe, tastefully styled).
  *
@@ -24,27 +24,27 @@ const mapsEmbed = 'https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3193.04
   <div class="px-6 md:px-10 max-w-6xl mx-auto pt-[clamp(5rem,10vw,8rem)] pb-12">
     <p
       data-fade
-      class="text-[10px] tracking-[0.3em] uppercase text-ink-dim font-semibold mb-4 opacity-0"
+      class="text-[10px] tracking-[0.3em] uppercase text-ink-dim font-semibold mb-4"
     >
       Nos encontrarás
     </p>
     <h2
       id="location-heading"
       data-reveal
-      class="font-display display-large text-cream opacity-0"
+      class="font-display display-large text-cream"
     >
       Encuéntranos
     </h2>
   </div>
 
-  <!-- 60/40 split -->
+  <!-- 50/50 split -->
   <div class="grid grid-cols-1 lg:grid-cols-[1fr_1fr] gap-px bg-border max-w-[100vw] overflow-hidden">
 
     <!-- Left: Info -->
     <div class="bg-bg-deep px-8 md:px-14 py-14 lg:py-20 flex flex-col justify-between gap-10">
 
       <!-- Address -->
-      <div data-fade class="opacity-0">
+      <div data-fade>
         <p class="text-[10px] tracking-[0.25em] uppercase text-ink-faint font-medium mb-3">Dirección</p>
         <address class="not-italic text-cream text-[clamp(1rem,2vw,1.2rem)] leading-relaxed font-medium">
           {business.address}
@@ -70,7 +70,7 @@ const mapsEmbed = 'https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3193.04
       <!-- Hours -->
       <div data-stagger class="flex flex-col gap-3">
         {business.hours.map((h) => (
-          <div class="flex items-baseline justify-between gap-4 border-b border-border pb-3 last:border-0 last:pb-0 opacity-0">
+          <div class="flex items-baseline justify-between gap-4 border-b border-border pb-3 last:border-0 last:pb-0">
             <span class="text-[12px] text-ink-dim font-medium uppercase tracking-wide">{h.day}</span>
             <span class="text-[13px] text-cream font-semibold text-right shrink-0">{h.time}</span>
           </div>
@@ -78,7 +78,7 @@ const mapsEmbed = 'https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3193.04
       </div>
 
       <!-- CTA -->
-      <div data-fade class="opacity-0">
+      <div data-fade>
         <CTA label="Reservar cita" />
       </div>
 
@@ -87,7 +87,7 @@ const mapsEmbed = 'https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3193.04
     <!-- Right: Map embed -->
     <div
       data-reveal="right"
-      class="relative min-h-[360px] lg:min-h-[520px] overflow-hidden opacity-0"
+      class="relative min-h-[360px] lg:min-h-[520px] overflow-hidden"
     >
       <iframe
         src={mapsEmbed}
