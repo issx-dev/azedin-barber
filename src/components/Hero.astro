@@ -29,12 +29,12 @@ const heroPoster = await getImage({ src: workspaceImg, format: 'webp', width: 80
   class="relative flex flex-col items-center justify-center min-h-[100dvh] overflow-hidden wood-slats"
   aria-label="Bienvenida"
 >
-  <!-- ── Background: photo + video (desktop, >= 768px) ───────────────── -->
-  <div class="hero-bg-desktop hidden md:block absolute inset-0 z-0" aria-hidden="true">
+  <!-- ── Background: photo + video (responsive via <source media>) ─── -->
+  <div class="hero-bg hero-bg-desktop absolute inset-0 z-0" aria-hidden="true">
     <Image
       src={workspaceImg}
       alt="Interior de Azedin Barber — barbería en Berja"
-      widths={[768, 1176]}
+      widths={[380, 768, 1176]}
       sizes="100vw"
       quality={88}
       format="webp"
@@ -46,7 +46,7 @@ const heroPoster = await getImage({ src: workspaceImg, format: 'webp', width: 80
       style="filter: sepia(20%) brightness(0.22) contrast(1.1);"
     />
     <video
-      id="hero-video-desktop"
+      id="hero-video"
       class="hero-video absolute inset-0 w-full h-[115%] object-cover object-center -translate-y-[7.5%]"
       autoplay
       loop
@@ -58,33 +58,12 @@ const heroPoster = await getImage({ src: workspaceImg, format: 'webp', width: 80
       style="filter: sepia(20%) brightness(0.22) contrast(1.1);"
       data-parallax="0.18"
     >
-      <source src={desktopVideoSrc} type="video/mp4" />
+      <source media="(max-width: 767px)" src={mobileVideoSrc} type="video/mp4" />
+      <source media="(min-width: 768px)" src={desktopVideoSrc} type="video/mp4" />
     </video>
     <div
       class="absolute inset-0"
       style="background: radial-gradient(ellipse 70% 60% at 50% 40%, rgba(196,149,106,0.06) 0%, transparent 70%), linear-gradient(to bottom, rgba(12,10,9,0.5) 0%, rgba(12,10,9,0.1) 40%, rgba(12,10,9,0.7) 80%, rgba(12,10,9,1) 100%);"
-    ></div>
-  </div>
-
-  <!-- ── Background: video loop (mobile only, < 768px) ──────────────── -->
-  <div class="hero-bg-mobile block md:hidden absolute inset-0 z-0" aria-hidden="true">
-    <video
-      id="hero-video-mobile"
-      class="hero-video absolute inset-0 w-full h-full object-cover"
-      autoplay
-      loop
-      muted
-      playsinline
-      preload="metadata"
-      poster={heroPoster.src}
-      aria-hidden="true"
-      style="filter: sepia(15%) brightness(0.2) contrast(1.15);"
-    >
-      <source src={mobileVideoSrc} type="video/mp4" />
-    </video>
-    <div
-      class="absolute inset-0"
-      style="background: radial-gradient(ellipse 70% 60% at 50% 40%, rgba(196,149,106,0.07) 0%, transparent 70%), linear-gradient(to bottom, rgba(12,10,9,0.45) 0%, rgba(12,10,9,0.05) 40%, rgba(12,10,9,0.72) 80%, rgba(12,10,9,1) 100%);"
     ></div>
   </div>
 
@@ -187,10 +166,9 @@ const heroPoster = await getImage({ src: workspaceImg, format: 'webp', width: 80
 </style>
 
 <script>
-  const videoDesktop = document.getElementById('hero-video-desktop') as HTMLVideoElement | null;
-  const videoMobile = document.getElementById('hero-video-mobile') as HTMLVideoElement | null;
+  const video = document.getElementById('hero-video') as HTMLVideoElement | null;
 
-  const startVideo = (video: HTMLVideoElement) => {
+  if (video) {
     const makeReady = () => video.classList.add('ready');
     video.play().then(() => {
       if (video.readyState >= 3) {
@@ -202,19 +180,5 @@ const heroPoster = await getImage({ src: workspaceImg, format: 'webp', width: 80
       console.warn("Autoplay was prevented or video load failed:", err);
       makeReady();
     });
-  };
-
-  const loadTargetVideo = () => {
-    if (window.innerWidth < 768) {
-      if (videoMobile) startVideo(videoMobile);
-    } else {
-      if (videoDesktop) startVideo(videoDesktop);
-    }
-  };
-
-  if (document.readyState === 'complete') {
-    loadTargetVideo();
-  } else {
-    window.addEventListener('load', loadTargetVideo, { once: true });
   }
 </script>

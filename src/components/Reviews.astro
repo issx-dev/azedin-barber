@@ -170,11 +170,15 @@ const track = [...reviews, ...reviews];
     display: none;
   }
 
-  /* Active dot — wider capsule + steel */
+  /* Active dot — GPU composited scaleX + steel color */
+  .reviews-dot {
+    transform-origin: center;
+    transition: transform 200ms ease-out, background-color 200ms ease-out;
+  }
   .min-w-\[44px\][data-active="true"] .reviews-dot,
   .reviews-dot[data-active="true"] {
     background-color: var(--color-steel);
-    width: 1.5rem;
+    transform: scaleX(4);
     border-radius: 9999px;
   }
 </style>

@@ -48,12 +48,12 @@ test.describe('Regression — Visibility & Animations', () => {
 
 test.describe('Regression — Video', () => {
 
-  test('mobile video element exists and is loaded', async ({ page }) => {
+  test('mobile video element exists and loads mobile source', async ({ page }) => {
     await page.setViewportSize({ width: 390, height: 844 });
     await page.goto('/', { waitUntil: 'networkidle' });
     await page.waitForTimeout(2000);
 
-    const video = page.locator('video#hero-video-mobile');
+    const video = page.locator('video#hero-video');
     await expect(video).toBeAttached();
     const src = await video.evaluate(el => el.currentSrc);
     expect(src).toContain('instalaciones-mobile');
@@ -64,7 +64,7 @@ test.describe('Regression — Video', () => {
     await page.goto('/', { waitUntil: 'networkidle' });
     await page.waitForTimeout(2000);
 
-    const video = page.locator('video#hero-video-desktop');
+    const video = page.locator('video#hero-video');
     await expect(video).toBeAttached();
     const src = await video.evaluate(el => el.currentSrc);
     expect(src).toContain('instalaciones-desktop');
