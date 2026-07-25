@@ -47,6 +47,7 @@ export const business = {
   rating: '5.0',
   reviewCount: '142 opiniones en Booksy',
   booksyUrl: 'https://booksy.com/es-es/141862_azedin-barber_barberia_26195_castala',
+  booksyAppUrl: 'http://azedinbarber.booksy.com/a',
   instagramUrl: 'https://www.instagram.com/azedinbarber/',
   tiktokUrl: 'https://www.tiktok.com/@azedin.barber',
   hours: [

@@ -228,15 +228,17 @@ export default function MobileNav({ logoSrc }) {
               <SiTiktok size={22} aria-hidden="true" />
             </a>
           </div>
-          <button
-            data-book-trigger
+          <a
+            href={business.booksyAppUrl}
+            target="_blank"
+            rel="noopener noreferrer"
             onClick={close}
             className="btn-oak"
             style={{ width: '100%', justifyContent: 'center', fontSize: '0.75rem' }}
             aria-label="Reservar cita en Booksy"
           >
             Reservar cita
-          </button>
+          </a>
         </div>
       </div>
 

@@ -2,13 +2,14 @@
 /**
  * MobileStickyCTA — Floating bottom CTA, visible only on mobile.
  */
+import { business } from '../data/content.js';
 import CTA from './CTA.astro';
 ---
 <div
   id="mobile-sticky-cta"
   class="fixed bottom-0 left-0 right-0 p-3.5 z-[90] md:hidden bg-bg-deep/95 backdrop-blur-md border-t border-steel/15 shadow-2xl transition-transform duration-300 ease-out pointer-events-none"
 >
-  <CTA label="RESERVAR CITA ›" extraClass="w-full shadow-lg pointer-events-auto text-[11px] font-semibold tracking-[0.18em] py-3.5" />
+  <CTA href={business.booksyAppUrl} label="RESERVAR CITA ›" extraClass="w-full shadow-lg pointer-events-auto text-[11px] font-semibold tracking-[0.18em] py-3.5" />
 </div>
 
 <script>

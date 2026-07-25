@@ -14,6 +14,7 @@
 import { Image } from 'astro:assets';
 import personaAzedin from '../assets/img/barbero-azedin-berja.jpeg';
 import personaSamir from '../assets/img/barbero-samir-berja.jpeg';
+import { business } from '../data/content.js';
 import CTA from './CTA.astro';
 
 const barbers = [
@@ -61,12 +62,13 @@ const barbers = [
   <div class="px-6 md:px-10 max-w-6xl mx-auto pb-20">
     <div class="grid grid-cols-1 md:grid-cols-2 gap-8 md:gap-12">
       {barbers.map((barber) => (
-        <button
-          type="button"
+        <a
+          href={business.booksyUrl}
+          target="_blank"
+          rel="noopener noreferrer"
+          data-booksy-link
           class="barber-card group relative block text-left w-full bg-bg-deep overflow-hidden cursor-pointer border-0 p-0"
-          data-book-trigger
-          data-book-barber={barber.name}
-          aria-label={`RESERVAR CON ${barber.name}`}
+          aria-label={`Reservar cita en Azedin Barber — ${barber.name} (${barber.title})`}
         >
           <div class="relative aspect-[3/4] overflow-hidden bg-bg-panel border border-steel/15 rounded-sm">
             <Image
@@ -90,7 +92,7 @@ const barbers = [
             <div class="absolute bottom-0 left-0 right-0 p-6 md:p-8 z-10">
               <div class="flex flex-col gap-1 border-b border-steel/30 pb-3">
                 <span class="text-[10px] tracking-[0.25em] text-steel uppercase font-medium">
-                  RESERVAR CON
+                  {barber.title}
                 </span>
                 <div class="flex items-center justify-between">
                   <h3 class="font-display text-3xl sm:text-4xl text-cream font-bold group-hover:text-oak transition-colors duration-300">
@@ -103,7 +105,7 @@ const barbers = [
               </div>
             </div>
           </div>
-        </button>
+        </a>
       ))}
     </div>
   </div>
