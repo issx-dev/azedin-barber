@@ -135,3 +135,30 @@ test.describe('Regression — Lookbook Toggle', () => {
     }
   });
 });
+
+test.describe('Regression — Direct Booking Links & Smart Routing', () => {
+
+  test('desktop: booking links point to booksy web url', async ({ page }) => {
+    await page.setViewportSize({ width: 1440, height: 900 });
+    await page.goto('/');
+
+    const bookingLink = page.locator('[data-booksy-link]').first();
+    await expect(bookingLink).toBeVisible();
+    const href = await bookingLink.getAttribute('href');
+    expect(href).toContain('booksy.com');
+    const target = await bookingLink.getAttribute('target');
+    expect(target).toBe('_blank');
+  });
+
+  test('mobile: clicking booking link routes to booksy app deep link', async ({ page }) => {
+    await page.setViewportSize({ width: 390, height: 844 });
+    await page.goto('/');
+
+    const bookingLink = page.locator('[data-booksy-link]:visible').first();
+    await expect(bookingLink).toBeVisible();
+    await bookingLink.click();
+
+    const href = await bookingLink.getAttribute('href');
+    expect(href).toContain('azedinbarber.booksy.com/a');
+  });
+});

@@ -6,7 +6,7 @@ import corteAfeitadoClasico from '../assets/img/corte-afeitado-clasico-navaja.jp
 import corteMidFade from '../assets/img/corte-mid-fade-degradado-medio.jpeg';
 import barberiaInteriorSalon from '../assets/img/barberia-interior-salon.jpeg';
 import barberiaInteriorRecepcion from '../assets/img/barberia-interior-recepcion.jpeg';
-import personaAzedin from '../assets/img/barbero-azedin-berja.jpeg';
+import personaAzedin from '../assets/img/barbero-azedin-master-barber-berja.jpeg';
 import personaSamir from '../assets/img/barbero-samir-berja.jpeg';
 
 export const services = [
@@ -47,6 +47,7 @@ export const business = {
   rating: '5.0',
   reviewCount: '142 opiniones en Booksy',
   booksyUrl: 'https://booksy.com/es-es/141862_azedin-barber_barberia_26195_castala',
+  booksyAppUrl: 'http://azedinbarber.booksy.com/a',
   instagramUrl: 'https://www.instagram.com/azedinbarber/',
   tiktokUrl: 'https://www.tiktok.com/@azedin.barber',
   hours: [
