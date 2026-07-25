@@ -17,8 +17,7 @@ test('homepage renders hero and services sections', async ({ page }) => {
 test('sections appear in correct editorial order', async ({ page }) => {
   await page.goto('/');
 
-  // Verify section order: Hero → Trust → Lookbook → Reviews → Services → Location
-  const hero = page.locator('section').first();
+  // Verify section order: Hero → Barbers → Reviews → Lookbook → Services → Location
   const lookbook = page.locator('#lookbook');
   const reviews = page.locator('#reseñas');
   const services = page.locator('#servicios');
@@ -26,11 +25,12 @@ test('sections appear in correct editorial order', async ({ page }) => {
 
   // All sections should be present
   await expect(lookbook).toBeVisible();
+  await expect(reviews).toBeVisible();
   await expect(services).toBeVisible();
   await expect(location).toBeVisible();
 
-  // Verify Services appears BEFORE Reviews (editorial order)
-  const servicesBox = await services.boundingBox();
+  // Verify Reviews appears BEFORE Lookbook (editorial order)
   const reviewsBox = await reviews.boundingBox();
-  expect(servicesBox.y).toBeLessThan(reviewsBox.y);
+  const lookbookBox = await lookbook.boundingBox();
+  expect(reviewsBox.y).toBeLessThan(lookbookBox.y);
 });

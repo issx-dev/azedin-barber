@@ -11,8 +11,6 @@ import Footer from '../components/Footer.astro';
 import About from '../components/About.astro';
 import InstagramStrip from '../components/InstagramStrip.astro';
 import MobileNav from '../components/MobileNav.jsx';
-import StarRating from '../components/StarRating.astro';
-import { business } from '../data/content.js';
 import logoSrc from '../assets/img/logo-azedin-barber-transparente.png';
 ---
 
@@ -22,30 +20,9 @@ import logoSrc from '../assets/img/logo-azedin-barber-transparente.png';
   <main id="main-content">
     <Hero />
     <Barbers />
-
-    <!-- Trust strip: rating between Barbers and Lookbook -->
-    <div class="border-y border-border py-5 overflow-hidden bg-bg-panel">
-      <div class="flex items-center justify-center gap-4 px-6 text-center flex-wrap">
-        <StarRating count={5} size={13} />
-        <span class="font-display text-cream font-bold text-lg">{business.rating}</span>
-        <span class="text-border-hi select-none">·</span>
-        <span class="text-ink-dim text-[12px]">{business.reviewCount}</span>
-        <span class="text-border-hi select-none hidden sm:inline">·</span>
-        <a
-          href={business.booksyUrl}
-          target="_blank"
-          rel="noopener noreferrer"
-          class="inline-flex items-center min-h-[44px] px-2 text-[11px] uppercase tracking-[0.14em] font-semibold text-ink-dim hover:text-cream transition-colors duration-180"
-          aria-label="Ver perfil en Booksy"
-        >
-          Booksy
-        </a>
-      </div>
-    </div>
-
+    <Reviews />
     <Lookbook />
     <Services />
-    <Reviews />
     <About />
     <Location />
     <InstagramStrip />
