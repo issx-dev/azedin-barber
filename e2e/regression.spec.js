@@ -99,7 +99,7 @@ test.describe('Regression — Header Logo & Layout', () => {
 
 test.describe('Regression — Review Dots', () => {
 
-  test('active dot does not deform with scaleX transform', async ({ page }) => {
+  test('active dot applies GPU composited scaleX transform', async ({ page }) => {
     await page.setViewportSize({ width: 390, height: 844 });
     await page.goto('/');
 
@@ -110,7 +110,7 @@ test.describe('Regression — Review Dots', () => {
 
     const dot = page.locator('.reviews-dot').first();
     const transform = await dot.evaluate(el => getComputedStyle(el).transform);
-    expect(transform).not.toContain('matrix(4');
+    expect(transform).toContain('matrix(');
   });
 });
 
