@@ -6,7 +6,7 @@ import corteAfeitadoClasico from '../assets/img/corte-afeitado-clasico-navaja.jp
 import corteMidFade from '../assets/img/corte-mid-fade-degradado-medio.jpeg';
 import barberiaInteriorSalon from '../assets/img/barberia-interior-salon.jpeg';
 import barberiaInteriorRecepcion from '../assets/img/barberia-interior-recepcion.jpeg';
-import personaAzedin from '../assets/img/barbero-azedin-berja.jpeg';
+import personaAzedin from '../assets/img/barbero-azedin-master-barber-berja.jpeg';
 import personaSamir from '../assets/img/barbero-samir-berja.jpeg';
 
 export const services = [
