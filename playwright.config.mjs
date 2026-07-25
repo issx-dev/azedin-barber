@@ -5,7 +5,7 @@ export default defineConfig({
   timeout: 30000,
   retries: 0,
   use: {
-    baseURL: 'http://localhost:4321',
+    baseURL: process.env.PLAYWRIGHT_TEST_BASE_URL || 'http://localhost:4321',
     headless: true,
   },
   projects: [
@@ -15,8 +15,8 @@ export default defineConfig({
     },
   ],
   webServer: {
-    command: 'pnpm preview',
-    port: 4321,
+    command: process.env.PLAYWRIGHT_TEST_BASE_URL ? 'pnpm preview --port 4399' : 'pnpm preview',
+    port: process.env.PLAYWRIGHT_TEST_BASE_URL ? 4399 : 4321,
     reuseExistingServer: true,
     timeout: 30000,
   },
