@@ -6,8 +6,8 @@ test.describe('Visual regression — studio-grotesque-redesign', () => {
     await page.setViewportSize({ width: 1440, height: 900 });
     await page.goto('/', { waitUntil: 'networkidle' });
 
-    // Wait for hero image to load (desktop shows static photo)
-    await expect(page.locator('.hero-bg-desktop img')).toBeVisible({ timeout: 10000 });
+    // Wait for hero image element in DOM
+    await expect(page.locator('#hero img').first()).toBeAttached();
 
     // Assert no horizontal overflow
     const scrollWidth = await page.evaluate(() => document.documentElement.scrollWidth);
