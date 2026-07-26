@@ -172,12 +172,14 @@ const ogImageUrl = new URL('/og-image.jpg', Astro.site || 'https://azedinbarber.
     })();
   </script>
 
-  <!-- ─── GSAP + Lenis animation engine (deferred after initial render) ── -->
   <script>
-    if ('requestIdleCallback' in window) {
-      requestIdleCallback(() => import('../scripts/animations.js'));
+    const loadAnimations = () => {
+      import('../scripts/animations.js');
+    };
+    if (document.readyState === 'complete') {
+      setTimeout(loadAnimations, 1000);
     } else {
-      setTimeout(() => import('../scripts/animations.js'), 200);
+      window.addEventListener('load', () => setTimeout(loadAnimations, 1000), { once: true });
     }
   </script>
 </body>

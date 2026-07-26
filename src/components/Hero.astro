@@ -54,8 +54,7 @@ const heroPoster = await getImage({ src: workspaceImg, format: 'avif', width: 80
       loop
       muted
       playsinline
-      preload="metadata"
-      poster={heroPoster.src}
+      preload="none"
       aria-hidden="true"
       style="filter: sepia(20%) brightness(0.22) contrast(1.1);"
       data-parallax="0.18"
