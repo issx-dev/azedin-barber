@@ -1,4 +1,6 @@
 ---
+import { getImage } from 'astro:assets';
+import workspaceImg from '../assets/img/barberia-interior-recepcion.jpeg';
 import '../styles/global.css';
 import MobileStickyCTA from '../components/MobileStickyCTA.astro';
 import { business } from '../data/content.js';
@@ -13,9 +15,9 @@ const {
   description = 'Reserva tu corte con Azedin o Samir. Fades, cortes de tendencia y arreglo de barba. 5.0★ en Booksy. Berja, Almería.',
 } = Astro.props;
 
-const siteOrigin = Astro.url.origin;
-const canonicalUrl = new URL(Astro.url.pathname, siteOrigin).href;
-const ogImageUrl = new URL('/og-image.jpg', siteOrigin).href;
+const heroLcpImage = await getImage({ src: workspaceImg, format: 'avif', width: 768, quality: 85 });
+const canonicalUrl = new URL(Astro.url.pathname, Astro.site || 'https://azedinbarber.com').href;
+const ogImageUrl = new URL('/og-image.jpg', Astro.site || 'https://azedinbarber.com').href;
 ---
 
 <!DOCTYPE html>
@@ -23,6 +25,7 @@ const ogImageUrl = new URL('/og-image.jpg', siteOrigin).href;
 <head>
   <meta charset="UTF-8" />
   <link rel="preload" as="font" type="font/woff2" crossorigin href="/fonts/bricolage-grotesque-latin-wght-normal.woff2">
+  <link rel="preload" as="image" href={heroLcpImage.src} type="image/avif" fetchpriority="high" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>{title}</title>
   <meta name="description" content={description} />
@@ -169,9 +172,13 @@ const ogImageUrl = new URL('/og-image.jpg', siteOrigin).href;
     })();
   </script>
 
-  <!-- ─── GSAP + Lenis animation engine ───────────────────────────────── -->
+  <!-- ─── GSAP + Lenis animation engine (deferred after initial render) ── -->
   <script>
-    import '../scripts/animations.js';
+    if ('requestIdleCallback' in window) {
+      requestIdleCallback(() => import('../scripts/animations.js'));
+    } else {
+      setTimeout(() => import('../scripts/animations.js'), 200);
+    }
   </script>
 </body>
 </html>

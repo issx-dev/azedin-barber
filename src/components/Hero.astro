@@ -16,12 +16,14 @@ import logoSrc from '../assets/img/logo-azedin-barber-transparente.png';
 import { business } from '../data/content.js';
 import CTA from './CTA.astro';
 
-// Video paths — served from public/ after build copy or referenced via import
+// Video paths — served from public/ with WebM primary and MP4 fallback
+const mobileVideoWebm = '/video/instalaciones-mobile.webm';
 const mobileVideoSrc = '/video/instalaciones-mobile.mp4';
+const desktopVideoWebm = '/video/instalaciones-desktop.webm';
 const desktopVideoSrc = '/video/instalaciones-desktop.mp4';
 
-// High-quality WebP poster (same 90 quality, 100% visual fidelity, smaller transfer)
-const heroPoster = await getImage({ src: workspaceImg, format: 'webp', width: 800, quality: 90 });
+// High-quality AVIF poster
+const heroPoster = await getImage({ src: workspaceImg, format: 'avif', width: 800, quality: 85 });
 ---
 
 <section
@@ -36,8 +38,8 @@ const heroPoster = await getImage({ src: workspaceImg, format: 'webp', width: 80
       alt="Interior de Azedin Barber — barbería en Berja"
       widths={[380, 768, 1176]}
       sizes="100vw"
-      quality={88}
-      format="webp"
+      quality={85}
+      format="avif"
       loading="eager"
       decoding="sync"
       fetchpriority="high"
@@ -58,7 +60,9 @@ const heroPoster = await getImage({ src: workspaceImg, format: 'webp', width: 80
       style="filter: sepia(20%) brightness(0.22) contrast(1.1);"
       data-parallax="0.18"
     >
+      <source media="(max-width: 767px)" src={mobileVideoWebm} type="video/webm" />
       <source media="(max-width: 767px)" src={mobileVideoSrc} type="video/mp4" />
+      <source media="(min-width: 768px)" src={desktopVideoWebm} type="video/webm" />
       <source media="(min-width: 768px)" src={desktopVideoSrc} type="video/mp4" />
     </video>
     <div
