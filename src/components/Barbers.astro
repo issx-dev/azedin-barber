@@ -74,10 +74,10 @@ const barbers = [
             <Image
               src={barber.img}
               alt={barber.alt}
-              widths={[380, 480, 600, 800, 1200]}
-              sizes="(max-width: 768px) calc(100vw - 3rem), 500px"
-              quality={90}
-              format="webp"
+              widths={[320, 360, 420, 540, 720, 960]}
+              sizes="(max-width: 640px) 340px, (max-width: 768px) 450px, 480px"
+              quality={80}
+              format="avif"
               loading="lazy"
               data-color-reveal
               class="barber-portrait-img w-full h-full object-cover transition-[filter,transform] duration-500 ease-out"
