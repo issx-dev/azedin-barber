@@ -4,7 +4,7 @@ test.describe('Visual regression — studio-grotesque-redesign', () => {
 
   test('desktop 1440×900 — full page snapshot + overflow guard', async ({ page }) => {
     await page.setViewportSize({ width: 1440, height: 900 });
-    await page.goto('/', { waitUntil: 'networkidle' });
+    await page.goto('/', { waitUntil: 'domcontentloaded' });
 
     // Wait for hero image element in DOM
     await expect(page.locator('#hero img').first()).toBeAttached();
@@ -18,7 +18,7 @@ test.describe('Visual regression — studio-grotesque-redesign', () => {
 
   test('mobile 390×844 — full page snapshot + overflow guard', async ({ page }) => {
     await page.setViewportSize({ width: 390, height: 844 });
-    await page.goto('/', { waitUntil: 'networkidle' });
+    await page.goto('/', { waitUntil: 'domcontentloaded' });
 
     // Assert no horizontal overflow
     const scrollWidth = await page.evaluate(() => document.documentElement.scrollWidth);
@@ -29,7 +29,7 @@ test.describe('Visual regression — studio-grotesque-redesign', () => {
 
   test('services dot-leader renders without overflow at 390px', async ({ page }) => {
     await page.setViewportSize({ width: 390, height: 844 });
-    await page.goto('/', { waitUntil: 'networkidle' });
+    await page.goto('/', { waitUntil: 'domcontentloaded' });
 
     // Services section should be visible
     await expect(page.locator('#servicios')).toBeVisible();
@@ -48,7 +48,7 @@ test.describe('Visual regression — studio-grotesque-redesign', () => {
 
   test('footer wordmark uses Bricolage Grotesque font', async ({ page }) => {
     await page.setViewportSize({ width: 1440, height: 900 });
-    await page.goto('/', { waitUntil: 'networkidle' });
+    await page.goto('/', { waitUntil: 'domcontentloaded' });
 
     const wordmark = page.locator('.footer-wordmark');
     await wordmark.scrollIntoViewIfNeeded();

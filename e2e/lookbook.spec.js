@@ -3,8 +3,8 @@ import { test, expect } from '@playwright/test';
 test('lookbook renders editorial catalog items without filters', async ({ page }) => {
   await page.goto('/');
 
-  // Wait for the page to fully load
-  await page.waitForLoadState('networkidle');
+  // Wait for DOM content to load
+  await page.waitForLoadState('domcontentloaded');
 
   // Scroll to lookbook section
   await page.evaluate(() => {

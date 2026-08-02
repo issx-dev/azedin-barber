@@ -5,4 +5,7 @@ import sitemap from '@astrojs/sitemap';
 export default defineConfig({
   site: process.env.URL || 'https://azedinbarber.com',
   integrations: [tailwind(), sitemap()],
+  server: {
+    host: '0.0.0.0',
+  },
 });

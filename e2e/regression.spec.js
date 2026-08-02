@@ -4,7 +4,7 @@ test.describe('Regression — Visibility & Animations', () => {
 
   test('all data-stagger containers become visible after scroll', async ({ page }) => {
     await page.setViewportSize({ width: 390, height: 844 });
-    await page.goto('/', { waitUntil: 'networkidle' });
+    await page.goto('/', { waitUntil: 'domcontentloaded' });
     await page.evaluate(() => window.scrollTo(0, document.body.scrollHeight));
     await page.waitForTimeout(1500);
 
@@ -20,7 +20,7 @@ test.describe('Regression — Visibility & Animations', () => {
 
   test('Services section rows are rendered and visible', async ({ page }) => {
     await page.setViewportSize({ width: 390, height: 844 });
-    await page.goto('/', { waitUntil: 'networkidle' });
+    await page.goto('/', { waitUntil: 'domcontentloaded' });
     await page.locator('#servicios').scrollIntoViewIfNeeded();
     await page.waitForTimeout(1000);
 
@@ -35,7 +35,7 @@ test.describe('Regression — Visibility & Animations', () => {
 
   test('Location hours list is rendered and visible', async ({ page }) => {
     await page.setViewportSize({ width: 390, height: 844 });
-    await page.goto('/', { waitUntil: 'networkidle' });
+    await page.goto('/', { waitUntil: 'domcontentloaded' });
     await page.locator('#ubicacion').scrollIntoViewIfNeeded();
     await page.waitForTimeout(1000);
 
@@ -50,7 +50,7 @@ test.describe('Regression — Video', () => {
 
   test('mobile video element exists and loads mobile source', async ({ page }) => {
     await page.setViewportSize({ width: 390, height: 844 });
-    await page.goto('/', { waitUntil: 'networkidle' });
+    await page.goto('/', { waitUntil: 'domcontentloaded' });
     await page.waitForTimeout(2000);
 
     const video = page.locator('video#hero-video');
@@ -61,7 +61,7 @@ test.describe('Regression — Video', () => {
 
   test('desktop video element exists and loads desktop source', async ({ page }) => {
     await page.setViewportSize({ width: 1440, height: 900 });
-    await page.goto('/', { waitUntil: 'networkidle' });
+    await page.goto('/', { waitUntil: 'domcontentloaded' });
     await page.waitForTimeout(2000);
 
     const video = page.locator('video#hero-video');

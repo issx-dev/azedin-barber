@@ -79,6 +79,8 @@ const items = galleryItems.slice(0, 6);
         id="lookbook-toggle-btn"
         class="btn-outline-thin text-[11px] px-8 py-3.5"
         aria-expanded="false"
+        data-label-more="VER MÁS CORTES ›"
+        data-label-less="VER MENOS ‹"
       >
         VER MÁS CORTES ›
       </button>
@@ -111,11 +113,14 @@ const items = galleryItems.slice(0, 6);
       });
 
       toggleBtn.setAttribute('aria-expanded', isExpanded ? 'false' : 'true');
-      toggleBtn.textContent = isExpanded ? 'VER MÁS CORTES ›' : 'VER MENOS ‹';
+      const moreText = toggleBtn.getAttribute('data-label-more');
+      const lessText = toggleBtn.getAttribute('data-label-less');
+      toggleBtn.textContent = isExpanded ? moreText : lessText;
 
       setTimeout(() => {
-        if (window.__ScrollTrigger) {
-          window.__ScrollTrigger.refresh();
+        const win = window as unknown as { __ScrollTrigger?: { refresh: () => void } };
+        if (win.__ScrollTrigger) {
+          win.__ScrollTrigger.refresh();
         }
       }, 0);
     });

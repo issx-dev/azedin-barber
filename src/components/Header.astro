@@ -9,6 +9,7 @@
  */
 import logoSrc from '../assets/img/logo-azedin-barber-transparente.png';
 import CTA from './CTA.astro';
+import { Image } from 'astro:assets';
 
 const navLinks = [
   { href: '#lookbook',  label: 'Lookbook'  },
@@ -27,13 +28,16 @@ const navLinks = [
 
     <!-- Logo -->
     <a href="#hero" class="flex items-center group" aria-label="Azedin Barber — Inicio">
-      <img
-        src={logoSrc.src}
+      <Image
+        src={logoSrc}
         alt="Azedin Barber"
         class="nav-logo-img"
         loading="eager"
-        width="500"
-        height="333"
+        fetchpriority="high"
+        width={110}
+        height={44}
+        format="webp"
+        quality={80}
       />
     </a>
 
@@ -103,8 +107,10 @@ const navLinks = [
     transition: opacity 200ms var(--ease-out), transform 200ms var(--ease-out);
   }
   
-  .nav-logo-img:hover {
-    opacity: 1;
-    transform: scale(1.03);
+  @media (hover: hover) and (pointer: fine) {
+    .nav-logo-img:hover {
+      opacity: 1;
+      transform: scale(1.03);
+    }
   }
 </style>
