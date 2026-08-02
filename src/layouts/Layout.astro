@@ -1,9 +1,7 @@
 ---
-import { getImage } from 'astro:assets';
-import workspaceImg from '../assets/img/barberia-interior-recepcion.jpeg';
 import '../styles/global.css';
 import MobileStickyCTA from '../components/MobileStickyCTA.astro';
-import { business } from '../data/content.js';
+import BackToTop from '../components/BackToTop.astro';
 
 export interface Props {
   title?: string;
@@ -11,11 +9,10 @@ export interface Props {
 }
 
 const {
-  title = 'Azedin Barber — Barbería en Berja, Almería',
+  title = 'Azedin Barber — Barbería en Berja, Almería | Cortes y Barba',
   description = 'Reserva tu corte con Azedin o Samir. Fades, cortes de tendencia y arreglo de barba. 5.0★ en Booksy. Berja, Almería.',
 } = Astro.props;
 
-const heroLcpImage = await getImage({ src: workspaceImg, format: 'avif', width: 768, quality: 85 });
 const canonicalUrl = new URL(Astro.url.pathname, Astro.site || 'https://azedinbarber.com').href;
 const ogImageUrl = new URL('/og-image.jpg', Astro.site || 'https://azedinbarber.com').href;
 ---
@@ -25,7 +22,6 @@ const ogImageUrl = new URL('/og-image.jpg', Astro.site || 'https://azedinbarber.
 <head>
   <meta charset="UTF-8" />
   <link rel="preload" as="font" type="font/woff2" crossorigin href="/fonts/bricolage-grotesque-latin-wght-normal.woff2">
-  <link rel="preload" as="image" href={heroLcpImage.src} type="image/avif" fetchpriority="high" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>{title}</title>
   <meta name="description" content={description} />
@@ -75,21 +71,13 @@ const ogImageUrl = new URL('/og-image.jpg', Astro.site || 'https://azedinbarber.
   <link
     href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@1,9..144,500&family=Instrument+Sans:wght@400;500;600&display=swap"
     rel="stylesheet"
-    media="print"
-    onload="this.media='all'"
   />
   <noscript>
-    <link
-      href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@1,9..144,500&family=Instrument+Sans:wght@400;500;600&display=swap"
-      rel="stylesheet"
-    />
-  </noscript>
-  <noscript>
     <style>
-      [data-reveal], [data-fade], [data-stagger] { opacity: 1 !important; }
+      [data-reveal], [data-fade], [data-stagger], [data-stagger] > *, [data-hero-text] { opacity: 1 !important; transform: none !important; clip-path: none !important; }
     </style>
   </noscript>
-  <script type="application/ld+json">
+  <script type="application/ld+json" is:inline>
     {
       "@context": "https://schema.org",
       "@type": "BarberShop",
@@ -128,6 +116,7 @@ const ogImageUrl = new URL('/og-image.jpg', Astro.site || 'https://azedinbarber.
   <a href="#main-content" class="sr-only focus:not-sr-only focus:fixed focus:top-4 focus:left-4 focus:z-[1000] focus:bg-oak focus:text-bg-deep focus:px-4 focus:py-2 focus:rounded">Saltar al contenido</a>
   <slot />
   <MobileStickyCTA />
+  <BackToTop />
 
   <!-- ─── Global event bus ─────────────────────────────────────────────── -->
   <script is:inline>
@@ -137,7 +126,7 @@ const ogImageUrl = new URL('/og-image.jpg', Astro.site || 'https://azedinbarber.
       if (booksyLink) {
         var isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent) || window.innerWidth < 768;
         if (isMobile) {
-          booksyLink.href = 'http://azedinbarber.booksy.com/a';
+          booksyLink.href = 'https://azedinbarber.booksy.com/a';
         }
         return;
       }
@@ -152,34 +141,40 @@ const ogImageUrl = new URL('/og-image.jpg', Astro.site || 'https://azedinbarber.
     (function() {
       var header = document.getElementById('site-header');
       var headerLine = document.getElementById('header-line');
-      if (!header) return;
-      var THRESHOLD = 60;
-      function onScroll() {
-        if (window.scrollY > THRESHOLD) {
+      var hero = document.getElementById('hero');
+      if (!header || !hero) return;
+      var observer = new IntersectionObserver(function(entries) {
+        if (!entries[0].isIntersecting) {
           header.classList.add('scrolled');
           if (headerLine) headerLine.style.opacity = '1';
         } else {
           header.classList.remove('scrolled');
           if (headerLine) headerLine.style.opacity = '0';
         }
-      }
-      window.addEventListener('scroll', onScroll, { passive: true });
-      onScroll();
-
-      document.addEventListener('astro:before-swap', function() {
-        window.removeEventListener('scroll', onScroll);
-      }, { once: true });
+      }, { rootMargin: '-60px 0px 0px 0px' });
+      observer.observe(hero);
     })();
   </script>
 
   <script>
-    const loadAnimations = () => {
+    // 1. Native CSS reveals using IntersectionObserver
+    const revealObserver = new IntersectionObserver((entries, observer) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          entry.target.classList.add('is-visible');
+          observer.unobserve(entry.target);
+        }
+      });
+    }, { rootMargin: '0px 0px -40px 0px', threshold: 0 });
+
+    const animatedElements = document.querySelectorAll(
+      '[data-reveal], [data-fade], [data-stagger], [data-hero-text]'
+    );
+    animatedElements.forEach(el => revealObserver.observe(el));
+
+    // 2. Load Lenis/GSAP animations only on desktop
+    if (window.matchMedia('(min-width: 768px)').matches) {
       import('../scripts/animations.js');
-    };
-    if (document.readyState === 'complete') {
-      setTimeout(loadAnimations, 1000);
-    } else {
-      window.addEventListener('load', () => setTimeout(loadAnimations, 1000), { once: true });
     }
   </script>
 </body>

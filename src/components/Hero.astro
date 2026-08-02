@@ -10,7 +10,7 @@
  * - data-hero-text targets → staggered entrance via GSAP
  */
 
-import { Image, getImage } from 'astro:assets';
+import { Image } from 'astro:assets';
 import workspaceImg from '../assets/img/barberia-interior-recepcion.jpeg';
 import logoSrc from '../assets/img/logo-azedin-barber-transparente.png';
 import { business } from '../data/content.js';
@@ -21,9 +21,6 @@ const mobileVideoWebm = '/video/instalaciones-mobile.webm';
 const mobileVideoSrc = '/video/instalaciones-mobile.mp4';
 const desktopVideoWebm = '/video/instalaciones-desktop.webm';
 const desktopVideoSrc = '/video/instalaciones-desktop.mp4';
-
-// High-quality AVIF poster
-const heroPoster = await getImage({ src: workspaceImg, format: 'avif', width: 800, quality: 85 });
 ---
 
 <section
@@ -39,7 +36,7 @@ const heroPoster = await getImage({ src: workspaceImg, format: 'avif', width: 80
       widths={[380, 768, 1176]}
       sizes="100vw"
       quality={85}
-      format="avif"
+      format="webp"
       loading="eager"
       decoding="sync"
       fetchpriority="high"
@@ -78,14 +75,16 @@ const heroPoster = await getImage({ src: workspaceImg, format: 'avif', width: 80
       data-hero-text
       class="mb-6"
     >
-      <img
-        src={logoSrc.src}
+      <Image
+        src={logoSrc}
         alt=""
         class="hero-logo-img mx-auto"
         loading="eager"
         fetchpriority="high"
-        width="500"
-        height="333"
+        width={420}
+        height={168}
+        format="webp"
+        quality={80}
         aria-hidden="true"
       />
       <span class="sr-only">Azedin Barber — Barbería en Berja, Almería</span>
@@ -155,8 +154,10 @@ const heroPoster = await getImage({ src: workspaceImg, format: 'avif', width: 80
     transition: transform 300ms var(--ease-out);
   }
   
-  .hero-logo-img:hover {
-    transform: scale(1.02);
+  @media (hover: hover) and (pointer: fine) {
+    .hero-logo-img:hover {
+      transform: scale(1.02);
+    }
   }
 
   .hero-video {
@@ -170,8 +171,9 @@ const heroPoster = await getImage({ src: workspaceImg, format: 'avif', width: 80
 
 <script>
   const video = document.getElementById('hero-video') as HTMLVideoElement | null;
+  const prefersReduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
-  if (video) {
+  if (video && !prefersReduced) {
     const makeReady = () => video.classList.add('ready');
     video.play().then(() => {
       if (video.readyState >= 3) {

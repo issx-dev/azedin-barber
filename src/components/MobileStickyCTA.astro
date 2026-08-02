@@ -18,32 +18,36 @@ import CTA from './CTA.astro';
     const hero = document.getElementById('hero');
     const locationSection = document.getElementById('ubicacion');
 
-    if (cta) {
-      const handleScroll = () => {
-        if (window.innerWidth >= 768) return;
-        
-        const scrollY = window.scrollY;
-        const windowHeight = window.innerHeight;
-        const heroHeight = hero ? hero.offsetHeight : 500;
-        
-        // Hide if near the footer
-        const docHeight = document.documentElement.scrollHeight;
-        const distanceToBottom = docHeight - (scrollY + windowHeight);
-        const nearBottom = distanceToBottom < 600;
+    if (cta && hero && locationSection) {
+      if (window.innerWidth >= 768) return;
 
-        if (scrollY > heroHeight && !nearBottom) {
-          cta.classList.remove('translate-y-full');
-        } else {
-          cta.classList.add('translate-y-full');
-        }
+      let isPastHero = false;
+      let isNearBottom = false;
+      let rAFId: number | null = null;
+
+      const updateCTA = () => {
+        if (rAFId) cancelAnimationFrame(rAFId);
+        rAFId = requestAnimationFrame(() => {
+          if (isPastHero && !isNearBottom) {
+            cta.classList.remove('translate-y-full');
+          } else {
+            cta.classList.add('translate-y-full');
+          }
+        });
       };
 
-      window.addEventListener('scroll', handleScroll, { passive: true });
-      handleScroll();
-      
-      document.addEventListener('astro:before-swap', function() {
-        window.removeEventListener('scroll', handleScroll);
-      }, { once: true });
+      const heroObserver = new IntersectionObserver((entries) => {
+        isPastHero = !entries[0].isIntersecting;
+        updateCTA();
+      }, { rootMargin: '0px' });
+
+      const locationObserver = new IntersectionObserver((entries) => {
+        isNearBottom = entries[0].isIntersecting;
+        updateCTA();
+      }, { rootMargin: '600px 0px 0px 0px' });
+
+      heroObserver.observe(hero);
+      locationObserver.observe(locationSection);
     }
   }
 

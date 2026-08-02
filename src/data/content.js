@@ -46,8 +46,10 @@ export const business = {
   tagline: 'Cortes personalizados',
   rating: '5.0',
   reviewCount: '142 opiniones en Booksy',
+  phone: '+34 643 945 522',
+  phoneRaw: '+34643945522',
   booksyUrl: 'https://booksy.com/es-es/141862_azedin-barber_barberia_26195_castala',
-  booksyAppUrl: 'http://azedinbarber.booksy.com/a',
+  booksyAppUrl: 'https://azedinbarber.booksy.com/a',
   instagramUrl: 'https://www.instagram.com/azedinbarber/',
   tiktokUrl: 'https://www.tiktok.com/@azedin.barber',
   hours: [

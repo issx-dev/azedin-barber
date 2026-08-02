@@ -3,9 +3,8 @@
  * Barbers — Editorial section below the Hero.
  *
  * Two barbers presented as full-height columns. On scroll:
- * - clip-path reveal: inset(0 0 100% 0) → inset(0) (bottom-up curtain)
- * - BN→color filter: grayscale(100%) → grayscale(0%)
- * Both transitions via data-color-reveal in animations.js
+ * - clip-path reveal: bottom-up curtain via data-reveal / data-stagger
+ * - B&N → color transition on hover / touch interaction
  *
  * No barbers in the Hero (avoids the "tosco" feel of two giant faces).
  * This section acts as a deliberate slow reveal: "meet who's waiting for you."
@@ -15,7 +14,6 @@ import { Image } from 'astro:assets';
 import personaAzedin from '../assets/img/barbero-azedin-master-barber-berja.jpeg';
 import personaSamir from '../assets/img/barbero-samir-berja.jpeg';
 import { business } from '../data/content.js';
-import CTA from './CTA.astro';
 
 const barbers = [
   {
@@ -60,27 +58,26 @@ const barbers = [
 
   <!-- Barber columns — Raven Barbers Inspired Architecture -->
   <div class="px-6 md:px-10 max-w-6xl mx-auto pb-20">
-    <div class="grid grid-cols-1 md:grid-cols-2 gap-8 md:gap-12">
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-8 md:gap-12" data-stagger>
       {barbers.map((barber) => (
         <a
           href={business.booksyUrl}
           target="_blank"
           rel="noopener noreferrer"
           data-booksy-link
-          class="barber-card group relative block text-left w-full bg-bg-deep overflow-hidden cursor-pointer border-0 p-0"
-          aria-label={`Reservar cita en Azedin Barber — ${barber.name} (${barber.title})`}
+          class="barber-card group relative block text-left w-full bg-bg-deep cursor-pointer border-0 p-0"
+          aria-label={`${barber.title} ${barber.name} — Reservar cita`}
         >
-          <div class="relative aspect-[3/4] overflow-hidden bg-bg-panel border border-steel/15 rounded-sm">
+          <div class="relative aspect-[3/4] overflow-hidden bg-bg-panel border border-steel/15 rounded-sm" data-reveal>
             <Image
               src={barber.img}
               alt={barber.alt}
-              widths={[320, 360, 420, 540, 720, 960]}
-              sizes="(max-width: 640px) 340px, (max-width: 768px) 450px, 480px"
-              quality={80}
-              format="avif"
+              widths={[400, 800]}
+              sizes="(max-width: 768px) 100vw, 50vw"
+              quality={60}
+              format="webp"
               loading="lazy"
-              data-color-reveal
-              class="barber-portrait-img w-full h-full object-cover transition-[filter,transform] duration-500 ease-out"
+              class="barber-portrait-img w-full h-full object-cover"
               style="object-position: center 18%;"
             />
             <!-- Gradient overlay for crisp typographic legibility -->
@@ -113,11 +110,15 @@ const barbers = [
 
 <style>
   .barber-portrait-img {
-    filter: grayscale(100%) contrast(1.1) brightness(0.9);
+    filter: grayscale(100%) contrast(1.08) brightness(0.92);
+    transform: scale(1);
+    transition: filter 0.6s var(--ease-out), transform 0.6s var(--ease-out);
+    will-change: filter, transform;
   }
-  @media (hover: hover) and (pointer: fine) {
-    .group:hover .barber-portrait-img {
-      filter: grayscale(0%) saturate(0.85) contrast(1.05) brightness(0.95);
-    }
+  .group:hover .barber-portrait-img,
+  .group:active .barber-portrait-img,
+  .group:focus-within .barber-portrait-img {
+    filter: grayscale(0%) saturate(0.92) contrast(1.05) brightness(0.96);
+    transform: scale(1.04);
   }
 </style>

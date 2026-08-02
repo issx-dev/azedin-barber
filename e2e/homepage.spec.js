@@ -1,7 +1,7 @@
 import { test, expect } from '@playwright/test';
 
 test('homepage renders hero and services sections', async ({ page }) => {
-  await page.goto('/');
+  await page.goto('/', { waitUntil: 'domcontentloaded' });
 
   // Hero section / Barbers section with barber names should be visible (h3 elements)
   await expect(page.locator('h3', { hasText: 'Azedin' }).first()).toBeVisible({ timeout: 10000 });
@@ -15,7 +15,7 @@ test('homepage renders hero and services sections', async ({ page }) => {
 });
 
 test('sections appear in correct editorial order', async ({ page }) => {
-  await page.goto('/');
+  await page.goto('/', { waitUntil: 'domcontentloaded' });
 
   // Verify section order: Hero → Barbers → Reviews → Lookbook → Services → Location
   const lookbook = page.locator('#lookbook');

@@ -78,7 +78,7 @@ const track = [...reviews, ...reviews];
       role="group"
       aria-label="Navegación de reseñas"
     >
-      {reviews.map((review, i) => (
+      {reviews.map((_, i) => (
         <button
           data-reviews-dot
           data-dot-index={i}
@@ -86,7 +86,7 @@ const track = [...reviews, ...reviews];
           aria-label={`Ver reseña ${i + 1}`}
           aria-controls="reviews-scroll"
         >
-          <span class="reviews-dot h-1.5 w-1.5 rounded-full bg-ink-faint transition-all duration-300 ease-out group-hover:bg-steel-dim group-focus-visible:outline-none group-focus-visible:ring-2 group-focus-visible:ring-steel"></span>
+          <span class="reviews-dot rounded-full group-focus-visible:outline-none group-focus-visible:ring-2 group-focus-visible:ring-steel"></span>
         </button>
       ))}
     </div>
@@ -163,6 +163,7 @@ const track = [...reviews, ...reviews];
 <style>
   /* Hide scrollbar on the mobile scroll-snap track */
   .reviews-scroll {
+    scrollbar-gutter: stable;
     scrollbar-width: none;
     -ms-overflow-style: none;
   }
@@ -170,16 +171,27 @@ const track = [...reviews, ...reviews];
     display: none;
   }
 
-  /* Active dot — GPU composited scaleX + steel color */
+  /* Review dot indicator — smooth GPU-composited capsule transition */
   .reviews-dot {
-    transform-origin: center;
-    transition: transform 200ms ease-out, background-color 200ms ease-out;
+    display: inline-block;
+    width: 0.375rem;
+    height: 0.375rem;
+    border-radius: 9999px;
+    background-color: var(--color-steel-dim);
+    transform: translateZ(0);
+    transition: width 250ms var(--ease-out), background-color 250ms var(--ease-out);
+    will-change: width, background-color;
   }
+
+  .group:hover .reviews-dot {
+    background-color: var(--color-steel);
+  }
+
+  [data-active="true"] .reviews-dot,
   .min-w-\[44px\][data-active="true"] .reviews-dot,
   .reviews-dot[data-active="true"] {
-    background-color: var(--color-steel);
-    transform: scaleX(4);
-    border-radius: 9999px;
+    width: 1.5rem;
+    background-color: var(--color-cream);
   }
 </style>
 
@@ -196,39 +208,36 @@ const track = [...reviews, ...reviews];
 
     let activeIdx = -1;
 
-    function update() {
-      const sw = scroll.clientWidth;
-      const scrollerLeft = scroll.getBoundingClientRect().left;
-      let best = 0;
-      let bestDist = Infinity;
-      articles.forEach((a, i) => {
-        const r = a.getBoundingClientRect();
-        const center = r.left + r.width / 2;
-        const viewportCenter = scrollerLeft + sw / 2;
-        const d = Math.abs(center - viewportCenter);
-        if (d < bestDist) {
-          best = i;
-          bestDist = d;
+    const observer = new IntersectionObserver((entries) => {
+      let maxRatio = 0;
+      let newActive = activeIdx;
+      entries.forEach(entry => {
+        if (entry.isIntersecting && entry.intersectionRatio > maxRatio) {
+          maxRatio = entry.intersectionRatio;
+          const idx = articles.indexOf(entry.target);
+          if (idx !== -1) {
+            newActive = idx;
+          }
         }
       });
-      if (best !== activeIdx) {
-        activeIdx = best;
+      if (newActive !== activeIdx && newActive !== -1) {
+        activeIdx = newActive;
         dots.forEach((d, i) =>
-          d.setAttribute('data-active', i === best ? 'true' : 'false')
+          d.setAttribute('data-active', i === activeIdx ? 'true' : 'false')
         );
       }
-    }
+    }, {
+      root: scroll,
+      threshold: [0.3, 0.5, 0.7, 0.9]
+    });
 
-    scroll.addEventListener('scroll', update, { passive: true });
-    update();
+    articles.forEach(a => observer.observe(a));
 
     dots.forEach((dot, i) => {
       dot.addEventListener('click', () => {
         const a = articles[i];
         if (!a) return;
-        const sw = scroll.clientWidth;
-        const targetLeft = a.offsetLeft - (sw - a.offsetWidth) / 2;
-        scroll.scrollTo({ left: targetLeft, behavior: 'smooth' });
+        a.scrollIntoView({ behavior: 'smooth', inline: 'center', block: 'nearest' });
       });
     });
   });

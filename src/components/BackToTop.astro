@@ -1,0 +1,45 @@
+---
+/**
+ * BackToTop — Floating stylized back-to-top button at bottom right.
+ * Appears smoothly when scrolling past 300px.
+ */
+---
+
+<a
+  href="#hero"
+  id="back-to-top"
+  class="fixed bottom-20 right-4 md:bottom-8 md:right-8 z-40 flex items-center justify-center w-11 h-11 md:w-12 md:h-12 rounded-full bg-bg-surface/90 text-cream border border-steel/25 backdrop-blur-md shadow-xl opacity-0 pointer-events-none transition-all duration-300 ease-out hover:border-oak hover:text-oak hover:bg-bg-panel hover:-translate-y-1 active:scale-95 focus:outline-none focus:ring-2 focus:ring-oak/50"
+  aria-label="Volver al inicio"
+  title="Volver al inicio"
+>
+  <svg
+    class="w-5 h-5 transition-transform duration-300"
+    fill="none"
+    stroke="currentColor"
+    stroke-width="2.2"
+    viewBox="0 0 24 24"
+    aria-hidden="true"
+  >
+    <path stroke-linecap="round" stroke-linejoin="round" d="M4.5 15.75l7.5-7.5 7.5 7.5" />
+  </svg>
+</a>
+
+<script>
+  (() => {
+    const backToTopBtn = document.getElementById('back-to-top');
+    if (!backToTopBtn) return;
+
+    const toggleBackToTop = () => {
+      if (window.scrollY > 300) {
+        backToTopBtn.classList.remove('opacity-0', 'pointer-events-none');
+        backToTopBtn.classList.add('opacity-100', 'pointer-events-auto');
+      } else {
+        backToTopBtn.classList.remove('opacity-100', 'pointer-events-auto');
+        backToTopBtn.classList.add('opacity-0', 'pointer-events-none');
+      }
+    };
+
+    window.addEventListener('scroll', toggleBackToTop, { passive: true });
+    toggleBackToTop();
+  })();
+</script>
