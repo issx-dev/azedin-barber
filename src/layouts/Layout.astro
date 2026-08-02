@@ -1,4 +1,6 @@
 ---
+import '@fontsource-variable/instrument-sans';
+import '@fontsource/fraunces/500-italic.css';
 import '../styles/global.css';
 import MobileStickyCTA from '../components/MobileStickyCTA.astro';
 import BackToTop from '../components/BackToTop.astro';
@@ -59,19 +61,9 @@ const ogImageUrl = new URL('/og-image.jpg', Astro.site || 'https://azedinbarber.
   <meta name="twitter:description" content={description} />
   <meta name="twitter:image" content={ogImageUrl} />
 
-  <!-- Preconnect and Preload for Critical Fonts (Bricolage self-hosted in global.css).
-       Fraunces / Outfit / Instrument Sans — Google Fonts CDN. -->
-  <link rel="preconnect" href="https://fonts.googleapis.com" />
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link
-    rel="preload"
-    as="style"
-    href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@1,9..144,500&family=Instrument+Sans:wght@400;500;600&display=swap"
-  />
-  <link
-    href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@1,9..144,500&family=Instrument+Sans:wght@400;500;600&display=swap"
-    rel="stylesheet"
-  />
+  <!-- Fuentes self-hosted. Bricolage cargada inline en global.css via @font-face.
+       Instrument Sans Variable + Fraunces via @fontsource (servidas localmente desde
+       node_modules en build, sin CDN externo). No quedan recursos de fonts.googleapis.com. -->
   <noscript>
     <style>
       [data-reveal], [data-fade], [data-stagger], [data-stagger] > *, [data-hero-text] { opacity: 1 !important; transform: none !important; clip-path: none !important; }
