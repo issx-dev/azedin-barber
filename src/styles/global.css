@@ -2,6 +2,7 @@
 @tailwind components;
 @tailwind utilities;
 
+
 /* ─── Self-hosted Bricolage Grotesque (variable) ─────────────────────────────── */
 @font-face {
   font-family: 'Bricolage Grotesque';
@@ -43,7 +44,7 @@
 
     /* ── Typography ────────────────────────────────────────────────────── */
     --font-display: 'Bricolage Grotesque', sans-serif;
-    --font-body:    'Instrument Sans', system-ui, sans-serif;
+    --font-body:    'Instrument Sans Variable', 'Instrument Sans', system-ui, sans-serif;
     --font-serif:   'Fraunces', serif;
 
     /* ── Easing curves — Emil Kowalski ─────────────────────────────────── */
