@@ -1,13 +1,15 @@
 /**
- * Photoreal barber pole, built the way a real one is built:
- *   - an inner drum carrying the red/white/blue helix (a canvas texture whose
- *     offset scrolls, so the stripes "climb" exactly like the motor-driven one),
- *   - a clear glass sleeve over it (MeshPhysicalMaterial transmission),
- *   - polished chrome caps and a domed finial, turned on a lathe profile,
- *   - a wall bracket, because the real one is mounted to the façade.
- * Lit by a RoomEnvironment PMREM so chrome and glass have something real to
- * reflect. No external assets: everything is generated, so it costs 0 network
- * requests beyond the three.js chunk.
+ * Barber pole modelled on a real wall-mounted unit (proportions measured from
+ * the product reference): domed chrome caps with a collar band where they
+ * meet the glass, a clear glass tube, an inner drum carrying wide red / white /
+ * blue bands, and a satin wall plate on the left joined by two short arms.
+ *
+ * Realism comes from the lighting, not the mesh count: chrome only looks like
+ * chrome when it has something sharp to reflect, so the environment is a
+ * small photo studio (tall strip boxes, an overhead softbox, a dim floor
+ * bounce) baked into a PMREM. The glass is additive specular only — a black
+ * dielectric drawn with additive blending contributes nothing but its
+ * reflections and Fresnel edges, so the stripes behind it stay crisp.
  */
 import {
   WebGLRenderer,
@@ -18,175 +20,222 @@ import {
   CylinderGeometry,
   LatheGeometry,
   BoxGeometry,
+  SphereGeometry,
   Vector2,
+  Vector3,
+  Box3,
+  Color,
   CanvasTexture,
   RepeatWrapping,
   SRGBColorSpace,
   MeshStandardMaterial,
-  MeshPhysicalMaterial,
+  MeshBasicMaterial,
   PMREMGenerator,
   NeutralToneMapping,
-  DirectionalLight,
-  AmbientLight,
+  BackSide,
+  DoubleSide,
+  AdditiveBlending,
 } from 'three';
-import { RoomEnvironment } from 'three/examples/jsm/environments/RoomEnvironment.js';
+import { RoundedBoxGeometry } from 'three/examples/jsm/geometries/RoundedBoxGeometry.js';
 
-// Colours sampled from the pole on the shop's façade.
-const RED = '#C2272D';
-const WHITE = '#F3F0E6';
-const BLUE = '#26408F';
+const RED = '#C8102E';
+const WHITE = '#F7F5EF';
+const BLUE = '#1F3A93';
 
+// Dimensions (scene units ≈ 1 per 100px of the reference photo).
+// Caps ≈1.45× the tube, as on the reference unit.
+const GLASS_R = 0.39;
+const GLASS_H = 2.45;
+// Close to the glass: at grazing angles a wider gap showed as dark seams at
+// the tube's silhouette, which the real (backlit) unit never has.
+const DRUM_R = 0.378;
+const HALF = GLASS_H / 2;
+
+/**
+ * A white product studio, like the one the reference was shot in. Polished
+ * chrome is a mirror: it reads as silver only if most of what it reflects is
+ * bright. The dark vertical flags are what give chrome its characteristic
+ * dark bands; the hot strips give the specular highlights. HDR values on
+ * purpose.
+ */
+function studio() {
+  const s = new Scene();
+  s.add(new Mesh(new SphereGeometry(20, 32, 16), new MeshBasicMaterial({ color: new Color(0xffffff).multiplyScalar(0.78), side: BackSide })));
+  const box = (w, h, d, x, y, z, k) => {
+    const m = new Mesh(new BoxGeometry(w, h, d), new MeshBasicMaterial({ color: new Color(0xffffff).multiplyScalar(k) }));
+    m.position.set(x, y, z);
+    s.add(m);
+  };
+  // Hot strips: the bright vertical highlights.
+  box(0.9, 16, 0.9, -4.5, 0, 5, 6);
+  box(0.5, 16, 0.5, 5, 0, 3.5, 4);
+  // Black flags: the dark bands that make chrome read as chrome.
+  box(1.6, 16, 0.2, 2.2, 0, 6, 0.02);
+  box(1.1, 16, 0.2, -7, 0, -1, 0.02);
+  box(2.2, 16, 0.2, 0, 0, -8, 0.04);
+  // Overhead softbox and a bright floor sweep, as on a seamless backdrop.
+  box(10, 0.2, 8, 0, 8, 0, 2.2);
+  box(18, 0.1, 18, 0, -8, 0, 1.1);
+  return s;
+}
+
+/** Bands as a doubly periodic phase, so the tile has no seam around the drum. */
 function stripeTexture() {
-  // Built per pixel from phase = (x/W + y/H) mod 1. Because the phase is
-  // periodic in BOTH axes with integer periods, the tile repeats with no seam
-  // around the drum (u) or along it (v) — a rotated-rectangle drawing does
-  // not, and showed hard cuts where tiles met.
-  const W = 256;
-  const H = 256;
+  const W = 512;
+  const H = 512;
   const c = document.createElement('canvas');
   c.width = W;
   c.height = H;
   const g = c.getContext('2d');
   const img = g.createImageData(W, H);
-  const hex = (h) => [1, 3, 5].map((i) => parseInt(h.slice(i, i + 2), 16));
-  const [r, w, b] = [hex(RED), hex(WHITE), hex(BLUE)];
-  // One period: red | white | blue | white, with a 1.5% soft edge so the
-  // bands do not alias when the drum turns.
-  const bands = [
-    [0.0, r],
-    [0.25, w],
-    [0.5, b],
-    [0.75, w],
-  ];
-  const soft = 0.015;
-  const colourAt = (t) => {
-    for (let k = 0; k < bands.length; k++) {
-      const [s0, col] = bands[k];
-      const s1 = k + 1 < bands.length ? bands[k + 1][0] : 1;
-      if (t >= s0 && t < s1) {
-        const next = bands[(k + 1) % bands.length][1];
-        const f = Math.max(0, Math.min(1, (t - (s1 - soft)) / soft));
-        return col.map((v, i) => v + (next[i] - v) * f);
-      }
-    }
-    return w;
-  };
+  const rgb = (h) => [1, 3, 5].map((i) => parseInt(h.slice(i, i + 2), 16));
+  const cols = [rgb(RED), rgb(WHITE), rgb(BLUE), rgb(WHITE)];
+  const soft = 0.006; // a hair of antialiasing between bands
   for (let y = 0; y < H; y++) {
     for (let x = 0; x < W; x++) {
       const t = (x / W + y / H) % 1;
-      const [cr, cg, cb] = colourAt(t);
+      const k = Math.floor(t * 4);
+      const local = t * 4 - k;
+      const a = cols[k];
+      const b = cols[(k + 1) % 4];
+      const f = Math.max(0, Math.min(1, (local - (1 - soft * 4)) / (soft * 4)));
       const o = (y * W + x) * 4;
-      img.data[o] = cr;
-      img.data[o + 1] = cg;
-      img.data[o + 2] = cb;
+      img.data[o] = a[0] + (b[0] - a[0]) * f;
+      img.data[o + 1] = a[1] + (b[1] - a[1]) * f;
+      img.data[o + 2] = a[2] + (b[2] - a[2]) * f;
       img.data[o + 3] = 255;
     }
   }
   g.putImageData(img, 0, 0);
   const t = new CanvasTexture(c);
   t.wrapS = t.wrapT = RepeatWrapping;
-  // 2 bands around the drum, 3 turns along it: the classic ~45° helix for a
-  // 0.24 radius, 2.4 tall drum.
-  t.repeat.set(2, 3);
+  // One period around the drum (integer = seamless), ~1.25 along the visible
+  // glass: wide bands at the reference's ~40° rake.
+  t.repeat.set(1, 1.45);
   t.colorSpace = SRGBColorSpace;
   t.anisotropy = 8;
   return t;
 }
 
-/** Lathe profile for a cap: a turned chrome collar with a rounded lip. */
-function capProfile(dome) {
-  const p = [];
-  if (dome) {
-    // Finial: collar, neck, then a hemisphere.
-    p.push(new Vector2(0, 0), new Vector2(0.34, 0), new Vector2(0.36, 0.04), new Vector2(0.36, 0.16));
-    p.push(new Vector2(0.3, 0.2), new Vector2(0.22, 0.24));
-    for (let a = 0; a <= 16; a++) {
-      const t = (a / 16) * (Math.PI / 2);
-      p.push(new Vector2(0.22 * Math.cos(t), 0.24 + 0.22 * Math.sin(t)));
-    }
-  } else {
-    p.push(new Vector2(0, 0), new Vector2(0.3, 0), new Vector2(0.36, 0.03), new Vector2(0.37, 0.09));
-    p.push(new Vector2(0.36, 0.15), new Vector2(0.32, 0.18), new Vector2(0, 0.18));
+/** Quarter-circle helper for lathe profiles. */
+function arc(cx, cy, r, a0, a1, n = 10) {
+  const out = [];
+  for (let i = 0; i <= n; i++) {
+    const a = a0 + ((a1 - a0) * i) / n;
+    out.push(new Vector2(cx + r * Math.cos(a), cy + r * Math.sin(a)));
   }
-  return p;
+  return out;
 }
 
-export function mountPole(canvas, { speed = 0.25 } = {}) {
+/**
+ * Cap profile, from the glass joint (y = 0) up: collar band, a step in, the
+ * cap body with one fine groove, and a broad rounded dome.
+ */
+function capProfile() {
+  return [
+    new Vector2(0.37, 0.0),
+    new Vector2(0.5, 0.0),
+    new Vector2(0.552, 0.018),
+    new Vector2(0.565, 0.06),
+    new Vector2(0.565, 0.11),
+    new Vector2(0.552, 0.148),
+    new Vector2(0.522, 0.162),
+    new Vector2(0.516, 0.18),
+    new Vector2(0.516, 0.33),
+    new Vector2(0.506, 0.344),
+    new Vector2(0.516, 0.358),
+    new Vector2(0.516, 0.5),
+    ...arc(0.296, 0.5, 0.22, 0, Math.PI / 2, 14).slice(1),
+    new Vector2(0.16, 0.728),
+    new Vector2(0.0, 0.734),
+  ];
+}
+
+export function mountPole(canvas, { speed = 0.22 } = {}) {
   const renderer = new WebGLRenderer({ canvas, antialias: true, alpha: true, powerPreference: 'low-power' });
   renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2));
-  // Khronos PBR Neutral keeps hue and saturation; ACES washed the red to pink
-  // and the blue to sky. The pole's colours are the point, so they must hold.
   renderer.toneMapping = NeutralToneMapping;
-  renderer.toneMappingExposure = 0.95;
+  renderer.toneMappingExposure = 1.0;
   renderer.setClearColor(0x000000, 0);
 
   const scene = new Scene();
   const pmrem = new PMREMGenerator(renderer);
-  scene.environment = pmrem.fromScene(new RoomEnvironment(), 0.04).texture;
+  scene.environment = pmrem.fromScene(studio(), 0.015).texture;
 
-  const camera = new PerspectiveCamera(22, 1, 0.1, 50);
+  const chrome = new MeshStandardMaterial({ color: 0xffffff, metalness: 1, roughness: 0.07, side: DoubleSide });
+  const satin = new MeshStandardMaterial({ color: 0xe2e2e2, metalness: 1, roughness: 0.32 });
 
-  const chrome = new MeshStandardMaterial({ color: '#d9d9d9', metalness: 1, roughness: 0.16 });
   const pole = new Group();
 
-  // Inner drum with the helix.
+  // Inner drum: the bands, faintly self-lit like the real backlit tube.
   const tex = stripeTexture();
-  const drum = new Mesh(
-    new CylinderGeometry(0.24, 0.24, 2.4, 64, 1, true),
-    new MeshStandardMaterial({ map: tex, roughness: 0.55, metalness: 0, envMapIntensity: 0.6 })
+  pole.add(
+    new Mesh(
+      new CylinderGeometry(DRUM_R, DRUM_R, GLASS_H, 96, 1, true),
+      new MeshStandardMaterial({
+        map: tex,
+        emissiveMap: tex,
+        emissive: 0xffffff,
+        emissiveIntensity: 0.2,
+        roughness: 0.62,
+        metalness: 0,
+        envMapIntensity: 0.38,
+      })
+    )
   );
-  pole.add(drum);
 
-  // Glass sleeve.
-  const glass = new Mesh(
-    new CylinderGeometry(0.3, 0.3, 2.42, 64, 1, true),
-    // Thin-shell glass: reflection-only, no refraction pass. Transmission
-    // refracts the drum through a blurred buffer, which doubled and smeared
-    // the stripes; a real sleeve is thin enough that you see them crisp.
-    new MeshPhysicalMaterial({
-      color: '#ffffff',
-      metalness: 0,
-      roughness: 0.02,
-      transparent: true,
-      opacity: 0.16,
-      envMapIntensity: 2.2,
-      clearcoat: 1,
-      clearcoatRoughness: 0.02,
-      depthWrite: false,
-    })
+  // Glass: reflections and Fresnel edges only.
+  pole.add(
+    new Mesh(
+      new CylinderGeometry(GLASS_R, GLASS_R, GLASS_H, 96, 1, true),
+      new MeshStandardMaterial({
+        color: 0x000000,
+        metalness: 0,
+        roughness: 0.02,
+        transparent: true,
+        blending: AdditiveBlending,
+        depthWrite: false,
+        envMapIntensity: 0.55,
+      })
+    )
   );
-  pole.add(glass);
 
   // Caps.
-  const top = new Mesh(new LatheGeometry(capProfile(true), 64), chrome);
-  top.position.y = 1.2;
+  const capGeo = new LatheGeometry(capProfile(), 96);
+  const top = new Mesh(capGeo, chrome);
+  top.position.y = HALF;
   pole.add(top);
-  const bottom = new Mesh(new LatheGeometry(capProfile(false), 64), chrome);
+  const bottom = new Mesh(capGeo, chrome);
   bottom.rotation.x = Math.PI;
-  bottom.position.y = -1.2;
+  bottom.position.y = -HALF;
   pole.add(bottom);
 
-  // Wall bracket: two arms back to a plate, like the one on the façade.
-  const arm = new CylinderGeometry(0.035, 0.035, 0.34, 16);
-  [1.28, -1.28].forEach((y) => {
-    const a = new Mesh(arm, chrome);
-    a.rotation.x = Math.PI / 2;
-    a.position.set(0, y, -0.47);
+  // Wall bracket on the left: satin plate + two polished arms.
+  const plateX = -0.86;
+  const plate = new Mesh(new RoundedBoxGeometry(0.06, 3.05, 0.3, 3, 0.02), satin);
+  plate.position.set(plateX, 0, 0);
+  pole.add(plate);
+  const armLen = Math.abs(plateX) - 0.035 - 0.5;
+  const armGeo = new CylinderGeometry(0.034, 0.034, armLen, 24);
+  [HALF + 0.25, -(HALF + 0.25)].forEach((y) => {
+    const a = new Mesh(armGeo, chrome);
+    a.rotation.z = Math.PI / 2;
+    a.position.set(plateX + 0.035 + armLen / 2, y, 0);
     pole.add(a);
   });
-  const plate = new Mesh(new BoxGeometry(0.16, 2.9, 0.03), chrome);
-  plate.position.set(0, 0, -0.645);
-  pole.add(plate);
 
-  // Three-quarter view so the bracket and depth read.
-  pole.rotation.y = -0.42;
-  scene.add(pole);
+  // Three-quarter view so the plate's face and the arms read, as in the photo.
+  pole.rotation.y = -0.55;
+  // Centre the whole assembly (plate included) on the origin.
+  const wrap = new Group();
+  wrap.add(pole);
+  const bb = new Box3().setFromObject(wrap);
+  const centre = bb.getCenter(new Vector3());
+  pole.position.sub(centre);
+  const sizeV = bb.getSize(new Vector3());
+  scene.add(wrap);
 
-  // A soft key from the street side, so the glass picks a highlight.
-  const key = new DirectionalLight('#fff7ea', 1.6);
-  key.position.set(-3, 4, 5);
-  scene.add(key);
-  scene.add(new AmbientLight('#ffffff', 0.15));
+  const camera = new PerspectiveCamera(20, 1, 0.1, 60);
 
   function fit() {
     const w = canvas.clientWidth;
@@ -194,11 +243,10 @@ export function mountPole(canvas, { speed = 0.25 } = {}) {
     if (!w || !h) return;
     renderer.setSize(w, h, false);
     camera.aspect = w / h;
-    // Frame the 3.1-unit-tall pole with a margin, whatever the box shape.
-    const fov = (camera.fov * Math.PI) / 180;
-    const distH = (3.1 / 2) / Math.tan(fov / 2);
-    const distW = (1.1 / 2) / (Math.tan(fov / 2) * camera.aspect);
-    camera.position.set(0, 0, Math.max(distH, distW) * 1.06);
+    const f = Math.tan((camera.fov * Math.PI) / 360);
+    const distH = sizeV.y / 2 / f;
+    const distW = sizeV.x / 2 / (f * camera.aspect);
+    camera.position.set(0, 0.15, Math.max(distH, distW) * 1.08 + sizeV.z / 2);
     camera.lookAt(0, 0, 0);
     camera.updateProjectionMatrix();
   }
@@ -210,31 +258,33 @@ export function mountPole(canvas, { speed = 0.25 } = {}) {
     raf = requestAnimationFrame(frame);
     const dt = last ? Math.min(0.05, (t - last) / 1000) : 0;
     last = t;
-    tex.offset.y -= dt * speed; // stripes climb, like the real motor
+    tex.offset.y -= dt * speed; // bands climb, like the motor-driven drum
     renderer.render(scene, camera);
-  }
-  function start() {
-    if (running) return;
-    running = true;
-    last = 0;
-    raf = requestAnimationFrame(frame);
-  }
-  function stop() {
-    running = false;
-    cancelAnimationFrame(raf);
   }
 
   fit();
   renderer.render(scene, camera);
-  const ro = new ResizeObserver(fit);
+  const ro = new ResizeObserver(() => {
+    fit();
+    if (!running) renderer.render(scene, camera);
+  });
   ro.observe(canvas);
 
   return {
-    start,
-    stop,
+    start() {
+      if (running) return;
+      running = true;
+      last = 0;
+      raf = requestAnimationFrame(frame);
+    },
+    stop() {
+      running = false;
+      cancelAnimationFrame(raf);
+    },
     renderOnce: () => renderer.render(scene, camera),
     dispose() {
-      stop();
+      running = false;
+      cancelAnimationFrame(raf);
       ro.disconnect();
       scene.traverse((o) => {
         o.geometry?.dispose();

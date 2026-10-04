@@ -1,0 +1,135 @@
+---
+/**
+ * InstagramFeed — the latest posts from @azedinbarber, refreshed on every visit.
+ *
+ * Instagram shut its public read API (Basic Display) in Dec 2024: there is no
+ * way to read a profile without the account owner authorising an app. So the
+ * live feed comes from a JSON endpoint set in PUBLIC_IG_FEED_URL — e.g. a
+ * free Behold.so feed, which the owner connects once and which then updates
+ * itself whenever they post. The browser fetches it on each visit (cached
+ * 10 min per tab), so new posts appear with no rebuild.
+ *
+ * Until that URL exists, the grid shows the shop's own recent work linking to
+ * the profile: the section is never empty or broken.
+ */
+import { Image } from 'astro:assets';
+import { business, galleryItems } from '../data/content.js';
+
+const FEED_URL = import.meta.env.PUBLIC_IG_FEED_URL ?? '';
+const fallback = galleryItems.filter((g) => g.src).slice(0, 6);
+---
+
+<section id="instagram" class="relative py-20 md:py-30" aria-labelledby="ig-title">
+  <div class="frame">
+    <header class="ruled-bottom flex flex-wrap items-end justify-between gap-6 pb-8">
+      <div>
+        <p class="eyebrow mb-3">Últimas publicaciones</p>
+        <h2 id="ig-title" class="text-sect display">@azedinbarber</h2>
+      </div>
+      <a class="btn btn-ghost" href={business.instagramUrl} target="_blank" rel="noopener noreferrer">
+        Seguir en Instagram
+      </a>
+    </header>
+
+    <ul class="ig-grid mt-10 grid grid-cols-3 gap-1 md:grid-cols-6 md:gap-2" data-feed={FEED_URL}>
+      {
+        fallback.map((g) => (
+          <li>
+            <a
+              href={business.instagramUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              class="group relative block aspect-square overflow-hidden bg-marmol-2"
+              aria-label={`${g.label} — ver en Instagram`}
+            >
+              <Image
+                src={g.src}
+                alt={g.alt}
+                width={320}
+                height={320}
+                format="avif"
+                quality={65}
+                loading="lazy"
+                style={`object-position: ${g.focus}`}
+                class="h-full w-full object-cover transition-transform duration-700 ease-marmol group-hover:scale-[1.04]"
+              />
+            </a>
+          </li>
+        ))
+      }
+    </ul>
+  </div>
+</section>
+
+<script>
+  type Post = { permalink: string; image: string; alt: string; video: boolean };
+
+  const grid = document.querySelector<HTMLUListElement>('.ig-grid');
+  const url = grid?.dataset.feed;
+  const KEY = 'az-ig-feed';
+  const TTL = 10 * 60 * 1000;
+
+  // Accepts Behold.so's shape and the Instagram Graph API shape.
+  function normalise(json: any): Post[] {
+    const items: any[] = json?.posts ?? json?.data ?? [];
+    return items
+      .map((p) => {
+        const video = /VIDEO|REEL/i.test(p.mediaType ?? p.media_type ?? '');
+        const image =
+          p.sizes?.medium?.mediaUrl ?? p.thumbnailUrl ?? p.thumbnail_url ?? (video ? '' : p.mediaUrl ?? p.media_url);
+        return {
+          permalink: p.permalink,
+          image,
+          alt: (p.prunedCaption ?? p.caption ?? 'Publicación de Instagram de Barbería Azedin').slice(0, 120),
+          video,
+        };
+      })
+      .filter((p) => p.permalink && p.image)
+      .slice(0, 6);
+  }
+
+  function render(posts: Post[]) {
+    if (!grid || posts.length < 3) return; // keep the fallback rather than a half grid
+    grid.innerHTML = posts
+      .map(
+        (p) => `<li>
+          <a href="${p.permalink}" target="_blank" rel="noopener noreferrer"
+             class="group relative block aspect-square overflow-hidden bg-marmol-2">
+            <img src="${p.image}" alt="${p.alt.replace(/"/g, '&quot;')}" loading="lazy" decoding="async"
+                 width="320" height="320"
+                 class="h-full w-full object-cover transition-transform duration-700 ease-marmol group-hover:scale-[1.04]" />
+            ${p.video ? '<span class="absolute right-2 top-2 font-body text-[0.625rem] font-semibold uppercase tracking-wide text-cal">Reel</span>' : ''}
+          </a>
+        </li>`
+      )
+      .join('');
+  }
+
+  async function load() {
+    if (!url) return;
+    try {
+      const cached = JSON.parse(sessionStorage.getItem(KEY) || 'null');
+      if (cached && Date.now() - cached.t < TTL) return render(cached.posts);
+      const res = await fetch(url, { headers: { Accept: 'application/json' } });
+      if (!res.ok) return;
+      const posts = normalise(await res.json());
+      sessionStorage.setItem(KEY, JSON.stringify({ t: Date.now(), posts }));
+      render(posts);
+    } catch {
+      /* network or CSP failure: the fallback grid stays */
+    }
+  }
+
+  // Only fetch when the section is about to be seen.
+  if (grid && url) {
+    new IntersectionObserver(
+      ([e], io) => {
+        if (e.isIntersecting) {
+          io.disconnect();
+          load();
+        }
+      },
+      { rootMargin: '400px 0px' }
+    ).observe(grid);
+  }
+</script>

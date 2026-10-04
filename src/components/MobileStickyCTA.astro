@@ -2,16 +2,17 @@
 /**
  * MobileStickyCTA — persistent booking bar on small screens.
  *
- * Appears once the hero is out of view and retracts near the footer, where the
- * big CTA already lives. Pattern from sublimestudio.dk, which keeps a floating
- * booking button through the whole scroll.
+ * Shown only when it adds something: after the tour (which has its own
+ * button) and away from sections where it would cover content that moves
+ * under it — the review belts, the Instagram grid, the location block with
+ * its own CTA, and the footer.
  */
 import { business } from '../data/content.js';
 ---
 
 <div
   id="mobile-sticky-cta"
-  class="pointer-events-none fixed inset-x-0 bottom-0 z-30 translate-y-full border-t border-veta bg-marmol/95 p-3 transition-transform duration-400 ease-led md:hidden motion-reduce:transition-none"
+  class="pointer-events-none fixed inset-x-0 bottom-0 z-30 translate-y-full border-t border-veta bg-marmol/95 p-3 pb-[max(0.75rem,env(safe-area-inset-bottom))] transition-transform duration-420 ease-led md:hidden motion-reduce:transition-none"
 >
   <a
     class="btn btn-primary pointer-events-auto w-full"
@@ -23,28 +24,25 @@ import { business } from '../data/content.js';
 
 <script>
   const cta = document.getElementById('mobile-sticky-cta');
-  const hero = document.getElementById('hero-title');
-  const tail = document.getElementById('donde');
+  const tour = document.querySelector('[data-tour]');
+  const quiet = ['#resenas', '#donde', '#instagram', 'footer']
+    .map((s) => document.querySelector(s))
+    .filter(Boolean) as Element[];
 
-  if (cta && hero && window.matchMedia('(max-width: 767px)').matches) {
-    let pastHero = false;
-    let atTail = false;
-
-    const sync = () => cta.classList.toggle('translate-y-full', !(pastHero && !atTail));
+  if (cta && tour && window.matchMedia('(max-width: 767px)').matches) {
+    let inTour = true;
+    const busy = new Set<Element>();
+    const sync = () => cta.classList.toggle('translate-y-full', inTour || busy.size > 0);
 
     new IntersectionObserver(([e]) => {
-      pastHero = !e.isIntersecting;
+      inTour = e.isIntersecting;
       sync();
-    }).observe(hero);
+    }).observe(tour);
 
-    if (tail) {
-      new IntersectionObserver(
-        ([e]) => {
-          atTail = e.isIntersecting;
-          sync();
-        },
-        { rootMargin: '400px 0px 0px 0px' }
-      ).observe(tail);
-    }
+    const io = new IntersectionObserver((entries) => {
+      entries.forEach((e) => (e.isIntersecting ? busy.add(e.target) : busy.delete(e.target)));
+      sync();
+    }, { rootMargin: '0px 0px -20% 0px' });
+    quiet.forEach((el) => io.observe(el));
   }
 </script>

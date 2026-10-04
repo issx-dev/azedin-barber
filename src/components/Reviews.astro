@@ -1,68 +1,170 @@
 ---
 /**
- * Reviews — attribution is the argument.
+ * Reseñas — a crowd of voices, not a wall of paragraphs.
  *
- * Every quote is verbatim from a verified Booksy customer, with the real name,
- * the service booked and the date. That is what separates this from the
- * three-testimonials-with-invented-names pattern: it is checkable.
+ * Three layers, each short enough to read at a glance:
+ *   1. The number: 5,0 and 179, set large. That alone is the argument.
+ *   2. One featured quote that rotates every 6 s (the four long ones), with
+ *      name, service and date — still verifiable, never more than ~25 words
+ *      on screen at once.
+ *   3. Two belts of one-line reviews drifting in opposite directions. Pure
+ *      CSS, pauses on hover/focus, stops under reduced-motion.
  */
-import { reviews, reviewThemes, business } from '../data/content.js';
+import { reviews, shortReviews, reviewThemes, business } from '../data/content.js';
 
-const featured = reviews.find((r) => r.featured) ?? reviews[0];
-const rest = reviews.filter((r) => r !== featured);
-
-const fmt = (iso) =>
-  new Date(iso).toLocaleDateString('es-ES', { month: 'short', year: 'numeric' });
+const featured = reviews.slice(0, 4);
+const half = Math.ceil(shortReviews.length / 2);
+const beltA = shortReviews.slice(0, half);
+const beltB = shortReviews.slice(half);
+const fmt = (iso: string) => new Date(iso).toLocaleDateString('es-ES', { month: 'short', year: 'numeric' });
 ---
 
-<section id="resenas" class="relative py-20 md:py-30" aria-labelledby="resenas-title">
+<section id="resenas" class="relative overflow-hidden py-20 md:py-30" aria-labelledby="resenas-title">
   <div class="frame">
-    <header class="ruled-bottom flex flex-wrap items-end justify-between gap-6 pb-8">
+    <div class="grid gap-x-16 gap-y-12 lg:grid-cols-[auto_1fr] lg:items-center">
+      <!-- 1. The number. -->
       <div>
-        <p class="eyebrow mb-4">{business.rating} ★ en {business.reviewSource}</p>
-        <h2 id="resenas-title" class="text-sect display text-cal">
-          {business.reviewCount} reseñas<br />verificadas
-        </h2>
+        <p class="eyebrow mb-4">Reseñas verificadas · {business.reviewSource}</p>
+        <h2 id="resenas-title" class="sr-only">Reseñas</h2>
+        <p class="font-display leading-none text-cal" style="font-size: clamp(5rem, 14vw, 10rem); font-variation-settings: 'wght' 600;">
+          {business.rating}
+        </p>
+        <p class="mt-4 flex items-center gap-3">
+          <span class="text-pino tracking-wide" aria-hidden="true">★★★★★</span>
+          <span class="font-body text-cap text-cal-dim tabular">{business.reviewCount} reseñas</span>
+        </p>
+        <ul class="mt-6 flex flex-wrap gap-2" aria-label="Lo que más se repite">
+          {reviewThemes.slice(0, 3).map((t) => <li class="pill">{t}</li>)}
+        </ul>
       </div>
-      <!-- What customers actually repeat, in frequency order. -->
-      <ul class="flex flex-wrap gap-x-5 gap-y-2">
-        {reviewThemes.map((t) => <li class="font-body text-cap uppercase tracking-wide text-humo">{t}</li>)}
-      </ul>
-    </header>
 
-    <!-- The one that answers the unasked question: can I bring my kid?
-         Set in the body face, not Cinzel: Roman capitals stop being legible
-         past six or seven words. -->
-    <blockquote class="ruled-bottom py-10 md:py-14" data-tour-row>
-      <p class="font-body text-cal" style="font-size: var(--step-2); line-height: 1.25; font-weight: 400; max-width: 30ch; text-wrap: balance;">
-        “{featured.quote}”
-      </p>
-      <footer class="mt-6 font-body text-cap text-humo tabular">
-        {featured.author} · {featured.service} con {featured.barber} · {fmt(featured.date)}
-      </footer>
-    </blockquote>
-
-    <ul class="grid md:grid-cols-2 lg:grid-cols-3">
-      {
-        rest.map((r, i) => (
-          <li
-            class="ruled-bottom border-veta py-8 md:py-10 md:[&:nth-child(odd)]:pr-10 lg:pr-10"
-            data-tour-row
-          >
-            <p class="text-cal" style="max-width: 38ch;">“{r.quote}”</p>
-            <p class="mt-5 font-body text-cap text-humo tabular">
-              {r.author} · {r.service} con {r.barber} · {fmt(r.date)}
-            </p>
-          </li>
-        ))
-      }
-    </ul>
-
-    <p class="mt-8 font-body text-cap text-humo">
-      Fuente:
-      <a href={business.booksyProfileUrl} target="_blank" rel="noopener noreferrer" class="underline decoration-veta underline-offset-4 hover:text-cal hover:decoration-roble">
-        perfil de {business.legalName} en Booksy
-      </a>. Todas las reseñas son de clientes con reserva confirmada.
-    </p>
+      <!-- 2. One quote at a time. -->
+      <div class="rev-rotator relative min-h-[13rem] border-l border-veta pl-6 md:min-h-[11rem] md:pl-10" aria-live="polite">
+        {
+          featured.map((r, i) => (
+            <figure class="rev-slide absolute inset-0 pl-6 md:pl-10" data-i={i} style={i === 0 ? '' : 'opacity:0;visibility:hidden'}>
+              <blockquote>
+                <p class="font-body text-cal" style="font-size: var(--step-2); line-height: 1.25; text-wrap: balance; max-width: 30ch;">
+                  “{r.quote}”
+                </p>
+              </blockquote>
+              <figcaption class="mt-5 font-body text-cap text-humo tabular">
+                <span class="text-cal">{r.author}</span> · {r.service} con {r.barber} · {fmt(r.date)}
+              </figcaption>
+            </figure>
+          ))
+        }
+        <div class="absolute -bottom-8 left-6 flex gap-2 md:left-10" role="tablist" aria-label="Elegir reseña">
+          {
+            featured.map((r, i) => (
+              <button
+                type="button"
+                class="rev-dot h-px w-8 bg-veta transition-colors duration-240"
+                role="tab"
+                aria-label={`Reseña de ${r.author}`}
+                aria-selected={i === 0 ? 'true' : 'false'}
+                data-i={i}
+              />
+            ))
+          }
+        </div>
+      </div>
+    </div>
   </div>
+
+  <!-- 3. The belts. -->
+  <div class="mt-24 space-y-4" aria-label="Más reseñas de clientes">
+    {
+      [beltA, beltB].map((belt, b) => (
+        <div class="rev-belt group flex overflow-hidden" data-dir={b === 0 ? 'left' : 'right'}>
+          {[0, 1].map((copy) => (
+            <ul class="rev-track flex shrink-0 gap-4 pr-4" aria-hidden={copy === 1 ? 'true' : undefined}>
+              {belt.map((r) => (
+                <li class="flex shrink-0 items-baseline gap-3 border border-veta bg-marmol-2 px-5 py-3 shadow-reflejo">
+                  <span class="whitespace-nowrap font-body text-cal">“{r.quote}”</span>
+                  <span class="whitespace-nowrap font-body text-cap text-humo">{r.author}</span>
+                </li>
+              ))}
+            </ul>
+          ))}
+        </div>
+      ))
+    }
+  </div>
+
+  <p class="frame mt-10 font-body text-cap text-humo">
+    Todas de clientes con reserva confirmada.
+    <a href={business.booksyProfileUrl} target="_blank" rel="noopener noreferrer" class="text-cal underline decoration-veta underline-offset-4 hover:decoration-roble">
+      Ver las {business.reviewCount} en Booksy
+    </a>
+  </p>
 </section>
+
+<style>
+  .rev-track {
+    animation: rev-left 60s linear infinite;
+  }
+  .rev-belt[data-dir='right'] .rev-track {
+    animation-name: rev-right;
+    animation-duration: 70s;
+  }
+  .rev-belt:hover .rev-track,
+  .rev-belt:focus-within .rev-track {
+    animation-play-state: paused;
+  }
+  @keyframes rev-left {
+    to { transform: translateX(-100%); }
+  }
+  @keyframes rev-right {
+    from { transform: translateX(-100%); }
+    to { transform: translateX(0); }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .rev-track { animation: none; }
+    .rev-belt { overflow-x: auto; }
+  }
+  .rev-slide {
+    transition: opacity 420ms var(--ease-led), visibility 0s linear 420ms;
+  }
+  .rev-slide.is-on {
+    transition: opacity 420ms var(--ease-led), visibility 0s;
+  }
+  .rev-dot[aria-selected='true'] {
+    background: var(--c-roble);
+  }
+</style>
+
+<script>
+  const root = document.querySelector<HTMLElement>('.rev-rotator');
+  if (root) {
+    const slides = [...root.querySelectorAll<HTMLElement>('.rev-slide')];
+    const dots = [...root.querySelectorAll<HTMLButtonElement>('.rev-dot')];
+    const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    let i = 0;
+    let timer = 0;
+
+    function show(n: number) {
+      i = (n + slides.length) % slides.length;
+      slides.forEach((s, k) => {
+        const on = k === i;
+        s.classList.toggle('is-on', on);
+        s.style.opacity = on ? '1' : '0';
+        s.style.visibility = on ? 'visible' : 'hidden';
+      });
+      dots.forEach((d, k) => d.setAttribute('aria-selected', String(k === i)));
+    }
+    function play() {
+      if (reduced) return;
+      clearInterval(timer);
+      timer = window.setInterval(() => show(i + 1), 6000);
+    }
+    dots.forEach((d) => d.addEventListener('click', () => { show(Number(d.dataset.i)); play(); }));
+    // Never rotate while someone is reading it.
+    root.addEventListener('mouseenter', () => clearInterval(timer));
+    root.addEventListener('mouseleave', play);
+    root.addEventListener('focusin', () => clearInterval(timer));
+    // Only rotate while visible.
+    new IntersectionObserver(([e]) => (e.isIntersecting ? play() : clearInterval(timer))).observe(root);
+    show(0);
+  }
+</script>

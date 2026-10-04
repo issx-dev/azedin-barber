@@ -16,7 +16,7 @@ const links = [
 ];
 ---
 
-<header class="fixed inset-x-0 top-0 z-40 border-b border-veta bg-marmol/90 ">
+<header class="site-header fixed inset-x-0 top-0 z-50 border-b border-transparent" data-header>
   <div class="frame flex h-16 items-center justify-between gap-3 sm:gap-6">
     <a href="#hero" class="shrink-0 whitespace-nowrap font-display text-cap font-semibold uppercase tracking-wider text-cal" aria-label={business.legalName}>
       Azedin <span class="text-roble">Barber</span>
@@ -86,7 +86,30 @@ const links = [
   </nav>
 </header>
 
+<style>
+  /* Over the tour the header is a thin veil; once you scroll it becomes a
+     solid marble bar, so it never sits transparent over content. */
+  .site-header {
+    background: linear-gradient(to bottom, rgb(15 15 20 / 0.7), rgb(15 15 20 / 0));
+    transition:
+      background-color 240ms var(--ease-marmol),
+      border-color 240ms var(--ease-marmol),
+      box-shadow 240ms var(--ease-marmol);
+  }
+  .site-header.is-solid {
+    background: var(--c-marmol);
+    border-color: var(--c-veta);
+    box-shadow: 0 1px 0 0 rgb(236 236 234 / 0.04);
+  }
+</style>
+
 <script>
+  // Solid as soon as the page leaves the very top.
+  const header = document.querySelector<HTMLElement>('[data-header]');
+  const sync = () => header?.classList.toggle('is-solid', window.scrollY > 8);
+  sync();
+  window.addEventListener('scroll', sync, { passive: true });
+
   // Progressive enhancement: the panel is a plain <nav> that we show/hide.
   const toggle = document.querySelector('[data-nav-toggle]');
   const panel = document.querySelector('[data-nav-panel]');

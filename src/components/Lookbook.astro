@@ -1,85 +1,76 @@
 ---
 /**
- * Lookbook — "Archivo".
+ * Archivo — the work, as a reel you scroll through.
  *
- * Two readings of one list, no duplicated DOM: a dense grid below `lg`, and a
- * horizontal rail that scrolls sideways while pinned above it. The rail is what
- * turns scrolling into a walk along the shop's work rather than a page of
- * thumbnails.
+ * One pinned horizontal rail on EVERY breakpoint (the previous version
+ * collapsed to a grid on phones, and the pin never ran there). On phones each
+ * card is ~78vw, so one cut fills the screen and the next peeks in.
  *
- * Hard constraint: available photography is 360–481px wide (Instagram), so
- * nothing is rendered above ~400px of layout width. Raise it only once
- * HAS_HIRES_PHOTOGRAPHY is true.
+ * The card nearest the centre is "on the chair": full brightness and scale,
+ * its video playing; the rest sit back. A counter (03 / 13) and the cut's name
+ * update as you pass. Without JS the rail is a native horizontal scroller with
+ * snap points, so nothing is ever unreachable.
  */
 import { Image } from 'astro:assets';
-import { galleryItems, business, HAS_HIRES_PHOTOGRAPHY } from '../data/content.js';
+import { galleryItems, business } from '../data/content.js';
 
-const INITIAL = 6;
+const total = String(galleryItems.length).padStart(2, '0');
 ---
 
-<section id="archivo" class="relative py-20 md:py-30" aria-labelledby="archivo-title">
-  <div class="frame">
-    <header class="ruled-bottom flex flex-wrap items-end justify-between gap-6 pb-8 lg:border-0 lg:pb-0">
-      <div class="lg:hidden">
-        <p class="eyebrow mb-4">{galleryItems.length} trabajos</p>
-        <h2 id="archivo-title" class="text-sect display text-cal">Archivo</h2>
+<section id="archivo" class="relative" aria-labelledby="archivo-title" data-reel>
+  <div class="reel-stage flex min-h-[100svh] flex-col justify-center overflow-hidden py-20 md:py-0">
+    <header class="frame flex items-end justify-between gap-6">
+      <div>
+        <p class="eyebrow mb-3">Trabajos recientes</p>
+        <h2 id="archivo-title" class="text-sect display">Archivo</h2>
       </div>
-      <a
-        href={business.instagramUrl}
-        target="_blank"
-        rel="noopener noreferrer"
-        class="font-body text-cap uppercase tracking-wide text-humo transition-colors duration-120 ease-marmol hover:text-cal"
-      >
-        Más en Instagram <span class="text-roble">→</span>
-      </a>
+      <p class="pb-1 font-display text-sub tabular text-humo" aria-hidden="true">
+        <span class="reel-index text-cal">01</span> / {total}
+      </p>
     </header>
-  </div>
 
-  <!-- Pinned on desktop; a plain block everywhere else. The heading rides
-       inside the pinned area so the section never loses its label mid-tour.
-       `overflow-clip` keeps the oversized rail from widening the document.
-       The track reserves the full scroll distance of the tour up front (hence
-       `pinSpacing: false` in motion.js), so pinning never shifts the layout. -->
-  <div
-    data-track
-    class="relative lg:overflow-x-clip"
-  >
-    <!-- ScrollTrigger pins THIS inner box; the track above keeps its own height
-         in normal flow, so going in and out of the pin shifts nothing. -->
-    <div data-pin class="lg:flex lg:h-screen lg:flex-col lg:justify-center">
-    <div class="frame hidden lg:mb-10 lg:block lg:max-w-none">
-      <div class="flex items-end justify-between gap-6">
-        <h2 id="archivo-title-lg" class="text-sect display text-cal">Archivo</h2>
-        <p class="eyebrow pb-2">Desliza · {galleryItems.length} trabajos</p>
-      </div>
-    </div>
-
-    <div class="frame lg:max-w-none lg:pr-0">
-      <ul
-        data-rail
-        class="mt-10 grid grid-cols-2 gap-x-gap gap-y-10 md:grid-cols-3 lg:mt-0 lg:flex lg:w-max lg:gap-8"
-      >
+    <!-- No-JS: native scroller with snap. With JS: driven by the page scroll. -->
+    <div class="reel-viewport mt-8 overflow-x-auto md:mt-12" tabindex="0" aria-label="Galería de cortes, desplazable">
+      <ul class="reel-rail flex w-max gap-4 px-[11vw] md:gap-8 md:px-[calc(50vw-160px)]">
         {
           galleryItems.map((item, i) => (
-            <li class={`${i >= INITIAL ? 'archivo-extra hidden md:block' : ''} lg:!block lg:w-[clamp(220px,19vw,300px)] lg:shrink-0`}>
+            <li class="reel-card w-[78vw] shrink-0 snap-center sm:w-[44vw] md:w-[clamp(240px,22vw,320px)]" data-i={i}>
               <figure>
-                <div class="relative aspect-reel overflow-hidden border border-veta bg-marmol-2">
-                  <Image
-                    src={item.src}
-                    alt={item.alt}
-                    width={400}
-                    height={711}
-                    widths={[200, 300, 400]}
-                    sizes="(min-width: 1024px) 300px, (min-width: 768px) 30vw, 44vw"
-                    format="avif"
-                    quality={70}
-                    loading={i < 4 ? 'eager' : 'lazy'}
-                    style={`object-position: ${item.focus}`}
-                    class="h-full w-full object-cover"
-                  />
+                <div class="reel-media relative aspect-reel overflow-hidden border border-veta bg-marmol-2">
+                  {item.video ? (
+                    <video
+                      class="reel-video absolute inset-0 h-full w-full object-cover"
+                      muted
+                      loop
+                      playsinline
+                      preload="none"
+                      poster={item.poster}
+                      aria-label={item.alt}
+                      data-src={item.video}
+                    />
+                  ) : (
+                    <Image
+                      src={item.src}
+                      alt={item.alt}
+                      width={480}
+                      height={853}
+                      widths={[320, 480]}
+                      sizes="(min-width: 768px) 320px, 78vw"
+                      format="avif"
+                      quality={70}
+                      loading={i < 3 ? 'eager' : 'lazy'}
+                      style={`object-position: ${item.focus}`}
+                      class="absolute inset-0 h-full w-full object-cover"
+                    />
+                  )}
+                  {item.video && (
+                    <span class="absolute left-3 top-3 border border-cal/30 bg-marmol/70 px-2 py-1 font-body text-[0.625rem] font-semibold uppercase tracking-wide text-cal">
+                      Vídeo
+                    </span>
+                  )}
                 </div>
-                <figcaption class="mt-3 flex items-baseline justify-between gap-3">
-                  <span class="font-body text-cap uppercase tracking-wide text-cal">{item.label}</span>
+                <figcaption class="mt-4 flex items-baseline justify-between gap-3">
+                  <span class="font-display text-cap font-semibold uppercase tracking-wide text-cal">{item.label}</span>
                   <span class="font-body text-cap text-humo">{item.barber}</span>
                 </figcaption>
               </figure>
@@ -88,39 +79,154 @@ const INITIAL = 6;
         }
       </ul>
     </div>
+
+    <div class="frame mt-8 flex items-center justify-between gap-6 md:mt-12">
+      <span class="relative block h-px flex-1 bg-veta" aria-hidden="true">
+        <span class="reel-progress absolute inset-y-0 left-0 block w-full origin-left scale-x-0 bg-roble"></span>
+      </span>
+      <a
+        href={business.instagramUrl}
+        target="_blank"
+        rel="noopener noreferrer"
+        class="shrink-0 font-body text-cap font-semibold uppercase tracking-wide text-humo transition-colors duration-120 hover:text-cal"
+      >
+        Más en Instagram <span class="text-roble">→</span>
+      </a>
     </div>
-  </div>
-
-  <div class="frame">
-    {
-      galleryItems.length > INITIAL && (
-        <div class="mt-12 md:hidden">
-          <button type="button" class="btn btn-ghost w-full" data-archivo-toggle aria-expanded="false">
-            Ver los {galleryItems.length} trabajos
-          </button>
-        </div>
-      )
-    }
-
-    {
-      !HAS_HIRES_PHOTOGRAPHY && (
-        <p class="mt-10 font-body text-cap text-humo">
-          Imágenes provisionales a resolución de Instagram. Pendiente de
-          sustituir por los originales del estudio.
-        </p>
-      )
-    }
   </div>
 </section>
 
+<style>
+  .reel-viewport {
+    scroll-snap-type: x mandatory;
+    scrollbar-width: none;
+  }
+  .reel-viewport::-webkit-scrollbar {
+    display: none;
+  }
+  /* Driven by scroll: the viewport no longer scrolls natively. */
+  [data-reel].is-live .reel-viewport {
+    overflow: visible;
+    scroll-snap-type: none;
+  }
+  .reel-card {
+    transition:
+      opacity 420ms var(--ease-led),
+      transform 420ms var(--ease-marmol);
+  }
+  /* Off-focus cards sit back: the photo dims and the card shrinks a touch.
+     Only the media dims — captions keep full contrast (WCAG AA). */
+  [data-reel].is-live .reel-card {
+    transform: scale(0.92);
+  }
+  [data-reel].is-live .reel-card .reel-media {
+    filter: brightness(0.3) saturate(0.5);
+    transition: filter 420ms var(--ease-led);
+  }
+  [data-reel].is-live .reel-card.is-on {
+    transform: scale(1);
+  }
+  [data-reel].is-live .reel-card.is-on .reel-media {
+    filter: none;
+  }
+  @media (prefers-reduced-motion: reduce) {
+    [data-reel].is-live .reel-card {
+      transform: none;
+    }
+  }
+</style>
+
 <script>
-  // Mobile-only disclosure. Desktop shows the whole rail, so there is nothing
-  // to toggle there.
-  const btn = document.querySelector('[data-archivo-toggle]');
-  btn?.addEventListener('click', () => {
-    const open = btn.getAttribute('aria-expanded') === 'true';
-    document.querySelectorAll('.archivo-extra').forEach((el) => el.classList.toggle('hidden', open));
-    btn.setAttribute('aria-expanded', String(!open));
-    btn.textContent = open ? 'Ver los trabajos' : 'Ver menos';
-  });
+  import gsap from 'gsap';
+  import { ScrollTrigger } from 'gsap/ScrollTrigger';
+  gsap.registerPlugin(ScrollTrigger);
+
+  const root = document.querySelector<HTMLElement>('[data-reel]');
+  const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  if (root) {
+    const stage = root.querySelector<HTMLElement>('.reel-stage')!;
+    const rail = root.querySelector<HTMLElement>('.reel-rail')!;
+    const cards = [...root.querySelectorAll<HTMLElement>('.reel-card')];
+    const indexEl = root.querySelector<HTMLElement>('.reel-index');
+    const progress = root.querySelector<HTMLElement>('.reel-progress');
+    let on = -1;
+
+    // The focused card ("on the chair") follows progress through the rail, so
+    // the first and last cuts get their turn too — a centre-distance test can
+    // never select them because they cannot scroll to the centre.
+    function focus(p?: number) {
+      let best = 0;
+      if (typeof p === 'number') {
+        best = Math.round(p * (cards.length - 1));
+      } else {
+        const mid = window.innerWidth / 2;
+        let bestD = Infinity;
+        cards.forEach((c, i) => {
+          const r = c.getBoundingClientRect();
+          const d = Math.abs(r.left + r.width / 2 - mid);
+          if (d < bestD) { bestD = d; best = i; }
+        });
+      }
+      if (best === on) return;
+      on = best;
+      cards.forEach((c, i) => c.classList.toggle('is-on', i === best));
+      if (indexEl) indexEl.textContent = String(best + 1).padStart(2, '0');
+      // Only the focused video plays; the others pause and keep their poster.
+      cards.forEach((c, i) => {
+        const v = c.querySelector<HTMLVideoElement>('video');
+        if (!v) return;
+        if (i === best && !reduced) {
+          if (!v.src) v.src = v.dataset.src!;
+          v.play().catch(() => {});
+        } else v.pause();
+      });
+    }
+
+    if (reduced) {
+      // Keep the native snap scroller; just track focus as the user swipes.
+      root.querySelector('.reel-viewport')!.addEventListener('scroll', focus, { passive: true });
+      focus();
+    } else {
+      root.classList.add('is-live');
+      // Travel is computed so that card k sits exactly at the screen centre
+      // at progress k/(n-1): the focused cut is always fully on screen, and
+      // the rail starts with card 0 centred and ends with the last centred.
+      const centreOf = (c: HTMLElement) => c.offsetLeft + c.offsetWidth / 2;
+      const offsetFor = (k: number) => centreOf(cards[k]) - window.innerWidth / 2;
+      const travel = () => offsetFor(cards.length - 1) - offsetFor(0);
+      gsap.set(rail, { x: () => -offsetFor(0) });
+      gsap.to(rail, {
+        x: () => -offsetFor(cards.length - 1),
+        ease: 'none',
+        scrollTrigger: {
+          trigger: root,
+          pin: stage,
+          start: 'top top',
+          end: () => '+=' + travel(),
+          scrub: 1, // a little lag = a glide, not a ratchet
+          // When the thumb stops, glide to the nearest cut so one is always
+          // centred, never left between two.
+          snap: {
+            snapTo: 1 / Math.max(1, cards.length - 1),
+            duration: { min: 0.25, max: 0.6 },
+            delay: 0.12,
+            ease: 'power2.inOut',
+          },
+          invalidateOnRefresh: true,
+          anticipatePin: 1,
+        },
+        // Fires on every animated frame of the (lagged) scrub, so the focused
+        // card and the counter match what is actually on screen, not where the
+        // scrollbar already is.
+        onUpdate() {
+          if (progress) progress.style.transform = `scaleX(${this.progress()})`;
+          focus();
+        },
+      });
+      focus();
+      document.fonts?.ready.then(() => ScrollTrigger.refresh());
+      window.addEventListener('load', () => ScrollTrigger.refresh(), { once: true });
+    }
+  }
 </script>

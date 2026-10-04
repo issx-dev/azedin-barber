@@ -68,7 +68,13 @@ export default {
     borderWidth: { 0: '0', DEFAULT: '1px', 2: '2px' },
     letterSpacing: { normal: '0', wide: '0.18em', wider: '0.3em' },
     lineHeight: { none: '1', tight: '1.05', snug: '1.35', normal: '1.55' },
-    opacity: { 0: '0', 6: '0.06', 20: '0.2', 40: '0.4', 60: '0.6', 80: '0.8', 100: '1' },
+    // Full 5-step scale. This also drives colour modifiers (`bg-marmol/90`):
+    // a restricted scale silently drops those classes from the CSS — which is
+    // exactly how the header, the sticky CTA and the tour gradients lost their
+    // backgrounds without any build error.
+    opacity: Object.fromEntries(
+      [0, 5, 6, 10, 15, 20, 25, 30, 40, 50, 60, 70, 75, 80, 85, 90, 95, 100].map((n) => [n, String(n / 100)])
+    ),
 
     extend: {
       fontWeight: { normal: '400', medium: '500', semibold: '600', bold: '700' },

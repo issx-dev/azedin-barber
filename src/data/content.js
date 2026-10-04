@@ -179,6 +179,27 @@ export const reviews = [
   },
 ];
 
+/**
+ * Short verified reviews for the moving wall: one line each, so the section
+ * reads as a crowd of voices rather than a block of text. Verbatim (Booksy).
+ */
+export const shortReviews = [
+  { quote: 'Puntual y muy atento, una máquina.', author: 'Zouhair' },
+  { quote: 'De los mejores en Berja.', author: 'Virginia' },
+  { quote: 'Son los mejores.', author: 'Gador' },
+  { quote: 'Excelentes profesionales.', author: 'Alejandro' },
+  { quote: 'Todo perfecto, muy buena gente.', author: 'Miguel' },
+  { quote: 'Muy competente y profesionales.', author: 'Manu' },
+  { quote: 'Son puntuales y amables.', author: 'Julio' },
+  { quote: 'Muy bien pelado, calidad.', author: 'Vlad' },
+  { quote: 'Todo perfecto. Muy recomendable.', author: 'José C.' },
+  { quote: 'Buen profesional, trato agradable y muy atento.', author: 'Daniel' },
+  { quote: 'Correcto y rápido.', author: 'Juan' },
+  { quote: 'Muy buen trato, os recomiendo 100 por 100.', author: 'Fina' },
+  { quote: 'Unos cracks.', author: 'Álvaro' },
+  { quote: 'Los mejores.', author: 'Marian' },
+];
+
 /** The five words customers actually repeat across ~60 reviews, in order. */
 export const reviewThemes = ['Profesionalidad', 'Detalle', 'Buen trato', 'Puntualidad', 'Limpieza'];
 
@@ -186,11 +207,13 @@ export const reviewThemes = ['Profesionalidad', 'Detalle', 'Buen trato', 'Puntua
 // Placeholder frames. `focus` sets object-position so the haircut, not the
 // ceiling, survives the crop.
 export const galleryItems = [
+  { label: 'Fade a máquina', barber: 'Azedin', alt: 'Vídeo: fade a máquina en primer plano', video: '/video/corte-fade.mp4', poster: '/video/corte-fade.webp' },
   { label: 'Skin Fade', barber: 'Azedin', alt: 'Skin fade degradado', src: corteSkinFade, width: 1179, height: 2071, focus: 'center 30%' },
   { label: 'Mid Fade', barber: 'Azedin', alt: 'Mid fade degradado', src: lookbookImg06, width: 1080, height: 1350, focus: 'center 30%' },
   { label: 'Modern Mule', barber: 'Azedin', alt: 'Mule moderno con fade', src: lookbookImg03, width: 1080, height: 1350, focus: 'center 30%' },
   { label: 'Taper Fade', barber: 'Azedin', alt: 'Taper fade con barba', src: lookbookImg02, width: 1080, height: 1350, focus: 'center 30%' },
   { label: 'Textured Crop', barber: 'Samir', alt: 'Crop texturizado', src: lookbookImg01, width: 1080, height: 1350, focus: 'center 28%' },
+  { label: 'Wolf cut', barber: 'Azedin', alt: 'Vídeo: wolf cut en primer plano', video: '/video/corte-wolf.mp4', poster: '/video/corte-wolf.webp' },
   { label: 'Burst Fade', barber: 'Samir', alt: 'Burst fade', src: lookbookImg04, width: 1080, height: 1350, focus: 'center 30%' },
   { label: 'Crop Top', barber: 'Azedin', alt: 'Crop top texturizado', src: corteCropTop, width: 1755, height: 2340, focus: 'center 30%' },
   { label: 'High & Tight', barber: 'Samir', alt: 'High and tight fade', src: lookbookImg07, width: 1080, height: 1350, focus: 'center 30%' },

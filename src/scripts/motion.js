@@ -11,7 +11,6 @@
  *   LAMA    — images reveal through vertical slats, like the oak wall.
  *   VETA    — a rule draws under each heading (CSS where supported).
  *   ENCENDIDO — rows and the 5.0 star come on with a brightness settle.
- *   RAIL    — the archive runs sideways while pinned (desktop only).
  */
 import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
@@ -25,7 +24,18 @@ let lenisRaf;
 async function initLenis() {
   const { default: Lenis } = await import('lenis');
   if (!mm) return;
-  lenis = new Lenis({ autoRaf: false, lerp: 0.1 });
+  // syncTouch: on phones the native flick is replaced by the same eased
+  // inertia as desktop, so the scroll tour glides instead of stuttering.
+  // syncTouchLerp is gentler than desktop lerp because a thumb flick already
+  // carries momentum.
+  lenis = new Lenis({
+    autoRaf: false,
+    lerp: 0.085,
+    syncTouch: true,
+    syncTouchLerp: 0.075,
+    touchInertiaExponent: 1.7,
+    wheelMultiplier: 0.9,
+  });
   lenis.on('scroll', ScrollTrigger.update);
   lenisRaf = (t) => lenis?.raf(t * 1000);
   gsap.ticker.add(lenisRaf);
@@ -117,40 +127,9 @@ function init() {
     });
   });
 
-  mm.add('(min-width: 1024px) and (prefers-reduced-motion: no-preference)', () => {
+  // Smooth scroll on every viewport, touch included.
+  mm.add('(prefers-reduced-motion: no-preference)', () => {
     initLenis();
-
-    // RAIL — the archive runs sideways while an inner box is pinned; the outer
-    // track keeps its height in normal flow so the pin never shifts layout.
-    const track = document.querySelector('[data-track]');
-    const pinBox = document.querySelector('[data-pin]');
-    const rail = document.querySelector('[data-rail]');
-    if (track && pinBox && rail) {
-      // Travel = the rail's overflow. The track's height is set to exactly
-      // one viewport plus that travel, so there is no dead space after the pin
-      // releases and the last cards do get reached.
-      const travel = () => Math.max(0, rail.scrollWidth - window.innerWidth + 80);
-      const sizeTrack = () => {
-        track.style.height = `${window.innerHeight + travel()}px`;
-      };
-      sizeTrack();
-      gsap.to(rail, {
-        x: () => -travel(),
-        ease: 'none',
-        scrollTrigger: {
-          trigger: track,
-          pin: pinBox,
-          pinSpacing: false,
-          anticipatePin: 1,
-          scrub: 1,
-          invalidateOnRefresh: true,
-          onRefreshInit: sizeTrack,
-          start: 'top top',
-          end: () => '+=' + travel(),
-        },
-      });
-    }
-
     return () => teardownLenis();
   });
 
