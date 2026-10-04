@@ -1,244 +1,66 @@
 ---
 /**
- * Reviews — Hybrid carousel.
+ * Reviews — attribution is the argument.
  *
- * - Mobile (≤767px): CSS scroll-snap horizontal carousel, no autoplay.
- *   Dots indicator below syncs to the closest article on scroll; clicking
- *   a dot scrolls the corresponding article into the viewport center.
- *   No fade edges — the user reads each review at their own pace.
- * - Desktop (≥768px): marquee autoplay (42s loop), fade edges at viewport
- *   boundaries. Track is duplicated for seamless loop. Pause on hover
- *   (existing) and on keyboard focus (a11y) via global.css focus rule.
+ * Every quote is verbatim from a verified Booksy customer, with the real name,
+ * the service booked and the date. That is what separates this from the
+ * three-testimonials-with-invented-names pattern: it is checkable.
  */
-import { reviews, business } from '../data/content.js';
-import StarRating from './StarRating.astro';
+import { reviews, reviewThemes, business } from '../data/content.js';
 
-// Duplicate only for desktop marquee seamless loop
-const track = [...reviews, ...reviews];
+const featured = reviews.find((r) => r.featured) ?? reviews[0];
+const rest = reviews.filter((r) => r !== featured);
+
+const fmt = (iso) =>
+  new Date(iso).toLocaleDateString('es-ES', { month: 'short', year: 'numeric' });
 ---
 
-<section
-  id="reseñas"
-  class="relative overflow-hidden py-[clamp(5rem,10vw,8rem)]"
-  aria-labelledby="reviews-heading"
->
+<section id="resenas" class="relative py-20 md:py-30" aria-labelledby="resenas-title">
+  <div class="frame">
+    <header class="ruled-bottom flex flex-wrap items-end justify-between gap-6 pb-8">
+      <div>
+        <p class="eyebrow mb-4">{business.rating} ★ en {business.reviewSource}</p>
+        <h2 id="resenas-title" class="text-sect uppercase text-caliza">
+          {business.reviewCount} reseñas<br />verificadas
+        </h2>
+      </div>
+      <!-- What customers actually repeat, in frequency order. -->
+      <ul class="flex flex-wrap gap-x-5 gap-y-2">
+        {reviewThemes.map((t) => <li class="font-mono text-cap uppercase tracking-wide text-lead">{t}</li>)}
+      </ul>
+    </header>
 
-  <!-- Header -->
-  <div class="px-6 md:px-10 max-w-4xl mx-auto mb-16">
-    <p
-      data-reveal="up"
-      class="text-[10px] tracking-[0.3em] uppercase text-ink-dim font-semibold mb-4"
-    >
-      Lo que dicen
-    </p>
-    <h2
-      id="reviews-heading"
-      data-reveal
-      class="font-display display-large text-cream"
-    >
-      Reseñas
-    </h2>
-  </div>
+    <!-- The one that answers the unasked question: can I bring my kid? -->
+    <blockquote class="ruled-bottom py-10 md:py-14" data-tour-row>
+      <p class="font-display uppercase text-caliza" style="font-size: var(--step-3); line-height: 1.05; letter-spacing: -0.03em; max-width: 34ch;">
+        “{featured.quote}”
+      </p>
+      <footer class="mt-6 font-mono text-cap text-lead tabular">
+        {featured.author} · {featured.service} con {featured.barber} · {fmt(featured.date)}
+      </footer>
+    </blockquote>
 
-  <!-- Mobile: scroll-snap carousel — no autoplay, no fade edges -->
-  <div class="md:hidden" aria-label="Carrusel de reseñas">
-    <div
-      id="reviews-scroll"
-      class="reviews-scroll flex gap-6 overflow-x-auto snap-x snap-mandatory pb-4 -mx-1 px-1"
-    >
-      {reviews.map((review) => (
-        <article
-          class="reviews-article shrink-0 w-[85vw] max-w-[480px] snap-center border-l border-border-hi pl-7 select-text"
-          aria-label={`Reseña de cliente: ${review.service} con ${review.barber}`}
-        >
-          <span
-            class="font-display text-[3.5rem] text-ink-dim leading-[0.7] block mb-2 select-none"
-            style="opacity: 0.18;"
-            aria-hidden="true"
+    <ul class="grid md:grid-cols-2 lg:grid-cols-3">
+      {
+        rest.map((r, i) => (
+          <li
+            class="ruled-bottom border-lead-lo py-8 md:py-10 md:[&:nth-child(odd)]:pr-10 lg:pr-10"
+            data-tour-row
           >
-            &ldquo;
-          </span>
-          <blockquote class="font-serif-quote text-[clamp(1.1rem,4vw,1.5rem)] text-cream leading-snug tracking-[-0.01em] mb-5">
-            {review.quote}
-          </blockquote>
-          <footer class="flex items-center gap-3">
-            <span class="text-[10px] uppercase tracking-[0.18em] font-semibold text-ink-dim">
-              {review.barber}
-            </span>
-            <span class="text-border-hi text-[10px]">&middot;</span>
-            <span class="text-[11px] text-ink-dim">{review.service}</span>
-          </footer>
-        </article>
-      ))}
-    </div>
-
-    <!-- Mobile dots indicator -->
-    <div
-      class="flex items-center justify-center gap-2 mt-8"
-      role="group"
-      aria-label="Navegación de reseñas"
-    >
-      {reviews.map((_, i) => (
-        <button
-          data-reviews-dot
-          data-dot-index={i}
-          class="min-w-[44px] min-h-[44px] flex items-center justify-center group"
-          aria-label={`Ver reseña ${i + 1}`}
-          aria-controls="reviews-scroll"
-        >
-          <span class="reviews-dot rounded-full group-focus-visible:outline-none group-focus-visible:ring-2 group-focus-visible:ring-steel"></span>
-        </button>
-      ))}
-    </div>
-  </div>
-
-  <!-- Desktop: marquee autoplay with fade edges + keyboard-focus pause -->
-  <div class="hidden md:block relative overflow-hidden" aria-label="Carrusel de reseñas">
-    <div
-      class="absolute left-0 top-0 bottom-0 w-24 z-[2] pointer-events-none"
-      style="background: linear-gradient(to right, var(--color-bg-deep), transparent);"
-      aria-hidden="true"
-    ></div>
-    <div
-      class="absolute right-0 top-0 bottom-0 w-24 z-[2] pointer-events-none"
-      style="background: linear-gradient(to left, var(--color-bg-deep), transparent);"
-      aria-hidden="true"
-    ></div>
-
-    <div
-      class="marquee-track flex gap-8 w-max py-2"
-      tabindex="0"
-    >
-      {track.map((review, i) => (
-        <article
-          class="shrink-0 w-[min(88vw,480px)] border-l border-border-hi pl-7"
-          aria-hidden={i >= reviews.length ? 'true' : undefined}
-          aria-label={`Reseña de cliente: ${review.service} con ${review.barber}`}
-        >
-          <span
-            class="font-display text-[5rem] text-ink-dim leading-[0.7] block mb-2 select-none"
-            style="opacity: 0.18;"
-            aria-hidden="true"
-          >
-            &ldquo;
-          </span>
-          <blockquote class="font-serif-quote text-[clamp(1.1rem,2.5vw,1.4rem)] text-cream leading-snug tracking-[-0.01em] mb-5">
-            {review.quote}
-          </blockquote>
-          <footer class="flex items-center gap-3">
-            <span class="text-[10px] uppercase tracking-[0.18em] font-semibold text-ink-dim">
-              {review.barber}
-            </span>
-            <span class="text-border-hi text-[10px]">&middot;</span>
-            <span class="text-[11px] text-ink-dim">{review.service}</span>
-          </footer>
-        </article>
-      ))}
-    </div>
-  </div>
-
-  <!-- Rating badge -->
-  <div class="px-6 md:px-10 max-w-4xl mx-auto mt-16">
-    <div
-      data-fade
-      class="flex flex-col sm:flex-row items-start sm:items-center gap-5"
-    >
-      <StarRating count={5} size={16} />
-      <span class="font-display text-cream text-2xl font-bold">{business.rating}</span>
-      <span class="text-ink-dim text-[12px]">{business.reviewCount}</span>
-      <a
-        href={business.booksyUrl}
-        target="_blank"
-        rel="noopener noreferrer"
-        class="text-[11px] text-steel/60 hover:text-steel transition-colors duration-180 uppercase tracking-[0.14em] font-semibold underline underline-offset-4 decoration-steel-faint"
-        aria-label="Ver todas las reseñas en Booksy"
-      >
-        Ver en Booksy →
-      </a>
-    </div>
-  </div>
-
-</section>
-
-<style>
-  /* Hide scrollbar on the mobile scroll-snap track */
-  .reviews-scroll {
-    scrollbar-gutter: stable;
-    scrollbar-width: none;
-    -ms-overflow-style: none;
-  }
-  .reviews-scroll::-webkit-scrollbar {
-    display: none;
-  }
-
-  /* Review dot indicator — smooth GPU-composited capsule transition */
-  .reviews-dot {
-    display: inline-block;
-    width: 0.375rem;
-    height: 0.375rem;
-    border-radius: 9999px;
-    background-color: var(--color-steel-dim);
-    transform: translateZ(0);
-    transition: width 250ms var(--ease-out), background-color 250ms var(--ease-out);
-    will-change: width, background-color;
-  }
-
-  .group:hover .reviews-dot {
-    background-color: var(--color-steel);
-  }
-
-  [data-active="true"] .reviews-dot,
-  .min-w-\[44px\][data-active="true"] .reviews-dot,
-  .reviews-dot[data-active="true"] {
-    width: 1.5rem;
-    background-color: var(--color-cream);
-  }
-</style>
-
-<script>
-  // Mobile dots ↔ scroll position sync.
-  // On scroll, mark the article whose center is closest to the viewport
-  // center as active; clicking a dot scrolls that article to center.
-  document.addEventListener('DOMContentLoaded', () => {
-    const scroll = document.getElementById('reviews-scroll');
-    if (!scroll) return;
-    const articles = [...scroll.querySelectorAll('.reviews-article')];
-    const dots = [...document.querySelectorAll('[data-reviews-dot]')];
-    if (!articles.length || !dots.length) return;
-
-    let activeIdx = -1;
-
-    const observer = new IntersectionObserver((entries) => {
-      let maxRatio = 0;
-      let newActive = activeIdx;
-      entries.forEach(entry => {
-        if (entry.isIntersecting && entry.intersectionRatio > maxRatio) {
-          maxRatio = entry.intersectionRatio;
-          const idx = articles.indexOf(entry.target);
-          if (idx !== -1) {
-            newActive = idx;
-          }
-        }
-      });
-      if (newActive !== activeIdx && newActive !== -1) {
-        activeIdx = newActive;
-        dots.forEach((d, i) =>
-          d.setAttribute('data-active', i === activeIdx ? 'true' : 'false')
-        );
+            <p class="text-caliza" style="max-width: 38ch;">“{r.quote}”</p>
+            <p class="mt-5 font-mono text-cap text-lead tabular">
+              {r.author} · {r.service} con {r.barber} · {fmt(r.date)}
+            </p>
+          </li>
+        ))
       }
-    }, {
-      root: scroll,
-      threshold: [0.3, 0.5, 0.7, 0.9]
-    });
+    </ul>
 
-    articles.forEach(a => observer.observe(a));
-
-    dots.forEach((dot, i) => {
-      dot.addEventListener('click', () => {
-        const a = articles[i];
-        if (!a) return;
-        a.scrollIntoView({ behavior: 'smooth', inline: 'center', block: 'nearest' });
-      });
-    });
-  });
-</script>
+    <p class="mt-8 font-mono text-cap text-lead">
+      Fuente:
+      <a href={business.booksyProfileUrl} target="_blank" rel="noopener noreferrer" class="underline decoration-lead-lo underline-offset-4 hover:text-caliza hover:decoration-gules">
+        perfil de {business.legalName} en Booksy
+      </a>. Todas las reseñas son de clientes con reserva confirmada.
+    </p>
+  </div>
+</section>

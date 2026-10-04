@@ -1,60 +1,50 @@
 ---
 /**
- * MobileStickyCTA — Floating bottom CTA, visible only on mobile.
+ * MobileStickyCTA — persistent booking bar on small screens.
+ *
+ * Appears once the hero is out of view and retracts near the footer, where the
+ * big CTA already lives. Pattern from sublimestudio.dk, which keeps a floating
+ * booking button through the whole scroll.
  */
 import { business } from '../data/content.js';
-import CTA from './CTA.astro';
 ---
+
 <div
   id="mobile-sticky-cta"
-  class="fixed bottom-0 left-0 right-0 p-3.5 z-[90] md:hidden bg-bg-deep/95 backdrop-blur-md border-t border-steel/15 shadow-2xl transition-transform duration-300 ease-out pointer-events-none"
+  class="pointer-events-none fixed inset-x-0 bottom-0 z-30 translate-y-full border-t border-lead-lo bg-ink/95 p-3 transition-transform duration-400 ease-out-quart md:hidden motion-reduce:transition-none"
 >
-  <CTA href={business.booksyAppUrl} label="RESERVAR CITA ›" extraClass="w-full shadow-lg pointer-events-auto text-[11px] font-semibold tracking-[0.18em] py-3.5" />
+  <a
+    class="btn btn-primary pointer-events-auto w-full"
+    href={business.booksyUrl}
+    target="_blank"
+    rel="noopener noreferrer">Reservar cita · {business.rating} ★</a
+  >
 </div>
 
 <script>
-  function initMobileCTA() {
-    const cta = document.getElementById('mobile-sticky-cta');
-    const hero = document.getElementById('hero');
-    const locationSection = document.getElementById('ubicacion');
+  const cta = document.getElementById('mobile-sticky-cta');
+  const hero = document.getElementById('hero-title');
+  const tail = document.getElementById('donde');
 
-    if (cta && hero && locationSection) {
-      if (window.innerWidth >= 768) return;
+  if (cta && hero && window.matchMedia('(max-width: 767px)').matches) {
+    let pastHero = false;
+    let atTail = false;
 
-      let isPastHero = false;
-      let isNearBottom = false;
-      let rAFId: number | null = null;
+    const sync = () => cta.classList.toggle('translate-y-full', !(pastHero && !atTail));
 
-      const updateCTA = () => {
-        if (rAFId) cancelAnimationFrame(rAFId);
-        rAFId = requestAnimationFrame(() => {
-          if (isPastHero && !isNearBottom) {
-            cta.classList.remove('translate-y-full');
-          } else {
-            cta.classList.add('translate-y-full');
-          }
-        });
-      };
+    new IntersectionObserver(([e]) => {
+      pastHero = !e.isIntersecting;
+      sync();
+    }).observe(hero);
 
-      const heroObserver = new IntersectionObserver((entries) => {
-        isPastHero = !entries[0].isIntersecting;
-        updateCTA();
-      }, { rootMargin: '0px' });
-
-      const locationObserver = new IntersectionObserver((entries) => {
-        isNearBottom = entries[0].isIntersecting;
-        updateCTA();
-      }, { rootMargin: '600px 0px 0px 0px' });
-
-      heroObserver.observe(hero);
-      locationObserver.observe(locationSection);
+    if (tail) {
+      new IntersectionObserver(
+        ([e]) => {
+          atTail = e.isIntersecting;
+          sync();
+        },
+        { rootMargin: '400px 0px 0px 0px' }
+      ).observe(tail);
     }
-  }
-
-  // Support Astro transitions and direct loads
-  if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', initMobileCTA);
-  } else {
-    initMobileCTA();
   }
 </script>

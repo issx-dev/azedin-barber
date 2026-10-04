@@ -2,440 +2,231 @@
 @tailwind components;
 @tailwind utilities;
 
-
-/* ─── Self-hosted Bricolage Grotesque (variable) ─────────────────────────────── */
-@font-face {
-  font-family: 'Bricolage Grotesque';
-  font-style: normal;
-  font-display: swap;
-  font-weight: 200 800;
-  src: url('/fonts/bricolage-grotesque-latin-wght-normal.woff2') format('woff2');
-  unicode-range: U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+0304,U+0308,U+0329,U+2000-206F,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD;
-}
-@font-face {
-  font-family: 'Bricolage Grotesque';
-  font-style: normal;
-  font-display: swap;
-  font-weight: 200 800;
-  src: url('/fonts/bricolage-grotesque-latin-ext-wght-normal.woff2') format('woff2');
-  unicode-range: U+0100-02BA,U+02BD-02C5,U+02C7-02CC,U+02CE-02D7,U+02DD-02FF,U+0304,U+0308,U+0329,U+1D00-1DBF,U+1E00-1E9F,U+1EF2-1EFF,U+2020,U+20A0-20AB,U+20AD-20C0,U+2113,U+2C60-2C7F,U+A720-A7FF;
-}
+/* ===========================================================================
+   PLOMO — Azedin Barber
+   A precision workshop read in lead, lime and gules. Berja, Almería.
+   ===========================================================================
+   Rules this file enforces, so no component has to remember them:
+   - Radius 0 by default. Depth is a displaced solid shadow or nothing.
+   - One accent (gules). One motion curve. Positive tracking only on eyebrows.
+   - Grain is an inline SVG turbulence at 4% — not a WebGL canvas.
+   ======================================================================== */
 
 @layer base {
   :root {
-    /* ── Colour tokens — Minimalist Industrial Nocturno palette ──────────── */
-    --color-bg-deep:    #0C0A09;   /* mármol negro absoluto */
-    --color-bg-panel:   #141210;   /* panel oscuro */
-    --color-bg-surface: #1E1A17;   /* superficie elevada */
-    /* ── Steel — cool desaturated grey ─────────────────────────────────── */
-    --color-steel:      #8A95A5;   /* líneas, bordes, badges, separadores */
-    --color-steel-dim:  rgba(138,149,165,0.35);
-    --color-steel-faint: rgba(138,149,165,0.18);
-    --color-oak:        #C29367;   /* roble — reservado a CTA primario + hover */
-    --color-oak-light:  #D4A67B;   /* roble claro para hover */
-    --color-oak-dim:    #8B6543;   /* roble tenue para detalles */
-    --color-sand:       #E8D5B5;   /* arena */
-    --color-cream:      #F4EFEA;   /* off-white para texto primario */
-    --color-ink:        #F0E6D8;   /* texto de cuerpo */
-    --color-ink-dim:    #9E8E7E;   /* texto secundario */
-    --color-ink-faint:  #8E7E70;   /* texto muy dim (WCAG AA) */
-    --color-border:     #2A2420;   /* borde sutil */
-    --color-border-hi:  #3D332B;   /* borde visible */
+    --c-ink: #0e0f0f;
+    --c-ink-2: #161818;
+    --c-lead: #7e8489;
+    --c-lead-lo: #3a3e41;
+    --c-caliza: #ede8df;
+    --c-gules: #b4291f;
 
-    /* ── Typography ────────────────────────────────────────────────────── */
-    --font-display: 'Bricolage Grotesque', sans-serif;
-    --font-body:    'Instrument Sans Variable', 'Instrument Sans', system-ui, sans-serif;
-    --font-serif:   'Fraunces', serif;
+    /* Extreme scale contrast is the signature: ~20:1 between poster and caption. */
+    --step--1: clamp(0.8125rem, 0.78rem + 0.15vw, 0.875rem);
+    --step-0: clamp(1.0625rem, 1rem + 0.25vw, 1.1875rem);
+    --step-1: clamp(1.375rem, 1.2rem + 0.8vw, 1.75rem);
+    --step-3: clamp(2.25rem, 1.6rem + 3vw, 4rem);
+    /* Extreme scale contrast is the signature: ~20:1 between poster and caption.
+       The poster floor is 14vw rather than a fixed rem so the name still reads
+       as signage on a 390px phone instead of shrinking to a headline. */
+    --step-poster: clamp(3.4rem, 14vw, 13rem);
 
-    /* ── Easing curves — Emil Kowalski ─────────────────────────────────── */
-    --ease-out:    cubic-bezier(0.23, 1, 0.32, 1);
-    --ease-in-out: cubic-bezier(0.77, 0, 0.175, 1);
-    --ease-drawer: cubic-bezier(0.32, 0.72, 0, 1);
+    --rule: 1px;
+    --gutter: clamp(1.25rem, 4vw, 3.5rem);
 
-    /* ── Spacing rhythm ────────────────────────────────────────────────── */
-    --section-py: clamp(6.5rem, 12vw, 10rem);
-    --container-px: clamp(1.5rem, 5vw, 4rem);
+    /* Spacing proportional to a 1440px design, so the whole layout scales with
+       the viewport instead of stepping between fixed breakpoints.
+       (Pattern measured on darkroom.engineering, the authors of Lenis.) */
+    --gap: calc(((16 * 100) / 1440) * 1vw);
+    --safe: calc(((24 * 100) / 1440) * 1vw);
+    --columns: 8;
+
+    /* The complete easing set. No component may write a loose cubic-bezier:
+       if a curve is not in this list, it is not in the design. */
+    --ease-plomo: cubic-bezier(0.23, 1, 0.32, 1); /* default hover/micro-state */
+    --ease-gleasing: cubic-bezier(0.4, 0, 0, 1); /* workhorse */
+    --ease-out-quart: cubic-bezier(0.165, 0.84, 0.44, 1); /* reveals */
+    --ease-in-out-quint: cubic-bezier(0.86, 0, 0.07, 1); /* large transitions */
+    --ease-in-out-expo: cubic-bezier(1, 0, 0, 1); /* curtains, overlays */
+
+    color-scheme: dark;
+  }
+
+  /* Fallback metrics matched to Hanken Grotesk so font-display:swap cannot
+     shift the layout (CLS budget is 0.00, not 0.05). */
+  @font-face {
+    font-family: 'Hanken fallback';
+    src: local('Arial');
+    size-adjust: 97%;
+    ascent-override: 92%;
+    descent-override: 24%;
+    line-gap-override: 0%;
   }
 
   html {
-    scroll-behavior: auto;
-  }
-  @media (max-width: 767px) {
-    html {
-      scroll-behavior: smooth;
-    }
+    background: var(--c-ink);
+    -webkit-text-size-adjust: 100%;
+    /* The marquee track is intentionally wider than the viewport; clip it at the
+       root so it can never create a horizontal scrollbar on mobile. */
+    overflow-x: clip;
   }
 
+  /* No smooth-scroll here: Lenis owns scrolling on desktop and a double
+     smoothing fights itself. */
   body {
-    font-family: var(--font-body);
-    color: var(--color-ink);
-    background-color: var(--color-bg-deep);
-    -webkit-font-smoothing: antialiased;
-    -moz-osx-font-smoothing: grayscale;
-    overflow-x: hidden;
+    @apply bg-ink font-body text-base text-caliza antialiased;
+    font-variation-settings: 'wght' 400;
+    text-rendering: optimizeLegibility;
   }
 
-  @media (max-width: 767px) {
-    body {
-      -webkit-overflow-scrolling: touch;
-      overscroll-behavior-y: contain;
+  h1,
+  h2,
+  h3 {
+    @apply font-display;
+    text-wrap: balance;
+  }
+
+  p {
+    @apply max-w-measure;
+    text-wrap: pretty;
+  }
+
+  /* Focus is in brand colour and always visible. Never `outline: none`. */
+  :focus-visible {
+    outline: 2px solid var(--c-gules);
+    outline-offset: 3px;
+  }
+
+  ::selection {
+    background: var(--c-gules);
+    color: var(--c-caliza);
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.01ms !important;
+      scroll-behavior: auto !important;
     }
-  }
-
-  /* Offset fixed header (68px) for smooth anchor navigation */
-  section[id] {
-    scroll-margin-top: 68px;
-  }
-
-  /* Prevent 300ms tap delay on interactive elements without breaking double-tap zoom */
-  a, button, [role="button"] {
-    touch-action: manipulation;
-  }
-
-  h1, h2, h3, h4, h5, h6 {
-    font-family: var(--font-display);
-    font-weight: 700;
-    text-transform: uppercase;
-    letter-spacing: -0.02em;
-    line-height: 1;
-    color: var(--color-cream);
-  }
-
-  /* Headings: size scale */
-  h1 { font-size: clamp(3.5rem, 8vw, 7rem); }
-  h2 { font-size: clamp(2.2rem, 5vw, 3.8rem); }
-  h3 { font-size: clamp(1.5rem, 3vw, 2rem); }
-
-  /* Badge / metadata token */
-  .badge, [data-badge] {
-    font-family: var(--font-body);
-    font-size: 11px;
-    text-transform: uppercase;
-    letter-spacing: 0.14em;
-    font-weight: 600;
-    color: var(--color-steel);
-  }
-
-  /* Serif Quote token for reviews / human stories */
-  .font-serif-quote {
-    font-family: var(--font-serif);
-    font-style: italic;
   }
 }
 
-/* ─── Wood slat texture — desaturated steel version ─────────────────────── */
 @layer components {
-  .wood-slats {
-    position: relative;
+  /* --- Frame ------------------------------------------------------------- */
+  .frame {
+    @apply mx-auto w-full max-w-frame;
+    padding-inline: var(--gutter);
   }
-  .wood-slats::before {
+
+  /* The grid is meant to be seen: hairlines, never cards. */
+  .ruled-top {
+    border-top: var(--rule) solid var(--c-lead-lo);
+  }
+  .ruled-bottom {
+    border-bottom: var(--rule) solid var(--c-lead-lo);
+  }
+
+  /* --- Eyebrow: the only place with positive tracking ------------------- */
+  .eyebrow {
+    @apply font-mono text-[0.6875rem] uppercase tracking-wide text-lead;
+    font-variation-settings: 'wght' 500;
+  }
+
+  /* --- Poster type: the shop name at signage scale ---------------------- */
+  .poster {
+    @apply font-display text-poster uppercase text-caliza;
+    font-variation-settings: 'wght' 800, 'wdth' 112;
+  }
+
+  /* --- Ledger row: prices as a mine docket, not as cards ---------------- */
+  .ledger-row {
+    @apply grid items-baseline gap-x-4 py-5;
+    grid-template-columns: auto minmax(0, 1fr) auto;
+    border-bottom: var(--rule) solid var(--c-lead-lo);
+  }
+  .ledger-leader {
+    /* Dot leaders drawn in CSS: cheaper and crisper than a border-dashed. */
+    height: 1px;
+    align-self: center;
+    background-image: radial-gradient(circle, var(--c-lead) 0.5px, transparent 0.5px);
+    background-size: 6px 1px;
+    background-repeat: repeat-x;
+    opacity: 0.55;
+  }
+  .ledger-price {
+    @apply font-mono text-caliza;
+    font-variant-numeric: tabular-nums;
+    font-variation-settings: 'wght' 600;
+  }
+
+  /* --- Buttons ---------------------------------------------------------- */
+  .btn {
+    @apply inline-flex items-center justify-center gap-2 border px-6 font-mono text-cap uppercase tracking-wide;
+    min-height: 48px; /* touch target floor */
+    transition:
+      background-color 250ms var(--ease-plomo),
+      color 250ms var(--ease-plomo),
+      box-shadow 250ms var(--ease-plomo),
+      transform 250ms var(--ease-plomo);
+  }
+  .btn-primary {
+    @apply border-gules bg-gules text-caliza;
+  }
+  .btn-primary:hover {
+    @apply shadow-hard-caliza;
+    transform: translate(-2px, -2px);
+  }
+  .btn-ghost {
+    @apply border-lead-lo bg-transparent text-caliza;
+  }
+  .btn-ghost:hover {
+    @apply border-caliza;
+  }
+  .btn:active {
+    transform: translate(0, 0);
+  }
+
+  /* --- Status pill: the one and only rounded-full element --------------- */
+  .pill {
+    @apply inline-flex items-center gap-2 rounded-full border border-lead-lo px-3 py-1 font-mono text-cap uppercase tracking-wide text-lead;
+  }
+}
+
+@layer utilities {
+  /* Mineral grain. Inline turbulence at 4%: ~1KB, zero JS, no WebGL. */
+  .grain::after {
     content: '';
     position: absolute;
     inset: 0;
     pointer-events: none;
-    z-index: 0;
-    background-image: repeating-linear-gradient(
-      90deg,
-      transparent 0px,
-      transparent 7px,
-      rgba(138, 149, 165, 0.025) 7px,
-      rgba(138, 149, 165, 0.025) 8px
-    );
+    opacity: 0.04;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='3'/%3E%3C/filter%3E%3Crect width='160' height='160' filter='url(%23n)'/%3E%3C/svg%3E");
   }
 
-  /* Stronger slat accent for section borders */
-  .wood-slats-accent::before {
-    background-image: repeating-linear-gradient(
-      90deg,
-      transparent 0px,
-      transparent 5px,
-      rgba(138, 149, 165, 0.05) 5px,
-      rgba(138, 149, 165, 0.05) 6px
-    );
+  /* Hairline grid columns, drawn not implied. */
+  .grid-lines {
+    background-image: linear-gradient(to right, var(--c-lead-lo) 1px, transparent 1px);
+    background-size: calc(100% / 6) 100%;
+    opacity: 0.35;
   }
 
-  /* ── CTA Button — oak rectangular (editorial, not pill) ──────────────── */
-  .btn-oak {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    gap: 0.5rem;
-    padding: 0.875rem 2.25rem;
-    background-color: var(--color-oak);
-    color: var(--color-bg-deep);
-    font-family: var(--font-body);
-    font-size: 0.6875rem;        /* 11px */
-    font-weight: 600;
-    letter-spacing: 0.14em;
-    text-transform: uppercase;
-    border: 1px solid var(--color-oak);
-    border-radius: 2px;          /* minimal radius — editorial */
-    cursor: pointer;
-    text-decoration: none;
-    /* Emil: exact properties, never 'all' */
-    transition:
-      background-color 180ms var(--ease-out),
-      border-color 180ms var(--ease-out),
-      transform 160ms var(--ease-out);
+  .tabular {
+    font-variant-numeric: tabular-nums;
   }
 
-  .btn-oak:hover {
-    background-color: var(--color-oak-light);
-    border-color: var(--color-oak-light);
-  }
-
-  /* Emil: active press feedback — scale(0.97) */
-  .btn-oak:active {
-    transform: scale(0.97);
-  }
-
-  /* ── Winston Studio Style Outline Box Button ──────────────────────────── */
-  .btn-outline-thin {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    gap: 0.5rem;
-    padding: 0.75rem 1.75rem;
-    background-color: transparent;
-    color: var(--color-cream);
-    font-family: var(--font-body);
-    font-size: 0.6875rem;        /* 11px */
-    font-weight: 500;
-    letter-spacing: 0.18em;
-    text-transform: uppercase;
-    border: 1px solid var(--color-steel-faint);
-    border-radius: 2px;
-    cursor: pointer;
-    text-decoration: none;
-    transition:
-      border-color 180ms var(--ease-out),
-      color 180ms var(--ease-out),
-      transform 160ms var(--ease-out);
-  }
-
-  .btn-outline-thin:hover {
-    border-color: var(--color-steel);
-    color: var(--color-cream);
-  }
-
-  .btn-outline-thin:active {
-    transform: scale(0.97);
-  }
-
-  /* Ghost variant */
-  .btn-ghost {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    gap: 0.5rem;
-    padding: 0.875rem 2.25rem;
-    background-color: transparent;
-    color: var(--color-cream);
-    font-family: var(--font-body);
-    font-size: 0.6875rem;
-    font-weight: 600;
-    letter-spacing: 0.14em;
-    text-transform: uppercase;
-    border: 1px solid var(--color-border-hi);
-    border-radius: 2px;
-    cursor: pointer;
-    text-decoration: none;
-    transition:
-      background-color 180ms var(--ease-out),
-      border-color 180ms var(--ease-out),
-      color 180ms var(--ease-out),
-      transform 160ms var(--ease-out);
-  }
-
-  @media (hover: hover) and (pointer: fine) {
-    .btn-ghost:hover {
-      border-color: var(--color-steel);
-      color: var(--color-steel);
+  /* Progressive enhancement, 0 KB of JS. Guarded because Safari only shipped
+     scroll-driven animations in 26.0 — the static state must stay visible. */
+  @supports (animation-timeline: view()) {
+    @media (prefers-reduced-motion: no-preference) {
+      .rule-draw {
+        transform-origin: left center;
+        animation: rule-in linear both;
+        animation-timeline: view();
+        animation-range: entry 10% entry 90%;
+      }
     }
-  }
-
-  .btn-ghost:active {
-    transform: scale(0.97);
-  }
-}
-
-/* ─── Photo presets & Display Large ────────────────────────────────────────── */
-@layer utilities {
-  .photo-preset {
-    filter: saturate(0.65) contrast(1.05) brightness(0.94);
-  }
-
-  .display-large {
-    font-family: var(--font-display) !important;
-    text-transform: none;
-    font-weight: 700;
-    font-size: 2.8rem;
-    letter-spacing: -0.03em;
-    line-height: 1.02;
-  }
-  @media (min-width: 768px) {
-    .display-large {
-      font-size: 5.2rem;
-      line-height: 0.92;
-    }
-  }
-
-  .marquee-track {
-    animation: marquee 42s linear infinite;
-    will-change: transform;
-  }
-  @media (hover: hover) and (pointer: fine) {
-    .marquee-track:hover {
-      animation-play-state: paused;
-    }
-  }
-  /* Accessibility — pause marquee on keyboard focus (not just hover) */
-  .marquee-track:focus-visible {
-    animation-play-state: paused;
-    outline: 2px solid var(--color-steel);
-    outline-offset: 8px;
-  }
-
-  @keyframes marquee {
-    from { transform: translateX(0); }
-    to   { transform: translateX(-50%); }
-  }
-
-  /* ── Lookbook hover & mobile state ─────────────────────────────────────── */
-  .lookbook-tile {
-    overflow: hidden;
-  }
-  .lookbook-overlay {
-    opacity: 1; /* Always visible on mobile/touch screens */
-    transition: opacity 250ms var(--ease-out);
-  }
-  @media (hover: hover) and (pointer: fine) {
-    .lookbook-img {
-      transition: transform 250ms var(--ease-out);
-      will-change: transform;
-    }
-    .lookbook-tile:hover .lookbook-img {
-      transform: scale(1.04);
-    }
-    .lookbook-overlay {
-      opacity: 0; /* Hidden by default on desktop hover devices */
-    }
-    .lookbook-tile:hover .lookbook-overlay {
-      opacity: 1;
-    }
-  }
-
-  /* ── Service row hover ─────────────────────────────────────────────────── */
-  @media (hover: hover) and (pointer: fine) {
-    .service-row {
-      transition: background-color 180ms var(--ease-out);
-    }
-    .service-row:hover {
-      background-color: var(--color-bg-panel);
-    }
-  }
-
-  /* ── Header blur on scroll — toggled via JS ────────────────────────────── */
-  #site-header.scrolled {
-    background-color: rgba(12, 10, 9, 0.88);
-    backdrop-filter: blur(14px);
-    -webkit-backdrop-filter: blur(14px);
-  }
-
-  [data-fade] {
-    opacity: 0;
-    transform: translateY(20px);
-    transition: opacity 0.5s var(--ease-out), transform 0.5s var(--ease-out);
-  }
-  [data-fade].is-visible {
-    opacity: 1;
-    transform: translateY(0);
-  }
-
-  [data-reveal], [data-reveal="up"] {
-    opacity: 0;
-    clip-path: inset(100% 0 0 0);
-    transition: opacity 0.75s var(--ease-out), clip-path 0.75s var(--ease-out);
-  }
-  [data-reveal="left"] {
-    opacity: 0;
-    clip-path: inset(0 100% 0 0);
-    transition: opacity 0.75s var(--ease-out), clip-path 0.75s var(--ease-out);
-  }
-  [data-reveal="right"] {
-    opacity: 0;
-    clip-path: inset(0 0 0 100%);
-    transition: opacity 0.75s var(--ease-out), clip-path 0.75s var(--ease-out);
-  }
-  [data-reveal].is-visible {
-    opacity: 1;
-    clip-path: inset(0% 0% 0% 0%);
-  }
-
-  [data-stagger] > * {
-    opacity: 0;
-    transform: translateY(16px);
-    transition: opacity 0.45s var(--ease-out), transform 0.45s var(--ease-out);
-  }
-  [data-stagger].is-visible > * {
-    opacity: 1;
-    transform: translateY(0);
-  }
-  [data-stagger].is-visible > *:nth-child(1) { transition-delay: 0ms; }
-  [data-stagger].is-visible > *:nth-child(2) { transition-delay: 70ms; }
-  [data-stagger].is-visible > *:nth-child(3) { transition-delay: 140ms; }
-  [data-stagger].is-visible > *:nth-child(4) { transition-delay: 210ms; }
-  [data-stagger].is-visible > *:nth-child(5) { transition-delay: 280ms; }
-  [data-stagger].is-visible > *:nth-child(6) { transition-delay: 350ms; }
-  [data-stagger].is-visible > *:nth-child(7) { transition-delay: 420ms; }
-  [data-stagger].is-visible > *:nth-child(8) { transition-delay: 490ms; }
-  [data-stagger].is-visible > *:nth-child(9) { transition-delay: 560ms; }
-  [data-stagger].is-visible > *:nth-child(10) { transition-delay: 630ms; }
-  [data-stagger].is-visible > *:nth-child(11) { transition-delay: 700ms; }
-  [data-stagger].is-visible > *:nth-child(12) { transition-delay: 770ms; }
-
-  /* ── Hero text nativa (mobile) ────────────────────────────────────────── */
-  [data-hero-text] {
-    opacity: 0;
-    transform: translateY(16px);
-    transition: opacity 0.55s var(--ease-out), transform 0.55s var(--ease-out);
-  }
-  [data-hero-text].is-visible {
-    opacity: 1;
-    transform: translateY(0);
-  }
-  [data-hero-text].is-visible:nth-child(1) { transition-delay: 100ms; }
-  [data-hero-text].is-visible:nth-child(2) { transition-delay: 200ms; }
-  [data-hero-text].is-visible:nth-child(3) { transition-delay: 300ms; }
-
-  /* ── prefers-reduced-motion overrides ──────────────────────────────────── */
-  @media (prefers-reduced-motion: reduce) {
-    [data-reveal], [data-fade], [data-stagger] { opacity: 1 !important; }
-    .marquee-track { animation: none; }
-    .lookbook-img { transition: none; }
-    .service-row  { transition: none; }
-    [data-hero-text], [data-reveal], [data-fade], [data-stagger] > *, [data-color-reveal] {
-      opacity: 1 !important;
-      transform: none !important;
-      clip-path: none !important;
-      filter: none !important;
-    }
-  }
-
-  /* ── Lenis html overrides ─────────────────────────────────────────────── */
-  html.lenis, html.lenis body {
-    height: auto;
-  }
-  .lenis.lenis-smooth {
-    scroll-behavior: auto !important;
-  }
-  .lenis.lenis-smooth [data-lenis-prevent] {
-    overscroll-behavior: contain;
-  }
-  .lenis.lenis-stopped {
-    overflow: hidden;
-  }
-  .lenis.lenis-scrolling iframe {
-    pointer-events: none;
   }
 }

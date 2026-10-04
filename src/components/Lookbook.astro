@@ -1,128 +1,126 @@
 ---
 /**
- * Lookbook — Winston Studio Inspired Editorial Catalog.
+ * Lookbook — "Archivo".
  *
- * Spacious 3-column portrait grid with clean external captions below each image.
- * Zero overlays covering the haircuts.
+ * Two readings of one list, no duplicated DOM: a dense grid below `lg`, and a
+ * horizontal rail that scrolls sideways while pinned above it. The rail is what
+ * turns scrolling into a walk along the shop's work rather than a page of
+ * thumbnails.
+ *
+ * Hard constraint: available photography is 360–481px wide (Instagram), so
+ * nothing is rendered above ~400px of layout width. Raise it only once
+ * HAS_HIRES_PHOTOGRAPHY is true.
  */
 import { Image } from 'astro:assets';
-import { galleryItems } from '../data/content.js';
-import CTA from './CTA.astro';
+import { galleryItems, business, HAS_HIRES_PHOTOGRAPHY } from '../data/content.js';
 
-// Use first 6 curated haircuts for the editorial catalog
-const items = galleryItems.slice(0, 6);
+const INITIAL = 6;
 ---
 
-<section
-  id="lookbook"
-  class="bg-bg-deep py-0"
-  aria-label="Galería de cortes — Lookbook"
->
-  <!-- Section header -->
-  <div class="px-6 md:px-10 pt-24 pb-14 max-w-6xl mx-auto">
-    <p
-      data-fade
-      class="text-[13px] md:text-[14.5px] tracking-[0.15em] uppercase text-ink-dim font-medium mb-4"
-    >
-      Nuestro trabajo
-    </p>
-    <h2
-      data-reveal
-      class="font-display display-large text-cream"
-    >
-      Lookbook
-    </h2>
-  </div>
-
-  <!-- Editorial Catalog Grid -->
-  <div class="px-5 sm:px-8 md:px-10 max-w-6xl mx-auto pb-8 md:pb-16">
-    <div class="grid grid-cols-2 lg:grid-cols-3 gap-3.5 sm:gap-8 lg:gap-14">
-      {items.map((item, index) => {
-        const isExtra = index >= 4;
-        return (
-          <div 
-            data-fade 
-            class={`lookbook-item group flex flex-col ${isExtra ? 'lookbook-extra hidden md:flex' : ''}`}
-          >
-            <!-- Portrait photo card -->
-            <div class="relative aspect-[3/4] overflow-hidden bg-bg-panel border border-steel/15 rounded-sm">
-              <Image
-                src={item.src}
-                alt={item.alt}
-                widths={[320, 380, 480, 640, 960]}
-                sizes="(max-width: 640px) calc(50vw - 1.75rem), (max-width: 1024px) 33vw, 400px"
-                quality={82}
-                format="avif"
-                loading="lazy"
-                class="lookbook-img photo-preset w-full h-full object-cover transition-transform duration-300 ease-out group-hover:scale-105"
-                style={`object-position: ${item.focus}`}
-              />
-            </div>
-
-            <!-- Clean external caption below image (Winston Studio pattern) -->
-            <div class="mt-2.5 sm:mt-4 flex items-center justify-between border-b border-steel/20 pb-2">
-              <span class="font-display font-semibold text-[11px] sm:text-[14px] text-cream uppercase tracking-wide truncate pr-1">
-                {String(index + 1).padStart(2, '0')} / {item.label}
-              </span>
-              <span class="text-steel/70 text-[9px] sm:text-[11px] font-mono tracking-wider shrink-0">
-                {item.barber}
-              </span>
-            </div>
-          </div>
-        );
-      })}
-    </div>
-
-    <!-- Mobile Progressive Expander Button (visible on mobile < 768px) -->
-    <div class="text-center pt-8 block md:hidden">
-      <button
-        id="lookbook-toggle-btn"
-        class="btn-outline-thin text-[11px] px-8 py-3.5"
-        aria-expanded="false"
-        data-label-more="VER MÁS CORTES ›"
-        data-label-less="VER MENOS ‹"
+<section id="archivo" class="relative py-20 md:py-30" aria-labelledby="archivo-title">
+  <div class="frame">
+    <header class="ruled-bottom flex flex-wrap items-end justify-between gap-6 pb-8 lg:border-0 lg:pb-0">
+      <div class="lg:hidden">
+        <p class="eyebrow mb-4">{galleryItems.length} trabajos</p>
+        <h2 id="archivo-title" class="text-sect uppercase text-caliza">Archivo</h2>
+      </div>
+      <a
+        href={business.instagramUrl}
+        target="_blank"
+        rel="noopener noreferrer"
+        class="font-mono text-cap uppercase tracking-wide text-lead transition-colors duration-150 ease-plomo hover:text-caliza"
       >
-        VER MÁS CORTES ›
-      </button>
+        Más en Instagram <span class="text-gules">→</span>
+      </a>
+    </header>
+  </div>
+
+  <!-- Pinned on desktop; a plain block everywhere else. The heading rides
+       inside the pinned area so the section never loses its label mid-tour.
+       `overflow-clip` keeps the oversized rail from widening the document.
+       The track reserves the full scroll distance of the tour up front (hence
+       `pinSpacing: false` in motion.js), so pinning never shifts the layout. -->
+  <div
+    data-track
+    class="relative lg:h-[260vh] lg:overflow-x-clip"
+  >
+    <!-- ScrollTrigger pins THIS inner box; the track above keeps its own height
+         in normal flow, so going in and out of the pin shifts nothing. -->
+    <div data-pin class="lg:flex lg:h-screen lg:flex-col lg:justify-center">
+    <div class="frame hidden lg:mb-10 lg:block lg:max-w-none">
+      <div class="flex items-end justify-between gap-6">
+        <h2 id="archivo-title-lg" class="text-sect uppercase text-caliza">Archivo</h2>
+        <p class="eyebrow pb-2">Desliza · {galleryItems.length} trabajos</p>
+      </div>
+    </div>
+
+    <div class="frame lg:max-w-none lg:pr-0">
+      <ul
+        data-rail
+        class="mt-10 grid grid-cols-2 gap-x-gap gap-y-10 md:grid-cols-3 lg:mt-0 lg:flex lg:w-max lg:gap-8"
+      >
+        {
+          galleryItems.map((item, i) => (
+            <li class={`${i >= INITIAL ? 'archivo-extra hidden md:block' : ''} lg:!block lg:w-[clamp(220px,19vw,300px)] lg:shrink-0`}>
+              <figure>
+                <div class="relative aspect-reel overflow-hidden border border-lead-lo bg-ink-2">
+                  <Image
+                    src={item.src}
+                    alt={item.alt}
+                    width={400}
+                    height={711}
+                    widths={[200, 300, 400]}
+                    sizes="(min-width: 1024px) 300px, (min-width: 768px) 30vw, 44vw"
+                    format="avif"
+                    quality={70}
+                    loading={i < 4 ? 'eager' : 'lazy'}
+                    style={`object-position: ${item.focus}`}
+                    class="h-full w-full object-cover"
+                  />
+                </div>
+                <figcaption class="mt-3 flex items-baseline justify-between gap-3">
+                  <span class="font-mono text-cap uppercase tracking-wide text-caliza">{item.label}</span>
+                  <span class="font-mono text-cap text-lead">{item.barber}</span>
+                </figcaption>
+              </figure>
+            </li>
+          ))
+        }
+      </ul>
+    </div>
     </div>
   </div>
 
-  <!-- CTA below grid (hidden on mobile to prevent conversion clutter) -->
-  <div class="text-center pt-8 pb-16 px-6 hidden md:block">
-    <p class="text-ink-dim text-[13px] mb-6">
-      Cada corte cuenta su propia historia.
-    </p>
-    <CTA label="Reserva tu corte" />
-  </div>
+  <div class="frame">
+    {
+      galleryItems.length > INITIAL && (
+        <div class="mt-12 md:hidden">
+          <button type="button" class="btn btn-ghost w-full" data-archivo-toggle aria-expanded="false">
+            Ver los {galleryItems.length} trabajos
+          </button>
+        </div>
+      )
+    }
 
+    {
+      !HAS_HIRES_PHOTOGRAPHY && (
+        <p class="mt-10 font-mono text-cap text-lead">
+          Imágenes provisionales a resolución de Instagram. Pendiente de
+          sustituir por los originales del estudio.
+        </p>
+      )
+    }
+  </div>
 </section>
 
 <script>
-  const toggleBtn = document.getElementById('lookbook-toggle-btn');
-  if (toggleBtn) {
-    toggleBtn.addEventListener('click', () => {
-      const extraItems = document.querySelectorAll('.lookbook-extra');
-      const isExpanded = toggleBtn.getAttribute('aria-expanded') === 'true';
-
-      extraItems.forEach((item) => {
-        if (isExpanded) {
-          item.classList.add('hidden');
-        } else {
-          item.classList.remove('hidden');
-        }
-      });
-
-      toggleBtn.setAttribute('aria-expanded', isExpanded ? 'false' : 'true');
-      const moreText = toggleBtn.getAttribute('data-label-more');
-      const lessText = toggleBtn.getAttribute('data-label-less');
-      toggleBtn.textContent = isExpanded ? moreText : lessText;
-
-      setTimeout(() => {
-        const win = window as unknown as { __ScrollTrigger?: { refresh: () => void } };
-        if (win.__ScrollTrigger) {
-          win.__ScrollTrigger.refresh();
-        }
-      }, 0);
-    });
-  }
+  // Mobile-only disclosure. Desktop shows the whole rail, so there is nothing
+  // to toggle there.
+  const btn = document.querySelector('[data-archivo-toggle]');
+  btn?.addEventListener('click', () => {
+    const open = btn.getAttribute('aria-expanded') === 'true';
+    document.querySelectorAll('.archivo-extra').forEach((el) => el.classList.toggle('hidden', open));
+    btn.setAttribute('aria-expanded', String(!open));
+    btn.textContent = open ? 'Ver los trabajos' : 'Ver menos';
+  });
 </script>

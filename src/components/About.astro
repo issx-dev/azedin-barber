@@ -1,64 +1,89 @@
 ---
+/**
+ * About — the trade, set as a dictionary entry.
+ *
+ * Structure borrowed from darkroom.engineering: a defined term, numbered
+ * senses, a manifesto paragraph in mono. It carries the Berja anchor — the
+ * lead mines of Sierra de Gádor — which is the one thing no other barbershop
+ * site on earth can claim.
+ */
+import { business, barbers, shopImages } from '../data/content.js';
 import { Image } from 'astro:assets';
-import aboutImg from '../assets/img/corte-pelo-azedin.jpeg';
 ---
 
-<section id="about" class="bg-bg-deep text-cream py-24 md:py-36 border-t border-steel-faint">
-  <div class="mx-auto max-w-5xl px-6 md:px-10">
-
-    <!-- 1. Header (Top centered hierarchy for both mobile & desktop) -->
-    <div data-reveal class="text-center mb-10 md:mb-14">
-      <p class="text-[12px] md:text-[13.5px] tracking-[0.2em] uppercase text-steel font-medium mb-3">
-        Sobre nosotros
-      </p>
-      <h2 class="font-display display-large text-cream leading-none">
-        Nuestra historia
+<section id="oficio" class="relative py-20 md:py-30" aria-labelledby="oficio-title">
+  <div class="frame">
+    <header class="ruled-bottom pb-8">
+      <p class="eyebrow mb-4">El oficio</p>
+      <h2 id="oficio-title" class="text-sect uppercase text-caliza">
+        <span class="font-mono text-lead">[ plomo ]</span>, sust.
       </h2>
-    </div>
+    </header>
 
-    <!-- 2. Photo Block (Middle centered widescreen presentation) -->
-    <div data-reveal="up" class="relative group mb-12 md:mb-16">
-      <div class="relative aspect-[4/3] sm:aspect-[16/10] md:aspect-[16/9] max-h-[540px] w-full overflow-hidden rounded-sm border border-steel/15 shadow-2xl bg-bg-panel">
-        <Image 
-          src={aboutImg} 
-          alt="Azedin en acción ejecutando un corte de precisión en el salón de Berja" 
-          widths={[480, 800, 1200, 1600]}
-          sizes="(max-width: 768px) 100vw, 1100px"
-          quality={82}
-          format="avif"
-          loading="eager"
-          class="w-full h-full object-cover photo-preset transition-transform duration-300 ease-out group-hover:scale-105"
-          style="object-position: center 30%;"
-        />
-      </div>
-    </div>
+    <div class="grid gap-x-10 gap-y-12 pt-10 lg:grid-cols-12">
+      <!-- Numbered senses: the term, then the claim. -->
+      <ol class="lg:col-span-5">
+        <li class="ruled-bottom flex gap-5 pb-6">
+          <span class="shrink-0 font-mono text-cap text-lead tabular">1.</span>
+          <p class="text-caliza">
+            Metal denso y maleable. Se extrajo de la Sierra de Gádor durante
+            décadas; Berja vivió de él.
+          </p>
+        </li>
+        <li class="ruled-bottom flex gap-5 py-6">
+          <span class="shrink-0 font-mono text-cap text-lead tabular">2.</span>
+          <p class="text-caliza">
+            Taller donde el corte se mide antes de hacerse. Tijera, navaja y
+            máquina; nada de prisa.
+          </p>
+        </li>
+      </ol>
 
-    <!-- 3. Story Narrative, Quote & Action (Bottom centered presentation) -->
-    <div data-reveal class="max-w-2xl mx-auto text-center flex flex-col items-center space-y-8">
-      <p class="font-sans text-ink-dim text-[15px] md:text-base leading-relaxed">
-        Desde el primer día, en Azedin Barber creamos un espacio donde la tradición barbera se encuentra con la técnica moderna y la precisión. Cada corte y arreglo de barba es una firma de calidad.
-      </p>
-
-      <!-- Serif Quote with subtle steel hairline borders -->
-      <div class="w-full py-6 border-y border-steel-faint">
-        <blockquote class="font-serif-quote text-cream text-xl sm:text-2xl italic leading-relaxed">
-          "Ofrecer a cada persona el corte que se merece."
-        </blockquote>
-        <span class="block mt-3 text-[10px] tracking-[0.25em] uppercase font-mono text-steel">
-          — AZEDIN · FUNDADOR
-        </span>
+      <div class="lg:col-span-4">
+        <p class="font-mono text-cap leading-normal text-lead">
+          {business.name} abre en la Avenida José Barrionuevo Peña desde la misma
+          idea con la que se bajaba el mineral de la sierra: trabajo medido,
+          hecho a mano y comprobable. Tres barberos, una tarifa publicada y
+          {business.reviewCount} reseñas con nombre y apellido.
+        </p>
+        <p class="mt-6 font-mono text-cap uppercase tracking-wide text-caliza">
+          {business.tagline}
+        </p>
       </div>
 
-      <div class="pt-2">
-        <a
-          href="#ubicacion"
-          class="btn-outline-thin text-[11px] px-8 py-3.5"
-          aria-label="Ver ubicación y horarios"
-        >
-          UBICACIÓN Y HORARIOS ›
-        </a>
-      </div>
+      <!-- Placeholder-resolution frame: capped at 420px so it never breaks. -->
+      <figure class="lg:col-span-3">
+        <div class="relative aspect-card overflow-hidden border border-lead-lo">
+          <Image
+            src={shopImages.salon.src}
+            alt={shopImages.salon.alt}
+            width={420}
+            height={560}
+            widths={[320, 420]}
+            sizes="(min-width: 1024px) 320px, 60vw"
+            format="avif"
+            quality={72}
+            class="h-full w-full object-cover grayscale"
+          />
+        </div>
+        <figcaption class="mt-3 font-mono text-cap text-lead">
+          El salón · Berja
+        </figcaption>
+      </figure>
     </div>
 
+    <!-- The team: three barbers, with who does what in plain numbers. -->
+    <ul class="ruled-top mt-16 grid gap-x-10 pt-10 sm:grid-cols-3">
+      {
+        barbers.map((b) => (
+          <li class="flex items-baseline gap-4 py-4 sm:block">
+            <h3 class="font-display uppercase text-caliza" style="font-size: var(--step-1); font-variation-settings: 'wght' 700, 'wdth' 100;">
+              {b.name}
+            </h3>
+            <p class="font-mono text-cap text-lead sm:mt-2">{b.role} · {b.share}</p>
+          </li>
+        ))
+      }
+    </ul>
   </div>
 </section>
