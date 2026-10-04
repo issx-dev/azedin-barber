@@ -107,7 +107,9 @@ const schema = {
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
     <!-- Only the display face is preloaded; body text can swap with matched metrics. -->
-    <link rel="preload" as="image" href="/img/hero-poster.avif" fetchpriority="high" />
+    <!-- LCP: first still of the walk-through, sized per breakpoint. -->
+    <link rel="preload" as="image" href="/tour/m/000.webp" media="(max-width: 767px)" fetchpriority="high" />
+    <link rel="preload" as="image" href="/tour/d/000.webp" media="(min-width: 768px)" fetchpriority="high" />
     <link rel="preload" as="font" type="font/woff2" crossorigin href={cinzelWoff} />
 
     <title>{title}</title>

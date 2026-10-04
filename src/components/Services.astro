@@ -7,6 +7,7 @@
  * numbered rows, dot leaders, tabular numerals. Not three cards with scissors.
  */
 import { services, business } from '../data/content.js';
+import BarberPole from './BarberPole.astro';
 ---
 
 <section id="servicios" class="relative py-20 md:py-30" aria-labelledby="servicios-title">
@@ -14,13 +15,14 @@ import { services, business } from '../data/content.js';
     <header class="ruled-bottom flex flex-wrap items-end justify-between gap-6 pb-8">
       <div>
         <p class="eyebrow mb-4">Tarifa</p>
-        <h2 id="servicios-title" class="text-sect display text-cal">Servicios<br />y precios</h2>
+        <h2 id="servicios-title" class="text-sect display text-cal">Precios</h2>
       </div>
       <p class="font-body text-cap text-humo">
         Todos los servicios, 30 min<br />Sin recargo por reserva online
       </p>
     </header>
 
+    <div class="grid gap-x-16 lg:grid-cols-[1fr_auto]">
     <ul class="mt-4">
       {
         services.map((s) => (
@@ -43,6 +45,14 @@ import { services, business } from '../data/content.js';
         ))
       }
     </ul>
+    <!-- The pole, as on the façade: a sign that says "barber" before any word. -->
+    <BarberPole
+      class="relative mx-auto mt-10 hidden lg:block"
+      width="150px"
+      height="460px"
+      speed={0.22}
+    />
+    </div>
 
     <div class="mt-10 flex flex-wrap items-center gap-4">
       <a class="btn btn-primary" href={business.booksyUrl} target="_blank" rel="noopener noreferrer">

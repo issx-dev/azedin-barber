@@ -1,0 +1,235 @@
+---
+/**
+ * LocalTour — the shop, walked by scrolling.
+ *
+ * The client's own 4K walkthrough, cut into 72 stills (WebP, 810px for phones,
+ * 1080px for desktop) and painted to a <canvas> as the page scrolls. Scrubbing
+ * a <video> is unreliable on iOS and laggy everywhere; a frame sequence is
+ * exact on every device, and the visitor controls the pace.
+ *
+ * Loading: the first frame is a real <img> and the LCP. The rest stream in only
+ * after the page is interactive, nearest-first, so a slow phone still gets a
+ * coherent (if coarser) walk instead of a blank canvas.
+ *
+ * Chapters are tied to what is actually on screen at that point of the walk —
+ * entrance, the chairs and slat wall, the work station, the waiting area —
+ * and use plain labels. No slogans.
+ */
+import { business } from '../data/content.js';
+import Logo from './Logo.astro';
+
+const FRAMES = 60;
+const chapters = [
+  { at: 0.0, kicker: 'Avenida José Barrionuevo Peña 14', title: 'Barbería en Berja', body: `${business.rating} ★ · ${business.reviewCount} reseñas verificadas en Booksy` },
+  { at: 0.28, kicker: 'El salón', title: 'Tres sillones', body: 'Azedin, Samir y Anas. Eliges barbero al reservar.' },
+  { at: 0.55, kicker: 'Cada puesto', title: 'Cita de 30 minutos', body: 'Corte desde 13 €. Corte y barba, 17 €.' },
+  { at: 0.8, kicker: 'La espera', title: 'Sin esperas', body: 'Reserva online y llegas a tu hora.' },
+];
+---
+
+<section
+  id="hero"
+  class="tour relative"
+  aria-labelledby="hero-title"
+  data-tour
+  data-frames={FRAMES}
+>
+  <div class="tour-stage sticky top-0 h-[100svh] overflow-hidden bg-marmol">
+    <!-- The walk. Phones: full-bleed (the footage is vertical, like the
+         screen). Desktop: a vertical panel on the right at native resolution,
+         never stretched across a landscape screen. -->
+    <div class="tour-media absolute inset-0 md:inset-auto md:bottom-0 md:right-0 md:top-0 md:h-full md:w-[56vw]">
+      <picture>
+        <source media="(min-width: 768px)" srcset="/tour/d/000.webp" />
+        <img
+          src="/tour/m/000.webp"
+          alt="Interior de Barbería Azedin en Berja: sillones, pared de listones de madera y suelo de mármol negro"
+          width="720"
+          height="1280"
+          fetchpriority="high"
+          decoding="async"
+          class="tour-poster absolute inset-0 h-full w-full object-cover object-[50%_35%]"
+        />
+      </picture>
+      <canvas class="tour-canvas absolute inset-0 h-full w-full" aria-hidden="true"></canvas>
+      <!-- Desktop: the panel's left edge dissolves into the marble. -->
+      <div class="pointer-events-none absolute inset-y-0 left-0 hidden w-2/5 bg-gradient-to-r from-marmol via-marmol/60 to-transparent md:block" aria-hidden="true"></div>
+    </div>
+
+    <!-- Phones: legibility only where the text sits. -->
+    <div class="pointer-events-none absolute inset-x-0 bottom-0 h-[62%] bg-gradient-to-t from-marmol via-marmol/75 to-transparent md:hidden" aria-hidden="true"></div>
+    <div class="pointer-events-none absolute inset-x-0 top-0 h-40 bg-gradient-to-b from-marmol via-marmol/80 to-transparent" aria-hidden="true"></div>
+
+    <div class="frame relative flex h-full flex-col justify-end pb-[max(2.5rem,env(safe-area-inset-bottom))] md:justify-center md:pb-0">
+      <div class="md:max-w-[min(46vw,560px)]">
+        <h1 id="hero-title" class="m-0">
+          <span class="sr-only">{business.legalName}, barbería en Berja</span>
+          <Logo class="h-auto w-[min(64vw,440px)] text-cal" data-logo />
+        </h1>
+
+        <!-- Chapters: stacked in one grid cell, swapped by scroll position. -->
+        <div class="mt-8 grid min-h-[7.5rem] md:mt-12 md:min-h-[8.5rem]">
+          {
+            chapters.map((c, i) => (
+              <div
+                class="tour-chapter col-start-1 row-start-1"
+                data-at={c.at}
+                style={i === 0 ? '' : 'opacity:0'}
+                aria-hidden={i === 0 ? undefined : 'true'}
+              >
+                <p class="eyebrow text-cal-dim">{c.kicker}</p>
+                <p class="display mt-3 text-h3">{c.title}</p>
+                <p class="mt-3 text-cal-dim">{c.body}</p>
+              </div>
+            ))
+          }
+        </div>
+
+        <div class="mt-8 flex flex-wrap items-center gap-x-6 gap-y-4 md:mt-12">
+          <a class="btn btn-primary" href={business.booksyUrl} target="_blank" rel="noopener noreferrer">
+            Reservar cita
+          </a>
+          <div class="flex items-center gap-3" aria-hidden="true">
+            <span class="eyebrow text-humo">Recorre el local</span>
+            <span class="relative block h-px w-24 bg-veta">
+              <span class="tour-progress absolute inset-y-0 left-0 block w-full origin-left scale-x-0 bg-roble"></span>
+            </span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<style>
+  /* Scroll length of the walk. Without JS the section is one screen tall
+     and frame 0 stands as a photograph. */
+  .tour.is-live {
+    height: 420svh;
+  }
+  .tour-canvas {
+    opacity: 0;
+  }
+  .tour.is-live .tour-canvas {
+    opacity: 1;
+  }
+  .tour-chapter {
+    transition: opacity 420ms var(--ease-led);
+  }
+</style>
+
+<script>
+  const root = document.querySelector<HTMLElement>('[data-tour]');
+  const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const saveData = (navigator as any).connection?.saveData === true;
+
+  if (root && !reduced && !saveData) {
+    const N = Number(root.dataset.frames);
+    const canvas = root.querySelector<HTMLCanvasElement>('.tour-canvas')!;
+    const ctx = canvas.getContext('2d', { alpha: false })!;
+    const chapters = [...root.querySelectorAll<HTMLElement>('.tour-chapter')];
+    const progress = root.querySelector<HTMLElement>('.tour-progress');
+    const dir = window.matchMedia('(min-width: 768px)').matches ? 'd' : 'm';
+    const frames: (HTMLImageElement | null)[] = new Array(N).fill(null);
+    let current = -1;
+    let raf = 0;
+
+    const src = (i: number) => `/tour/${dir}/${String(i).padStart(3, '0')}.webp`;
+
+    // Canvas backing store matches its CSS box at device pixel ratio (capped).
+    function size() {
+      const dpr = Math.min(window.devicePixelRatio || 1, 2);
+      const r = canvas.getBoundingClientRect();
+      canvas.width = Math.round(r.width * dpr);
+      canvas.height = Math.round(r.height * dpr);
+      current = -1;
+      paint(progressAt());
+    }
+
+    // object-fit: cover, done by hand.
+    function draw(img: HTMLImageElement) {
+      const cw = canvas.width, ch = canvas.height;
+      const s = Math.max(cw / img.naturalWidth, ch / img.naturalHeight);
+      const w = img.naturalWidth * s, h = img.naturalHeight * s;
+      // Bias the vertical crop upward so the hexagonal ceiling stays in frame.
+      ctx.drawImage(img, (cw - w) / 2, (ch - h) * 0.35, w, h);
+    }
+
+    // If the exact frame hasn't arrived, paint the nearest one that has.
+    function nearestLoaded(i: number) {
+      for (let d = 0; d < N; d++) {
+        if (frames[i - d]?.complete) return frames[i - d];
+        if (frames[i + d]?.complete) return frames[i + d];
+      }
+      return null;
+    }
+
+    function progressAt() {
+      const r = root!.getBoundingClientRect();
+      const travel = r.height - window.innerHeight;
+      return travel > 0 ? Math.min(1, Math.max(0, -r.top / travel)) : 0;
+    }
+
+    function paint(p: number) {
+      const i = Math.min(N - 1, Math.round(p * (N - 1)));
+      const img = frames[i]?.complete ? frames[i] : nearestLoaded(i);
+      if (img && i !== current) {
+        draw(img);
+        if (frames[i]?.complete) current = i;
+      }
+      // Chapter = the last one whose start we have passed.
+      let active = 0;
+      chapters.forEach((c, k) => { if (p >= Number(c.dataset.at)) active = k; });
+      chapters.forEach((c, k) => {
+        c.style.opacity = k === active ? '1' : '0';
+        if (k === active) c.removeAttribute('aria-hidden');
+        else c.setAttribute('aria-hidden', 'true');
+      });
+      if (progress) progress.style.transform = `scaleX(${p})`;
+    }
+
+    function onScroll() {
+      if (raf) return;
+      raf = requestAnimationFrame(() => {
+        raf = 0;
+        paint(progressAt());
+      });
+    }
+
+    function load(i: number) {
+      return new Promise<void>((res) => {
+        const img = new Image();
+        img.decoding = 'async';
+        img.onload = () => {
+          frames[i] = img;
+          // A frame near the current position just arrived: repaint.
+          if (Math.abs(i - Math.round(progressAt() * (N - 1))) < 4) { current = -1; paint(progressAt()); }
+          res();
+        };
+        img.onerror = () => res();
+        img.src = src(i);
+      });
+    }
+
+    async function start() {
+      await load(0);
+      root!.classList.add('is-live');
+      size();
+      window.addEventListener('scroll', onScroll, { passive: true });
+      window.addEventListener('resize', size);
+
+      // Coarse-to-fine: every 8th, then every 4th, 2nd, then the rest. A slow
+      // connection gets a complete (if steppy) walk early instead of half a walk.
+      const order: number[] = [];
+      for (const step of [8, 4, 2, 1]) for (let i = 0; i < N; i += step) if (!order.includes(i)) order.push(i);
+      const queue = order.filter((i) => i !== 0);
+      const workers = 6;
+      await Promise.all(Array.from({ length: workers }, async () => {
+        while (queue.length) await load(queue.shift()!);
+      }));
+    }
+
+    if ('requestIdleCallback' in window) requestIdleCallback(start, { timeout: 1200 });
+    else window.addEventListener('load', start, { once: true });
+  }
+</script>
