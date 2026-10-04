@@ -1,107 +1,102 @@
 /** @type {import('tailwindcss').Config} */
 
 /**
- * PLOMO design system — Azedin Barber.
+ * MÁRMOL design system — Azedin Barber.
  *
- * Deliberate choice: `theme` replaces Tailwind's defaults instead of extending
- * them. The whole generic palette (indigo/violet/purple/slate…), the full radius
- * scale and every blurred shadow simply do not exist here, so they cannot be
- * written by accident. Structural guardrail beats a style guide in prose.
+ * Every colour below was sampled from the shop itself (4K video of the
+ * premises, Av. José Barrionuevo Peña 14, Berja): polished black marble floor
+ * with white veins, matt charcoal walls, vertical oak slats, chrome, white
+ * furniture and a hexagonal LED ceiling. Nothing here is a "brand colour"
+ * someone invented — if it is not in the room, it is not in the theme.
+ *
+ * `theme` replaces Tailwind's defaults instead of extending them, so the
+ * generic palette, the radius scale and every blurred shadow cannot be written
+ * by accident.
  */
 export default {
   content: ['./src/**/*.{astro,html,js,jsx,md,mdx,ts,tsx}'],
   theme: {
-    screens: {
-      sm: '640px',
-      md: '768px',
-      lg: '1024px',
-      xl: '1280px',
-    },
+    screens: { sm: '640px', md: '768px', lg: '1024px', xl: '1280px' },
 
-    // Mineral palette sampled from Berja: lead ore of Sierra de Gádor, lime
-    // render, and the gules red of the town's coat of arms as the only accent.
     colors: {
       transparent: 'transparent',
       current: 'currentColor',
-      ink: '#0E0F0F', // mineral black — never #0F172A
-      'ink-2': '#161818', // raised plane
-      'ink-3': '#1F2122', // deepest raise, borders on dark
-      // `lead` is the measured AA-safe lead grey: 5.07:1 on ink and 4.71:1 on
-      // ink-2. The "correct" ore colour #6E7378 only reaches 4.01:1 and fails
-      // body text, so it survives only as `lead-lo` for hairlines.
-      lead: '#7E8489', // metadata, rules — AA on both dark planes
-      'lead-dim': '#6E7378', // large text / decorative only (4.01:1)
-      'lead-lo': '#3A3E41', // hairlines on ink, never text
-      caliza: '#EDE8DF', // lime paper — never #FFFFFF
-      'caliza-dim': '#C8C2B8',
-      gules: '#B4291F', // the single accent. Display/UI only, never body copy
-      'gules-hi': '#E05046', // AA-safe gules on ink for small text (4.94:1)
-      oro: '#A6791F', // matte gold of the castle — never #FFD700
+      marmol: '#0F0F14', // polished floor between veins — the canvas
+      'marmol-2': '#16161C', // matt wall — raised planes, nav
+      'marmol-3': '#212128', // shelving — hover, inputs
+      piel: '#0D0D17', // leather chair — overlays on video/photo only
+      veta: '#3A3A42', // vein shadow — hairlines, never text (1.7:1)
+      'humo-lo': '#6E6E76', // lit wall — decorative, text ≥24px only (3.78)
+      humo: '#9A9AA2', // dull reflection — metadata, hours (6.84 AA)
+      'cal-dim': '#C4C4C2', // chrome / ring light — secondary text (10.94)
+      cal: '#ECECEA', // white furniture — primary text, logo (16.16 AAA)
+      roble: '#B3A98F', // oak slats — THE accent: CTA, prices, focus (8.18)
+      'roble-hi': '#CFC5A8', // slat against light — CTA hover, star (11.11)
+      'roble-lo': '#8E8468', // slat groove — CTA border, text ≥18px (5.14)
+      pino: '#D9C979', // pallet table — ONE appearance per page (11.45)
+      salvia: '#8FA070', // monstera — the "open now" dot, nothing else
     },
 
     fontFamily: {
-      // Archivo variable carries both the condensed and expanded widths, so the
-      // extreme scale/width contrast costs one file instead of two families.
-      display: ['"Archivo Variable"', 'ui-sans-serif', 'sans-serif'],
-      body: ['"Hanken Grotesk Variable"', 'ui-sans-serif', 'sans-serif'],
-      mono: ['"Archivo Variable"', 'ui-monospace', 'monospace'],
+      // Cinzel shares the Roman-capital genealogy of the "BARBER" in the logo.
+      display: ['"Cinzel Variable"', '"Cinzel fallback"', 'Georgia', 'serif'],
+      // Pinyon is the closest copperplate to the logo's "Azedin": one word per
+      // page, at display size only. Imported where used, not in the layout.
+      script: ['"Pinyon Script"', 'cursive'],
+      body: ['"Hanken Grotesk Variable"', '"Hanken fallback"', 'ui-sans-serif', 'sans-serif'],
     },
 
     fontSize: {
       cap: ['var(--step--1)', { lineHeight: '1.45' }],
       base: ['var(--step-0)', { lineHeight: '1.55' }],
-      // Named `sub`, not `lead`: a `lead` size token would collide with the
-      // `lead` colour token and `text-lead` would silently set both.
       sub: ['var(--step-1)', { lineHeight: '1.35' }],
-      sect: ['var(--step-3)', { lineHeight: '0.95', letterSpacing: '-0.03em' }],
-      poster: ['var(--step-poster)', { lineHeight: '0.84', letterSpacing: '-0.04em' }],
+      h3: ['var(--step-2)', { lineHeight: '1.05' }],
+      sect: ['var(--step-3)', { lineHeight: '0.95' }],
+      poster: ['var(--step-poster)', { lineHeight: '0.95' }],
     },
 
-    // Three values. Default is 0. `full` is reserved for the single status pill.
-    borderRadius: {
-      none: '0',
-      DEFAULT: '0',
-      sm: '2px',
-      full: '9999px',
-    },
+    // Slats, marble, LED panel: everything in the room is an edge.
+    borderRadius: { none: '0', DEFAULT: '0', sm: '2px', full: '9999px' },
 
-    // Displaced solid shadow or nothing. No blur anywhere.
+    // Depth is a reflection, like the floor — never a blur.
     boxShadow: {
       none: 'none',
-      hard: '5px 5px 0 0 var(--c-ink)',
-      'hard-caliza': '5px 5px 0 0 var(--c-caliza)',
+      reflejo: 'inset 0 1px 0 0 rgb(236 236 234 / 0.06)',
+      aro: '0 0 0 1px #C4C4C2, 0 0 0 7px rgb(236 236 234 / 0.06)',
     },
 
-    borderWidth: { 0: '0', DEFAULT: '1px', 2: '2px', 4: '4px' },
-    letterSpacing: { tight: '-0.03em', normal: '0', wide: '0.08em' },
-    lineHeight: { none: '1', tight: '1.1', snug: '1.35', normal: '1.55' },
-    opacity: { 0: '0', 5: '0.05', 20: '0.2', 40: '0.4', 60: '0.6', 80: '0.8', 100: '1' },
+    borderWidth: { 0: '0', DEFAULT: '1px', 2: '2px' },
+    letterSpacing: { normal: '0', wide: '0.18em', wider: '0.3em' },
+    lineHeight: { none: '1', tight: '1.05', snug: '1.35', normal: '1.55' },
+    opacity: { 0: '0', 6: '0.06', 20: '0.2', 40: '0.4', 60: '0.6', 80: '0.8', 100: '1' },
 
     extend: {
-      fontWeight: {
-        normal: '400',
-        medium: '500',
-        semibold: '600',
-        bold: '700',
-        black: '800',
-      },
+      fontWeight: { normal: '400', medium: '500', semibold: '600', bold: '700' },
       transitionTimingFunction: {
-        // One curve for the whole site. No back/elastic/bounce, ever.
-        plomo: 'cubic-bezier(0.23, 1, 0.32, 1)',
-        gleasing: 'cubic-bezier(0.4, 0, 0, 1)',
-        'out-quart': 'cubic-bezier(0.165, 0.84, 0.44, 1)',
+        marmol: 'cubic-bezier(0.23, 1, 0.32, 1)', // micro-states
+        lama: 'cubic-bezier(0.4, 0, 0, 1)', // slat reveals
+        led: 'cubic-bezier(0.165, 0.84, 0.44, 1)', // lights coming on
+        puerta: 'cubic-bezier(0.86, 0, 0.07, 1)', // overlays
       },
-      transitionDuration: { 120: '120ms', 150: '150ms', 250: '250ms', 400: '400ms', 600: '600ms' },
-      spacing: { 18: '4.5rem', 22: '5.5rem', 30: '7.5rem', gap: 'var(--gap)', safe: 'var(--safe)' },
+      transitionDuration: { 120: '120ms', 240: '240ms', 420: '420ms', 700: '700ms' },
+      spacing: {
+        18: '4.5rem',
+        22: '5.5rem',
+        30: '7.5rem',
+        lama: 'var(--lama)',
+        ranura: 'var(--ranura)',
+        gap: 'var(--gap)',
+        safe: 'var(--safe)',
+      },
       maxWidth: { measure: '66ch', frame: '88rem' },
       aspectRatio: { reel: '9 / 16', card: '3 / 4' },
       keyframes: {
-        // Rule drawn left→right: the only decorative motion allowed in CSS.
-        ruleIn: { from: { transform: 'scaleX(0)' }, to: { transform: 'scaleX(1)' } },
+        veta: { from: { transform: 'scaleX(0)' }, to: { transform: 'scaleX(1)' } },
         marquee: { from: { transform: 'translateX(0)' }, to: { transform: 'translateX(-50%)' } },
+        reflejo: { from: { transform: 'translateX(-120%)' }, to: { transform: 'translateX(220%)' } },
       },
       animation: {
-        'rule-in': 'ruleIn 0.4s cubic-bezier(0.2, 0.7, 0.2, 1) both',
+        veta: 'veta 420ms cubic-bezier(0.165, 0.84, 0.44, 1) both',
         marquee: 'marquee 48s linear infinite',
       },
     },

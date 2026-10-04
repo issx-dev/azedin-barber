@@ -3,57 +3,54 @@
 @tailwind utilities;
 
 /* ===========================================================================
-   PLOMO — Azedin Barber
-   A precision workshop read in lead, lime and gules. Berja, Almería.
+   MÁRMOL — Azedin Barber
+   Polished black marble, oak slats, chrome, a hexagonal LED ceiling and one
+   calligraphic logo. Berja, Almería. "Estilo y Elegancia" — their words.
    ===========================================================================
-   Rules this file enforces, so no component has to remember them:
-   - Radius 0 by default. Depth is a displaced solid shadow or nothing.
-   - One accent (gules). One motion curve. Positive tracking only on eyebrows.
-   - Grain is an inline SVG turbulence at 4% — not a WebGL canvas.
+   What this file enforces so no component has to remember it:
+   - Radius 0. Depth is a 1px reflection, like the floor. No blur, no grain.
+   - One accent (oak). Positive tracking only on Cinzel and eyebrows.
+   - The four motifs (.panal .lamas .veta .aro) are all things in the room.
    ======================================================================== */
 
 @layer base {
   :root {
-    --c-ink: #0e0f0f;
-    --c-ink-2: #161818;
-    --c-lead: #7e8489;
-    --c-lead-lo: #3a3e41;
-    --c-caliza: #ede8df;
-    --c-gules: #b4291f;
+    --c-marmol: #0f0f14;
+    --c-marmol-2: #16161c;
+    --c-veta: #3a3a42;
+    --c-humo: #9a9aa2;
+    --c-cal-dim: #c4c4c2;
+    --c-cal: #ececea;
+    --c-roble: #b3a98f;
+    --c-roble-hi: #cfc5a8;
 
-    /* Extreme scale contrast is the signature: ~20:1 between poster and caption. */
     --step--1: clamp(0.8125rem, 0.78rem + 0.15vw, 0.875rem);
     --step-0: clamp(1.0625rem, 1rem + 0.25vw, 1.1875rem);
-    --step-1: clamp(1.375rem, 1.2rem + 0.8vw, 1.75rem);
-    --step-3: clamp(2.25rem, 1.6rem + 3vw, 4rem);
-    /* Extreme scale contrast is the signature: ~20:1 between poster and caption.
-       The poster floor is 14vw rather than a fixed rem so the name still reads
-       as signage on a 390px phone instead of shrinking to a headline. */
-    --step-poster: clamp(3.4rem, 14vw, 13rem);
+    --step-1: clamp(1.25rem, 1.1rem + 0.7vw, 1.625rem);
+    --step-2: clamp(1.75rem, 1.3rem + 1.8vw, 2.75rem);
+    --step-3: clamp(2.5rem, 1.6rem + 3.4vw, 4.5rem);
+    --step-poster: clamp(3.25rem, 12vw, 11rem);
 
     --rule: 1px;
     --gutter: clamp(1.25rem, 4vw, 3.5rem);
-
-    /* Spacing proportional to a 1440px design, so the whole layout scales with
-       the viewport instead of stepping between fixed breakpoints.
-       (Pattern measured on darkroom.engineering, the authors of Lenis.) */
     --gap: calc(((16 * 100) / 1440) * 1vw);
     --safe: calc(((24 * 100) / 1440) * 1vw);
-    --columns: 8;
 
-    /* The complete easing set. No component may write a loose cubic-bezier:
-       if a curve is not in this list, it is not in the design. */
-    --ease-plomo: cubic-bezier(0.23, 1, 0.32, 1); /* default hover/micro-state */
-    --ease-gleasing: cubic-bezier(0.4, 0, 0, 1); /* workhorse */
-    --ease-out-quart: cubic-bezier(0.165, 0.84, 0.44, 1); /* reveals */
-    --ease-in-out-quint: cubic-bezier(0.86, 0, 0.07, 1); /* large transitions */
-    --ease-in-out-expo: cubic-bezier(1, 0, 0, 1); /* curtains, overlays */
+    /* Slat rhythm from the wall: 12px slat, 4px groove. */
+    --lama: 12px;
+    --ranura: 4px;
+    /* Apothem of the ceiling hexagons. Never below 40px or it reads as "tech". */
+    --hex: 56px;
+
+    --ease-marmol: cubic-bezier(0.23, 1, 0.32, 1);
+    --ease-lama: cubic-bezier(0.4, 0, 0, 1);
+    --ease-led: cubic-bezier(0.165, 0.84, 0.44, 1);
+    --ease-puerta: cubic-bezier(0.86, 0, 0.07, 1);
 
     color-scheme: dark;
   }
 
-  /* Fallback metrics matched to Hanken Grotesk so font-display:swap cannot
-     shift the layout (CLS budget is 0.00, not 0.05). */
+  /* Metric-matched fallbacks so font-display:swap cannot shift the layout. */
   @font-face {
     font-family: 'Hanken fallback';
     src: local('Arial');
@@ -62,27 +59,30 @@
     descent-override: 24%;
     line-gap-override: 0%;
   }
+  @font-face {
+    font-family: 'Cinzel fallback';
+    src: local('Georgia');
+    size-adjust: 104%;
+    ascent-override: 88%;
+    descent-override: 22%;
+    line-gap-override: 0%;
+  }
 
   html {
-    background: var(--c-ink);
+    background: var(--c-marmol);
     -webkit-text-size-adjust: 100%;
-    /* The marquee track is intentionally wider than the viewport; clip it at the
-       root so it can never create a horizontal scrollbar on mobile. */
     overflow-x: clip;
   }
 
-  /* No smooth-scroll here: Lenis owns scrolling on desktop and a double
-     smoothing fights itself. */
   body {
-    @apply bg-ink font-body text-base text-caliza antialiased;
-    font-variation-settings: 'wght' 400;
+    @apply bg-marmol font-body text-base text-cal antialiased;
     text-rendering: optimizeLegibility;
   }
 
   h1,
   h2,
   h3 {
-    @apply font-display;
+    @apply font-display uppercase;
     text-wrap: balance;
   }
 
@@ -91,15 +91,14 @@
     text-wrap: pretty;
   }
 
-  /* Focus is in brand colour and always visible. Never `outline: none`. */
   :focus-visible {
-    outline: 2px solid var(--c-gules);
+    outline: 2px solid var(--c-roble);
     outline-offset: 3px;
   }
 
   ::selection {
-    background: var(--c-gules);
-    color: var(--c-caliza);
+    background: var(--c-roble);
+    color: var(--c-marmol);
   }
 
   @media (prefers-reduced-motion: reduce) {
@@ -115,117 +114,169 @@
 }
 
 @layer components {
-  /* --- Frame ------------------------------------------------------------- */
   .frame {
     @apply mx-auto w-full max-w-frame;
     padding-inline: var(--gutter);
   }
 
-  /* The grid is meant to be seen: hairlines, never cards. */
   .ruled-top {
-    border-top: var(--rule) solid var(--c-lead-lo);
+    border-top: var(--rule) solid var(--c-veta);
   }
   .ruled-bottom {
-    border-bottom: var(--rule) solid var(--c-lead-lo);
+    border-bottom: var(--rule) solid var(--c-veta);
   }
 
-  /* --- Eyebrow: the only place with positive tracking ------------------- */
+  /* Eyebrow: Hanken, not Cinzel — a Roman capital at 11px stops reading as
+     the logo and starts reading as a template. */
   .eyebrow {
-    @apply font-mono text-[0.6875rem] uppercase tracking-wide text-lead;
-    font-variation-settings: 'wght' 500;
+    @apply font-body text-[0.6875rem] font-semibold uppercase tracking-wide text-humo;
   }
 
-  /* --- Poster type: the shop name at signage scale ---------------------- */
-  .poster {
-    @apply font-display text-poster uppercase text-caliza;
-    font-variation-settings: 'wght' 800, 'wdth' 112;
+  /* Display rules: Cinzel is always capitals with open tracking, like BARBER. */
+  .display {
+    @apply font-display uppercase tracking-wide text-cal;
+    font-variation-settings: 'wght' 600;
   }
 
-  /* --- Ledger row: prices as a mine docket, not as cards ---------------- */
+  /* The one calligraphic gesture per page. Padding keeps the swash in the box. */
+  .script {
+    @apply font-script normal-case text-cal;
+    letter-spacing: 0;
+    line-height: 1;
+    padding-inline: 0.15em;
+  }
+
+  /* --- Price ledger ------------------------------------------------------- */
   .ledger-row {
     @apply grid items-baseline gap-x-4 py-5;
     grid-template-columns: auto minmax(0, 1fr) auto;
-    border-bottom: var(--rule) solid var(--c-lead-lo);
+    border-bottom: var(--rule) solid var(--c-veta);
+    transition: border-color 240ms var(--ease-marmol);
+  }
+  .ledger-row:hover {
+    border-color: var(--c-roble-lo, #8e8468);
   }
   .ledger-leader {
-    /* Dot leaders drawn in CSS: cheaper and crisper than a border-dashed. */
     height: 1px;
     align-self: center;
-    background-image: radial-gradient(circle, var(--c-lead) 0.5px, transparent 0.5px);
+    background-image: radial-gradient(circle, var(--c-humo) 0.5px, transparent 0.5px);
     background-size: 6px 1px;
     background-repeat: repeat-x;
-    opacity: 0.55;
+    opacity: 0.5;
   }
   .ledger-price {
-    @apply font-mono text-caliza;
+    @apply font-display text-roble;
     font-variant-numeric: tabular-nums;
     font-variation-settings: 'wght' 600;
   }
 
-  /* --- Buttons ---------------------------------------------------------- */
+  /* --- Buttons ------------------------------------------------------------ */
   .btn {
-    @apply inline-flex items-center justify-center gap-2 border px-6 font-mono text-cap uppercase tracking-wide;
-    min-height: 48px; /* touch target floor */
+    @apply relative inline-flex items-center justify-center gap-2 overflow-hidden border px-6 font-body text-cap font-semibold uppercase tracking-wide;
+    min-height: 48px;
     transition:
-      background-color 250ms var(--ease-plomo),
-      color 250ms var(--ease-plomo),
-      box-shadow 250ms var(--ease-plomo),
-      transform 250ms var(--ease-plomo);
+      background-color 240ms var(--ease-marmol),
+      color 240ms var(--ease-marmol),
+      border-color 240ms var(--ease-marmol),
+      transform 120ms var(--ease-marmol);
   }
+  /* Primary = oak with marble text (8.18:1). Never white on oak (1.98:1). */
   .btn-primary {
-    @apply border-gules bg-gules text-caliza;
+    @apply border-roble bg-roble text-marmol;
   }
   .btn-primary:hover {
-    @apply shadow-hard-caliza;
-    transform: translate(-2px, -2px);
+    @apply border-roble-hi bg-roble-hi;
+  }
+  /* A single reflection runs across the oak on hover, like light on the floor. */
+  .btn-primary::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    width: 40%;
+    transform: translateX(-120%);
+    background: linear-gradient(100deg, transparent, rgb(236 236 234 / 0.35), transparent);
+    pointer-events: none;
+  }
+  .btn-primary:hover::after {
+    animation: reflejo 700ms linear;
   }
   .btn-ghost {
-    @apply border-lead-lo bg-transparent text-caliza;
+    @apply border-veta bg-transparent text-cal;
   }
   .btn-ghost:hover {
-    @apply border-caliza;
+    @apply border-cal-dim;
   }
   .btn:active {
-    transform: translate(0, 0);
+    transform: translateY(1px);
   }
 
-  /* --- Status pill: the one and only rounded-full element --------------- */
+  /* --- Status pill: the ring light, and the only rounded-full element ---- */
   .pill {
-    @apply inline-flex items-center gap-2 rounded-full border border-lead-lo px-3 py-1 font-mono text-cap uppercase tracking-wide text-lead;
+    @apply inline-flex items-center gap-2 rounded-full border border-veta px-3 py-1 font-body text-cap font-semibold uppercase tracking-wide text-humo;
+  }
+  .pill-dot {
+    @apply h-2 w-2 rounded-full bg-salvia shadow-aro;
   }
 }
 
 @layer utilities {
-  /* Mineral grain. Inline turbulence at 4%: ~1KB, zero JS, no WebGL. */
-  .grain::after {
+  /* --- Motif 1: the hexagonal LED ceiling -------------------------------- */
+  .panal {
+    background-image:
+      radial-gradient(ellipse at 50% 30%, rgb(15 15 20 / 0) 30%, var(--c-marmol) 75%),
+      url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='112' height='194' viewBox='0 0 112 194'%3E%3Cg fill='none' stroke='%23ECECEA' stroke-opacity='.08'%3E%3Cpath d='M56 2 110 33v62L56 128 2 95V33z'/%3E%3Cpath d='M56 130l54 31v62M56 130 2 161v62'/%3E%3C/g%3E%3C/svg%3E");
+    background-size:
+      auto,
+      calc(var(--hex) * 2) auto;
+  }
+
+  /* --- Motif 2: the oak slat wall ---------------------------------------- */
+  .lamas {
+    background: repeating-linear-gradient(
+      90deg,
+      var(--c-roble) 0 var(--lama),
+      transparent var(--lama) calc(var(--lama) + var(--ranura))
+    );
+  }
+  .lamas-faint {
+    background: repeating-linear-gradient(
+      90deg,
+      rgb(236 236 234 / 0.06) 0 var(--lama),
+      transparent var(--lama) calc(var(--lama) + var(--ranura))
+    );
+  }
+
+  /* --- Motif 3: the marble vein — one diagonal line, behind text only ---- */
+  .veta-diag::before {
     content: '';
     position: absolute;
     inset: 0;
     pointer-events: none;
-    opacity: 0.04;
-    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='3'/%3E%3C/filter%3E%3Crect width='160' height='160' filter='url(%23n)'/%3E%3C/svg%3E");
+    background: linear-gradient(
+      -28deg,
+      transparent 49.6%,
+      rgb(236 236 234 / 0.07) 50%,
+      transparent 50.4%
+    );
   }
 
-  /* Hairline grid columns, drawn not implied. */
-  .grid-lines {
-    background-image: linear-gradient(to right, var(--c-lead-lo) 1px, transparent 1px);
-    background-size: calc(100% / 6) 100%;
-    opacity: 0.35;
+  /* --- Motif 4: the ring light ------------------------------------------- */
+  .aro {
+    @apply rounded-full shadow-aro;
   }
 
   .tabular {
     font-variant-numeric: tabular-nums;
   }
 
-  /* Progressive enhancement, 0 KB of JS. Guarded because Safari only shipped
-     scroll-driven animations in 26.0 — the static state must stay visible. */
+  /* Rule that draws itself under each h2, 0 KB of JS. */
   @supports (animation-timeline: view()) {
     @media (prefers-reduced-motion: no-preference) {
-      .rule-draw {
+      .veta-draw {
         transform-origin: left center;
-        animation: rule-in linear both;
+        animation: veta linear both;
         animation-timeline: view();
-        animation-range: entry 10% entry 90%;
+        animation-range: entry 10% entry 60%;
       }
     }
   }

@@ -1,0 +1,451 @@
+---
+/**
+ * BarberPole — the rulo de barbero, in 3D.
+ *
+ * One cylinder, one shader, no textures, no lights array. The stripes are
+ * procedural (a diagonal `fract()` over the cylinder's uv) so the whole thing
+ * is ~16 KB brotli of OGL loaded lazily, after first paint, only when the
+ * element is about to scroll into view. The colours are the PLOMO palette —
+ * red, white and blue — the exact pole mounted on the shop's façade (see
+ * pole: a rulo from Berja, not from a clipart library.
+ *
+ * Progressive enhancement, like the rest of the motion layer:
+ *   - JS off / WebGL off / `prefers-reduced-motion: reduce` → a static CSS
+ *     pole made of a repeating gradient. Same silhouette, same colours, 0 KB.
+ *   - Canvas stops rendering when off-screen or when the tab is hidden.
+ *   - Context loss is handled (fallback comes back, no white rectangle).
+ *
+ * Props
+ *   width / height  CSS size of the pole box. Aspect is kept by the geometry.
+ *   speed           turns per second of the stripe. 0.35 is the "shop sign".
+ *   class           extra classes for the outer wrapper.
+ */
+interface Props {
+  width?: string;
+  height?: string;
+  speed?: number;
+  tilt?: number; // degrees, lean of the pole on the Z axis
+  class?: string;
+  label?: string;
+}
+
+const {
+  width = '72px',
+  height = '320px',
+  speed = 0.35,
+  tilt = 0,
+  class: className = '',
+  label = 'Rulo de barbero',
+} = Astro.props;
+---
+
+<div
+  class:list={[className || 'relative', 'barber-pole']}
+  style={`--pole-w:${width};--pole-h:${height};--pole-tilt:${tilt}deg;`}
+  data-barber-pole
+  data-speed={speed}
+  role="img"
+  aria-label={label}
+>
+  <!-- Static pole: the no-JS / reduced-motion / no-WebGL truth. -->
+  <div class="barber-pole__static" data-pole-static aria-hidden="true">
+    <span class="barber-pole__cap barber-pole__cap--top"></span>
+    <span class="barber-pole__tube"></span>
+    <span class="barber-pole__cap barber-pole__cap--bottom"></span>
+  </div>
+
+  <canvas class="barber-pole__canvas" data-pole-canvas aria-hidden="true"></canvas>
+</div>
+
+<style>
+  .barber-pole {
+    width: var(--pole-w);
+    height: var(--pole-h);
+    transform: rotate(var(--pole-tilt));
+    transform-origin: 50% 100%;
+  }
+
+  .barber-pole__canvas {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    display: block;
+    opacity: 0;
+    transition: opacity 400ms ease;
+  }
+
+  .barber-pole[data-pole-ready] .barber-pole__canvas {
+    opacity: 1;
+  }
+
+  .barber-pole[data-pole-ready] .barber-pole__static {
+    opacity: 0;
+  }
+
+  /* ---- Static fallback ------------------------------------------------- */
+  .barber-pole__static {
+    position: absolute;
+    inset: 0;
+    display: grid;
+    grid-template-rows: 7% 1fr 7%;
+    transition: opacity 400ms ease;
+  }
+
+  .barber-pole__cap {
+    display: block;
+    background: linear-gradient(to right, var(--c-veta), var(--c-cal-dim) 45%, var(--c-veta));
+    border: var(--rule, 1px) solid var(--c-veta);
+  }
+
+  .barber-pole__tube {
+    display: block;
+    /* Diagonal stripes, gules / caliza / lead, over a radial shade that reads
+       as a cylinder. Three stops; the lead stripe is the Berja note. */
+    background-image:
+      linear-gradient(
+        to right,
+        rgb(14 15 15 / 0.55) 0%,
+        rgb(14 15 15 / 0) 38%,
+        rgb(237 232 223 / 0.12) 48%,
+        rgb(14 15 15 / 0) 60%,
+        rgb(14 15 15 / 0.65) 100%
+      ),
+      repeating-linear-gradient(
+        58deg,
+        #C8302C 0 22px,
+        #F4F1E6 22px 44px,
+        #2F4C9A 44px 66px,
+        #F4F1E6 66px 88px
+      );
+    border-left: var(--rule, 1px) solid var(--c-veta);
+    border-right: var(--rule, 1px) solid var(--c-veta);
+  }
+
+  @media (prefers-reduced-motion: no-preference) {
+    .barber-pole__tube {
+      animation: barber-pole-slide 1.6s linear infinite;
+    }
+  }
+
+  @keyframes barber-pole-slide {
+    to {
+      background-position:
+        0 0,
+        0 78px;
+    }
+  }
+</style>
+
+<script>
+  /**
+   * The 3D layer. Imported only if (a) the user has no motion preference,
+   * (b) WebGL exists, (c) the pole is within 200px of the viewport. Everything
+   * before that is the CSS pole above.
+   */
+  // Imported by path, not from the 'ogl' barrel: the barrel drags every extra
+  // (GLTF loader, post-processing, text…) into the chunk — 39 KB gz vs ~16 KB.
+  type OGL = {
+    Renderer: typeof import('ogl').Renderer;
+    Camera: typeof import('ogl').Camera;
+    Transform: typeof import('ogl').Transform;
+    Program: typeof import('ogl').Program;
+    Mesh: typeof import('ogl').Mesh;
+    Cylinder: typeof import('ogl').Cylinder;
+  };
+
+  async function loadOGL(): Promise<OGL> {
+    const [r, c, t, p, m, cy] = await Promise.all([
+      import('ogl/src/core/Renderer.js'),
+      import('ogl/src/core/Camera.js'),
+      import('ogl/src/core/Transform.js'),
+      import('ogl/src/core/Program.js'),
+      import('ogl/src/core/Mesh.js'),
+      import('ogl/src/extras/Cylinder.js'),
+    ]);
+    return {
+      Renderer: r.Renderer,
+      Camera: c.Camera,
+      Transform: t.Transform,
+      Program: p.Program,
+      Mesh: m.Mesh,
+      Cylinder: cy.Cylinder,
+    };
+  }
+
+  const VERT = /* glsl */ `
+    attribute vec3 position;
+    attribute vec3 normal;
+    attribute vec2 uv;
+    uniform mat4 modelViewMatrix;
+    uniform mat4 projectionMatrix;
+    uniform mat3 normalMatrix;
+    varying vec2 vUv;
+    varying vec3 vNormal;
+    varying vec3 vPos;
+    void main() {
+      vUv = uv;
+      vNormal = normalize(normalMatrix * normal);
+      vec4 mv = modelViewMatrix * vec4(position, 1.0);
+      vPos = mv.xyz;
+      gl_Position = projectionMatrix * mv;
+    }
+  `;
+
+  const FRAG = /* glsl */ `
+    precision highp float;
+    uniform float uTime;
+    uniform float uSpeed;
+    uniform vec3 uGules;
+    uniform vec3 uCaliza;
+    uniform vec3 uLead;
+    uniform vec3 uInk;
+    uniform float uIsCap;
+    varying vec2 vUv;
+    varying vec3 vNormal;
+    varying vec3 vPos;
+
+    void main() {
+      vec3 n = normalize(vNormal);
+      // One key light high-left, one cool rim from the right. Matte.
+      vec3 L1 = normalize(vec3(-0.6, 0.8, 0.9));
+      vec3 L2 = normalize(vec3(0.9, -0.2, 0.4));
+      float d1 = max(dot(n, L1), 0.0);
+      float d2 = max(dot(n, L2), 0.0);
+      vec3 V = normalize(-vPos);
+      vec3 H = normalize(L1 + V);
+      float spec = pow(max(dot(n, H), 0.0), 28.0) * 0.18;
+      float fres = pow(1.0 - max(dot(n, V), 0.0), 3.0);
+
+      vec3 base;
+      if (uIsCap > 0.5) {
+        base = uLead;
+      } else {
+        // Helix: uv.x around, uv.y along. 3.2 turns over the tube; the stripe
+        // scrolls with time, so the pole "rises" like the real motor does.
+        float t = fract(vUv.x + vUv.y * 3.2 - uTime * uSpeed);
+        // Period split: gules 0.28 | caliza 0.28 | lead 0.16 | caliza 0.28.
+        float edge = 0.012;
+        float g = 1.0 - smoothstep(0.28 - edge, 0.28 + edge, t);
+        float l = smoothstep(0.56 - edge, 0.56 + edge, t) * (1.0 - smoothstep(0.72 - edge, 0.72 + edge, t));
+        base = mix(uCaliza, uGules, g);
+        base = mix(base, uLead, l);
+      }
+
+      float light = 0.22 + d1 * 0.78 + d2 * 0.22;
+      vec3 col = base * light + vec3(spec);
+      col = mix(col, uInk, fres * 0.55);
+      gl_FragColor = vec4(col, 1.0);
+    }
+  `;
+
+  const hex = (h: string): [number, number, number] => {
+    const v = h.replace('#', '');
+    return [0, 2, 4].map((i) => parseInt(v.slice(i, i + 2), 16) / 255) as [number, number, number];
+  };
+
+  const PALETTE = {
+    // The real pole on the shop's façade: red, blue and warm white stripes,
+    // chrome caps. This is the ONE place red and blue exist in the whole site —
+    // because they exist on the building.
+    gules: hex('#C8302C'),
+    caliza: hex('#F4F1E6'),
+    lead: hex('#2F4C9A'),
+    ink: hex('#C4C4C2'),
+  };
+
+  function hasWebGL(): boolean {
+    try {
+      const c = document.createElement('canvas');
+      return !!(c.getContext('webgl2') || c.getContext('webgl'));
+    } catch {
+      return false;
+    }
+  }
+
+  async function mount(root: HTMLElement, ogl: OGL) {
+    const { Renderer, Camera, Transform, Cylinder, Program, Mesh } = ogl;
+    const canvas = root.querySelector<HTMLCanvasElement>('[data-pole-canvas]')!;
+    const speed = parseFloat(root.dataset.speed || '0.35') || 0.35;
+
+    const renderer = new Renderer({
+      canvas,
+      alpha: true,
+      antialias: true,
+      dpr: Math.min(window.devicePixelRatio || 1, 2),
+      premultipliedAlpha: true,
+    });
+    const gl = renderer.gl;
+    gl.clearColor(0, 0, 0, 0);
+
+    const camera = new Camera(gl, { fov: 24, near: 0.1, far: 20 });
+    const scene = new Transform();
+
+    // Tube + two caps. Aspect comes from the CSS box so the pole always fills
+    // its slot; the camera distance is solved from that aspect below.
+    const uniforms = () => ({
+      uTime: { value: 0 },
+      uSpeed: { value: speed },
+      uGules: { value: PALETTE.gules },
+      uCaliza: { value: PALETTE.caliza },
+      uLead: { value: PALETTE.lead },
+      uInk: { value: PALETTE.ink },
+      uIsCap: { value: 0 },
+    });
+
+    const tubeProgram = new Program(gl, { vertex: VERT, fragment: FRAG, uniforms: uniforms() });
+    const capUniforms = uniforms();
+    capUniforms.uIsCap.value = 1;
+    const capProgram = new Program(gl, { vertex: VERT, fragment: FRAG, uniforms: capUniforms });
+
+    const TUBE_H = 4;
+    const R = 0.42;
+    const tube = new Mesh(gl, {
+      geometry: new Cylinder(gl, {
+        radiusTop: R,
+        radiusBottom: R,
+        height: TUBE_H,
+        radialSegments: 48,
+        heightSegments: 1,
+        openEnded: true,
+      }),
+      program: tubeProgram,
+    });
+    tube.setParent(scene);
+
+    const capGeo = new Cylinder(gl, {
+      radiusTop: R * 1.18,
+      radiusBottom: R * 1.18,
+      height: 0.32,
+      radialSegments: 48,
+      heightSegments: 1,
+      openEnded: false,
+    });
+    const capTop = new Mesh(gl, { geometry: capGeo, program: capProgram });
+    capTop.position.y = TUBE_H / 2 + 0.16;
+    capTop.setParent(scene);
+    const capBottom = new Mesh(gl, { geometry: capGeo, program: capProgram });
+    capBottom.position.y = -TUBE_H / 2 - 0.16;
+    capBottom.setParent(scene);
+
+    scene.rotation.z = 0;
+
+    function resize() {
+      const w = root.clientWidth || 1;
+      const h = root.clientHeight || 1;
+      renderer.setSize(w, h);
+      camera.perspective({ aspect: w / h });
+      // Fit the full pole (tube + caps, 4.64 units) into the vertical fov with
+      // 4% margin.
+      const totalH = TUBE_H + 0.64;
+      const fovRad = (camera.fov * Math.PI) / 180;
+      camera.position.set(0, 0, (totalH / 2 / Math.tan(fovRad / 2)) * 1.04);
+      camera.lookAt([0, 0, 0]);
+    }
+    resize();
+    const ro = new ResizeObserver(resize);
+    ro.observe(root);
+
+    // ---- Render loop, paused when hidden -----------------------------------
+    let raf = 0;
+    let running = false;
+    let last = performance.now();
+    let time = 0;
+
+    const frame = (now: number) => {
+      if (!running) return;
+      const dt = Math.min((now - last) / 1000, 0.1); // clamp tab-switch jumps
+      last = now;
+      time += dt;
+      tubeProgram.uniforms.uTime.value = time;
+      renderer.render({ scene, camera });
+      raf = requestAnimationFrame(frame);
+    };
+
+    const start = () => {
+      if (running) return;
+      running = true;
+      last = performance.now();
+      raf = requestAnimationFrame(frame);
+    };
+    const stop = () => {
+      running = false;
+      cancelAnimationFrame(raf);
+    };
+
+    let inView = true;
+    const io = new IntersectionObserver(
+      ([e]) => {
+        inView = e.isIntersecting;
+        inView && !document.hidden ? start() : stop();
+      },
+      { rootMargin: '100px' },
+    );
+    io.observe(root);
+
+    const onVisibility = () => (document.hidden || !inView ? stop() : start());
+    document.addEventListener('visibilitychange', onVisibility);
+
+    // Context loss: show the CSS pole again; restore if the browser gives the
+    // context back.
+    canvas.addEventListener('webglcontextlost', (e) => {
+      e.preventDefault();
+      stop();
+      delete root.dataset.poleReady;
+    });
+    canvas.addEventListener('webglcontextrestored', () => {
+      root.dataset.poleReady = '';
+      start();
+    });
+
+    // First frame before reveal, so the crossfade never shows an empty canvas.
+    renderer.render({ scene, camera });
+    root.dataset.poleReady = '';
+    start();
+
+    // Astro view transitions / HMR: tidy up.
+    document.addEventListener(
+      'astro:before-swap',
+      () => {
+        stop();
+        io.disconnect();
+        ro.disconnect();
+        document.removeEventListener('visibilitychange', onVisibility);
+        gl.getExtension('WEBGL_lose_context')?.loseContext();
+      },
+      { once: true },
+    );
+  }
+
+  function init() {
+    const poles = Array.from(
+      document.querySelectorAll<HTMLElement>('[data-barber-pole]:not([data-pole-mounted])'),
+    );
+    poles.forEach((p) => (p.dataset.poleMounted = ''));
+    if (!poles.length) return;
+    if (!window.matchMedia('(prefers-reduced-motion: no-preference)').matches) return;
+    if (!hasWebGL()) return;
+
+    // Load OGL once, when the first pole is near the viewport.
+    let loading: Promise<OGL> | null = null;
+    const load = () => (loading ??= loadOGL());
+
+    const gate = new IntersectionObserver(
+      (entries) => {
+        for (const e of entries) {
+          if (!e.isIntersecting) continue;
+          gate.unobserve(e.target);
+          const el = e.target as HTMLElement;
+          load()
+            .then((ogl) => mount(el, ogl))
+            .catch((err) => console.warn('[BarberPole] fallback to CSS pole:', err));
+        }
+      },
+      { rootMargin: '200px' },
+    );
+    poles.forEach((p) => gate.observe(p));
+  }
+
+  init();
+  document.addEventListener('astro:page-load', init);
+</script>

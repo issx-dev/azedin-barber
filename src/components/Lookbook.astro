@@ -22,15 +22,15 @@ const INITIAL = 6;
     <header class="ruled-bottom flex flex-wrap items-end justify-between gap-6 pb-8 lg:border-0 lg:pb-0">
       <div class="lg:hidden">
         <p class="eyebrow mb-4">{galleryItems.length} trabajos</p>
-        <h2 id="archivo-title" class="text-sect uppercase text-caliza">Archivo</h2>
+        <h2 id="archivo-title" class="text-sect display text-cal">Archivo</h2>
       </div>
       <a
         href={business.instagramUrl}
         target="_blank"
         rel="noopener noreferrer"
-        class="font-mono text-cap uppercase tracking-wide text-lead transition-colors duration-150 ease-plomo hover:text-caliza"
+        class="font-body text-cap uppercase tracking-wide text-humo transition-colors duration-120 ease-marmol hover:text-cal"
       >
-        Más en Instagram <span class="text-gules">→</span>
+        Más en Instagram <span class="text-roble">→</span>
       </a>
     </header>
   </div>
@@ -42,14 +42,14 @@ const INITIAL = 6;
        `pinSpacing: false` in motion.js), so pinning never shifts the layout. -->
   <div
     data-track
-    class="relative lg:h-[260vh] lg:overflow-x-clip"
+    class="relative lg:overflow-x-clip"
   >
     <!-- ScrollTrigger pins THIS inner box; the track above keeps its own height
          in normal flow, so going in and out of the pin shifts nothing. -->
     <div data-pin class="lg:flex lg:h-screen lg:flex-col lg:justify-center">
     <div class="frame hidden lg:mb-10 lg:block lg:max-w-none">
       <div class="flex items-end justify-between gap-6">
-        <h2 id="archivo-title-lg" class="text-sect uppercase text-caliza">Archivo</h2>
+        <h2 id="archivo-title-lg" class="text-sect display text-cal">Archivo</h2>
         <p class="eyebrow pb-2">Desliza · {galleryItems.length} trabajos</p>
       </div>
     </div>
@@ -63,7 +63,7 @@ const INITIAL = 6;
           galleryItems.map((item, i) => (
             <li class={`${i >= INITIAL ? 'archivo-extra hidden md:block' : ''} lg:!block lg:w-[clamp(220px,19vw,300px)] lg:shrink-0`}>
               <figure>
-                <div class="relative aspect-reel overflow-hidden border border-lead-lo bg-ink-2">
+                <div class="relative aspect-reel overflow-hidden border border-veta bg-marmol-2">
                   <Image
                     src={item.src}
                     alt={item.alt}
@@ -79,8 +79,8 @@ const INITIAL = 6;
                   />
                 </div>
                 <figcaption class="mt-3 flex items-baseline justify-between gap-3">
-                  <span class="font-mono text-cap uppercase tracking-wide text-caliza">{item.label}</span>
-                  <span class="font-mono text-cap text-lead">{item.barber}</span>
+                  <span class="font-body text-cap uppercase tracking-wide text-cal">{item.label}</span>
+                  <span class="font-body text-cap text-humo">{item.barber}</span>
                 </figcaption>
               </figure>
             </li>
@@ -104,7 +104,7 @@ const INITIAL = 6;
 
     {
       !HAS_HIRES_PHOTOGRAPHY && (
-        <p class="mt-10 font-mono text-cap text-lead">
+        <p class="mt-10 font-body text-cap text-humo">
           Imágenes provisionales a resolución de Instagram. Pendiente de
           sustituir por los originales del estudio.
         </p>

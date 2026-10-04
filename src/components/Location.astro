@@ -18,7 +18,7 @@ const directionsUrl = `https://www.google.com/maps/dir/?api=1&destination=${busi
   <div class="frame">
     <header class="ruled-bottom pb-8">
       <p class="eyebrow mb-4">{business.plusCode}</p>
-      <h2 id="donde-title" class="text-sect uppercase text-caliza">Dónde</h2>
+      <h2 id="donde-title" class="text-sect display text-cal">Dónde</h2>
     </header>
 
     <div class="grid gap-x-10 gap-y-12 pt-10 lg:grid-cols-12">
@@ -28,13 +28,13 @@ const directionsUrl = `https://www.google.com/maps/dir/?api=1&destination=${busi
         <dl>
           {
             hours.map((h) => (
-              <div class="flex items-baseline justify-between gap-4 border-b border-lead-lo py-3">
-                <dt class="font-mono text-cap uppercase tracking-wide text-caliza">{h.day}</dt>
-                <dd class="text-right font-mono text-cap tabular text-lead">
+              <div class="flex items-baseline justify-between gap-4 border-b border-veta py-3">
+                <dt class="font-body text-cap uppercase tracking-wide text-cal">{h.day}</dt>
+                <dd class="text-right font-body text-cap tabular text-humo">
                   {h.slots.length ? h.slots.join(' · ') : 'Cerrado'}
                   {/* The note only adds information when there are hours to
                       qualify; on Sunday it would just repeat "Cerrado". */}
-                  {h.note && h.slots.length > 0 && <span class="ml-2 text-gules-hi">{h.note}</span>}
+                  {h.note && h.slots.length > 0 && <span class="ml-2 text-roble-hi">{h.note}</span>}
                 </dd>
               </div>
             ))
@@ -45,16 +45,16 @@ const directionsUrl = `https://www.google.com/maps/dir/?api=1&destination=${busi
       <div class="lg:col-span-4">
         <p class="eyebrow mb-5">Dirección</p>
         <address class="not-italic">
-          <p class="font-display uppercase text-caliza" style="font-size: var(--step-1); font-variation-settings: 'wght' 600, 'wdth' 100;">
+          <p class="font-display uppercase text-cal" style="font-size: var(--step-1); font-variation-settings: 'wght' 600;">
             {business.address}
           </p>
-          <p class="mt-2 font-mono text-cap text-lead">
+          <p class="mt-2 font-body text-cap text-humo">
             {business.postalCode} {business.town}, {business.province}
           </p>
           <p class="mt-5">
             <a
               href={`tel:${business.phoneRaw}`}
-              class="font-mono tabular text-caliza underline decoration-lead-lo underline-offset-4 transition-colors duration-150 ease-plomo hover:decoration-gules"
+              class="font-body tabular text-cal underline decoration-veta underline-offset-4 transition-colors duration-120 ease-marmol hover:decoration-roble"
             >
               {business.phone}
             </a>
@@ -73,13 +73,13 @@ const directionsUrl = `https://www.google.com/maps/dir/?api=1&destination=${busi
           href={mapsUrl}
           target="_blank"
           rel="noopener noreferrer"
-          class="group block border border-lead-lo p-5 transition-colors duration-250 ease-plomo hover:border-caliza"
+          class="group block border border-veta p-5 transition-colors duration-240 ease-marmol hover:border-cal-dim"
         >
-          <p class="font-mono text-cap tabular text-lead">
+          <p class="font-body text-cap tabular text-humo">
             {business.lat.toFixed(5)}<br />{business.lng.toFixed(5)}
           </p>
-          <p class="mt-6 font-mono text-cap uppercase tracking-wide text-caliza">
-            Ver en Google Maps <span class="text-gules">→</span>
+          <p class="mt-6 font-body text-cap uppercase tracking-wide text-cal">
+            Ver en Google Maps <span class="text-roble">→</span>
           </p>
         </a>
       </div>

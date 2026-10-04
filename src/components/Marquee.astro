@@ -16,7 +16,7 @@ const items = Array.from({ length: 8 });
   href={business.booksyUrl}
   target="_blank"
   rel="noopener noreferrer"
-  class="ruled-top ruled-bottom group relative block overflow-hidden bg-ink-2 py-5"
+  class="ruled-top ruled-bottom group relative block overflow-hidden bg-marmol-2 py-5"
   aria-label={`${phrase} en Booksy`}
 >
   <!-- `contain: paint` clips the oversized track locally, so the animation can
@@ -29,10 +29,10 @@ const items = Array.from({ length: 8 });
     {
       items.map(() => (
         <span class="flex shrink-0 items-center gap-10">
-          <span class="font-display uppercase text-caliza transition-colors duration-250 ease-plomo group-hover:text-gules" style="font-size: var(--step-1); font-variation-settings: 'wght' 700, 'wdth' 92;">
+          <span class="font-display uppercase text-cal transition-colors duration-240 ease-marmol group-hover:text-roble" style="font-size: var(--step-1); font-variation-settings: 'wght' 600;">
             {phrase}
           </span>
-          <span class="font-mono text-cap text-gules">●</span>
+          <span class="font-body text-cap text-roble">●</span>
         </span>
       ))
     }

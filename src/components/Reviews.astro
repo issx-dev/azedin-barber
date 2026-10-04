@@ -20,22 +20,24 @@ const fmt = (iso) =>
     <header class="ruled-bottom flex flex-wrap items-end justify-between gap-6 pb-8">
       <div>
         <p class="eyebrow mb-4">{business.rating} ★ en {business.reviewSource}</p>
-        <h2 id="resenas-title" class="text-sect uppercase text-caliza">
+        <h2 id="resenas-title" class="text-sect display text-cal">
           {business.reviewCount} reseñas<br />verificadas
         </h2>
       </div>
       <!-- What customers actually repeat, in frequency order. -->
       <ul class="flex flex-wrap gap-x-5 gap-y-2">
-        {reviewThemes.map((t) => <li class="font-mono text-cap uppercase tracking-wide text-lead">{t}</li>)}
+        {reviewThemes.map((t) => <li class="font-body text-cap uppercase tracking-wide text-humo">{t}</li>)}
       </ul>
     </header>
 
-    <!-- The one that answers the unasked question: can I bring my kid? -->
+    <!-- The one that answers the unasked question: can I bring my kid?
+         Set in the body face, not Cinzel: Roman capitals stop being legible
+         past six or seven words. -->
     <blockquote class="ruled-bottom py-10 md:py-14" data-tour-row>
-      <p class="font-display uppercase text-caliza" style="font-size: var(--step-3); line-height: 1.05; letter-spacing: -0.03em; max-width: 34ch;">
+      <p class="font-body text-cal" style="font-size: var(--step-2); line-height: 1.25; font-weight: 400; max-width: 30ch; text-wrap: balance;">
         “{featured.quote}”
       </p>
-      <footer class="mt-6 font-mono text-cap text-lead tabular">
+      <footer class="mt-6 font-body text-cap text-humo tabular">
         {featured.author} · {featured.service} con {featured.barber} · {fmt(featured.date)}
       </footer>
     </blockquote>
@@ -44,11 +46,11 @@ const fmt = (iso) =>
       {
         rest.map((r, i) => (
           <li
-            class="ruled-bottom border-lead-lo py-8 md:py-10 md:[&:nth-child(odd)]:pr-10 lg:pr-10"
+            class="ruled-bottom border-veta py-8 md:py-10 md:[&:nth-child(odd)]:pr-10 lg:pr-10"
             data-tour-row
           >
-            <p class="text-caliza" style="max-width: 38ch;">“{r.quote}”</p>
-            <p class="mt-5 font-mono text-cap text-lead tabular">
+            <p class="text-cal" style="max-width: 38ch;">“{r.quote}”</p>
+            <p class="mt-5 font-body text-cap text-humo tabular">
               {r.author} · {r.service} con {r.barber} · {fmt(r.date)}
             </p>
           </li>
@@ -56,9 +58,9 @@ const fmt = (iso) =>
       }
     </ul>
 
-    <p class="mt-8 font-mono text-cap text-lead">
+    <p class="mt-8 font-body text-cap text-humo">
       Fuente:
-      <a href={business.booksyProfileUrl} target="_blank" rel="noopener noreferrer" class="underline decoration-lead-lo underline-offset-4 hover:text-caliza hover:decoration-gules">
+      <a href={business.booksyProfileUrl} target="_blank" rel="noopener noreferrer" class="underline decoration-veta underline-offset-4 hover:text-cal hover:decoration-roble">
         perfil de {business.legalName} en Booksy
       </a>. Todas las reseñas son de clientes con reserva confirmada.
     </p>

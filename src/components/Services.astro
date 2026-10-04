@@ -14,9 +14,9 @@ import { services, business } from '../data/content.js';
     <header class="ruled-bottom flex flex-wrap items-end justify-between gap-6 pb-8">
       <div>
         <p class="eyebrow mb-4">Tarifa</p>
-        <h2 id="servicios-title" class="text-sect uppercase text-caliza">Servicios<br />y precios</h2>
+        <h2 id="servicios-title" class="text-sect display text-cal">Servicios<br />y precios</h2>
       </div>
-      <p class="font-mono text-cap text-lead">
+      <p class="font-body text-cap text-humo">
         Todos los servicios, 30 min<br />Sin recargo por reserva online
       </p>
     </header>
@@ -25,16 +25,16 @@ import { services, business } from '../data/content.js';
       {
         services.map((s) => (
           <li class="ledger-row" data-tour-row>
-            <span class="font-mono text-cap text-lead tabular">{s.num}</span>
+            <span class="font-body text-cap text-humo tabular">{s.num}</span>
             <span class="flex min-w-0 items-baseline gap-4">
               <span
-                class="min-w-0 font-display uppercase text-caliza"
-                style="font-size: var(--step-1); font-variation-settings: 'wght' 600, 'wdth' 100;"
+                class="min-w-0 font-display uppercase text-cal"
+                style="font-size: var(--step-1); font-variation-settings: 'wght' 600;"
               >
                 {s.name}
               </span>
               <span class="ledger-leader hidden min-w-6 flex-1 sm:block" aria-hidden="true"></span>
-              {s.note && <span class="hidden shrink-0 font-mono text-cap text-lead lg:block">{s.note}</span>}
+              {s.note && <span class="hidden shrink-0 font-body text-cap text-humo lg:block">{s.note}</span>}
             </span>
             <span class="ledger-price whitespace-nowrap" style="font-size: var(--step-1);">
               {s.price ? `${s.price} €` : 'Consultar'}
@@ -48,7 +48,7 @@ import { services, business } from '../data/content.js';
       <a class="btn btn-primary" href={business.booksyUrl} target="_blank" rel="noopener noreferrer">
         Reservar en Booksy
       </a>
-      <p class="font-mono text-cap text-lead">
+      <p class="font-body text-cap text-humo">
         Elige barbero y hora. {business.reviewCount} reseñas verificadas.
       </p>
     </div>

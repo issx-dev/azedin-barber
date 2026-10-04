@@ -7,72 +7,74 @@
  * winstonstudio.dk, who set "Winston Studio™" at 12px next to a 32px CTA.)
  */
 import { business, hours } from '../data/content.js';
+import Logo from './Logo.astro';
 
 const year = new Date().getFullYear();
 const today = hours[(new Date().getDay() + 6) % 7];
 ---
 
-<footer class="ruled-top relative bg-ink-2 py-16 md:py-22">
+<footer class="ruled-top relative bg-marmol-2 py-16 md:py-22">
   <div class="frame">
     <!-- The CTA is the loudest thing here. -->
     <a
       href={business.booksyUrl}
       target="_blank"
       rel="noopener noreferrer"
-      class="group block max-w-measure font-display uppercase text-caliza transition-colors duration-250 ease-plomo hover:text-gules"
+      class="group block max-w-measure font-display uppercase text-cal transition-colors duration-240 ease-marmol hover:text-roble"
       style="font-size: var(--step-3); line-height: 0.95; letter-spacing: -0.03em;"
     >
-      Reserva tu cita <span class="text-gules group-hover:text-caliza">→</span>
+      Reserva tu cita <span class="text-roble group-hover:text-cal">→</span>
     </a>
 
     <div class="ruled-top mt-14 grid gap-x-10 gap-y-10 pt-10 sm:grid-cols-2 lg:grid-cols-4">
       <div>
         <p class="eyebrow mb-4">Hoy</p>
-        <p class="font-mono text-cap tabular text-caliza">
+        <p class="font-body text-cap tabular text-cal">
           {today.slots.length ? today.slots.join(' · ') : 'Cerrado'}
         </p>
-        <p class="mt-1 font-mono text-cap text-lead">{today.day}</p>
+        <p class="mt-1 font-body text-cap text-humo">{today.day}</p>
       </div>
 
       <div>
         <p class="eyebrow mb-4">Dirección</p>
-        <p class="font-mono text-cap text-caliza">{business.address}</p>
-        <p class="mt-1 font-mono text-cap text-lead">
+        <p class="font-body text-cap text-cal">{business.address}</p>
+        <p class="mt-1 font-body text-cap text-humo">
           {business.postalCode} {business.town}
         </p>
       </div>
 
       <div>
         <p class="eyebrow mb-4">Contacto</p>
-        <a href={`tel:${business.phoneRaw}`} class="block font-mono text-cap tabular text-caliza hover:text-gules">
+        <a href={`tel:${business.phoneRaw}`} class="block font-body text-cap tabular text-cal hover:text-roble">
           {business.phone}
         </a>
         <a
           href={business.instagramUrl}
           target="_blank"
           rel="noopener noreferrer"
-          class="mt-1 block font-mono text-cap text-lead hover:text-caliza">@azedinbarber</a
+          class="mt-1 block font-body text-cap text-humo hover:text-cal">@azedinbarber</a
         >
       </div>
 
       <div>
         <p class="eyebrow mb-4">Valoración</p>
-        <p class="font-mono text-cap tabular text-caliza">{business.rating} ★ · {business.reviewCount}</p>
+        <p class="font-body text-cap tabular text-cal">{business.rating} ★ · {business.reviewCount}</p>
         <a
           href={business.booksyProfileUrl}
           target="_blank"
           rel="noopener noreferrer"
-          class="mt-1 block font-mono text-cap text-lead hover:text-caliza">Reseñas en Booksy</a
+          class="mt-1 block font-body text-cap text-humo hover:text-cal">Reseñas en Booksy</a
         >
       </div>
     </div>
 
     <!-- The brand whispers. -->
     <div class="ruled-top mt-12 flex flex-wrap items-baseline justify-between gap-4 pt-6">
-      <p class="font-mono text-cap uppercase tracking-wide text-lead">
-        {business.legalName}<span class="text-gules">™</span> · {business.town}, {business.province}
+      <p class="flex items-center gap-4 font-body text-cap uppercase tracking-wide text-humo">
+        <Logo class="h-8 w-auto text-cal-dim" />
+        <span>{business.town}, {business.province}</span>
       </p>
-      <p class="font-mono text-cap text-lead">© {year} {business.owner}</p>
+      <p class="font-body text-cap text-humo">© {year} {business.owner}</p>
     </div>
   </div>
 </footer>

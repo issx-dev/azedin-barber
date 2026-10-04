@@ -1,14 +1,12 @@
 ---
-// Archivo's `wdth` axis (62%–125%) is the whole point of the display face: one
-// file gives both the condensed and expanded widths the poster type needs.
-// Fontsource's default entry point only ships `wght`, so import `wdth` explicitly.
-import '@fontsource-variable/archivo/wdth.css';
+// Cinzel: the Roman capitals of the logo's "BARBER". Hanken: body.
+// Pinyon (the script) is imported only by the component that uses it.
+import '@fontsource-variable/cinzel';
 import '@fontsource-variable/hanken-grotesk';
 import '../styles/global.css';
 
-// Resolved through Vite so the preload points at the real hashed asset instead
-// of a hand-written path that silently 404s.
-import archivoWdth from '@fontsource-variable/archivo/files/archivo-latin-wdth-normal.woff2?url';
+// Resolved through Vite so the preload points at the real hashed asset.
+import cinzelWoff from '@fontsource-variable/cinzel/files/cinzel-latin-wght-normal.woff2?url';
 
 import { business, services, hours, reviews } from '../data/content.js';
 
@@ -109,11 +107,12 @@ const schema = {
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
     <!-- Only the display face is preloaded; body text can swap with matched metrics. -->
-    <link rel="preload" as="font" type="font/woff2" crossorigin href={archivoWdth} />
+    <link rel="preload" as="image" href="/img/hero-poster.avif" fetchpriority="high" />
+    <link rel="preload" as="font" type="font/woff2" crossorigin href={cinzelWoff} />
 
     <title>{title}</title>
     <meta name="description" content={description} />
-    <meta name="theme-color" content="#0E0F0F" />
+    <meta name="theme-color" content="#0F0F14" />
     <link rel="canonical" href={canonicalUrl} />
 
     <link rel="icon" type="image/x-icon" href="/favicon.ico" />
@@ -146,7 +145,7 @@ const schema = {
   <body>
     <a
       href="#main-content"
-      class="sr-only focus:not-sr-only focus:fixed focus:left-4 focus:top-4 focus:z-50 focus:border focus:border-caliza focus:bg-ink focus:px-4 focus:py-2 focus:font-mono focus:text-cap focus:uppercase focus:text-caliza"
+      class="sr-only focus:not-sr-only focus:fixed focus:left-4 focus:top-4 focus:z-50 focus:border focus:border-cal-dim focus:bg-marmol focus:px-4 focus:py-2 focus:font-body focus:text-cap focus:uppercase focus:text-cal"
       >Saltar al contenido</a
     >
     <slot />

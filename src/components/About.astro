@@ -1,86 +1,88 @@
 ---
 /**
- * About — the trade, set as a dictionary entry.
+ * El local — the room, and the three people in it.
  *
- * Structure borrowed from darkroom.engineering: a defined term, numbered
- * senses, a manifesto paragraph in mono. It carries the Berja anchor — the
- * lead mines of Sierra de Gádor — which is the one thing no other barbershop
- * site on earth can claim.
+ * No invented metaphor: the shop's own materials are the argument. Marble
+ * floor, oak slats, hexagonal light. The team gets a ring-light avatar each
+ * because the ring light is in the room; Anas has no portrait yet, so he gets
+ * the ring alone rather than a stock silhouette.
  */
-import { business, barbers, shopImages } from '../data/content.js';
 import { Image } from 'astro:assets';
+import { business, barbers, shopImages } from '../data/content.js';
+import '@fontsource/pinyon-script';
 ---
 
-<section id="oficio" class="relative py-20 md:py-30" aria-labelledby="oficio-title">
+<section id="local" class="relative py-20 md:py-30" aria-labelledby="local-title">
   <div class="frame">
     <header class="ruled-bottom pb-8">
-      <p class="eyebrow mb-4">El oficio</p>
-      <h2 id="oficio-title" class="text-sect uppercase text-caliza">
-        <span class="font-mono text-lead">[ plomo ]</span>, sust.
+      <p class="eyebrow mb-4">El local</p>
+      <h2 id="local-title" class="text-sect display">
+        Mármol, roble<br />y luz
       </h2>
+      <div class="veta-draw mt-6 h-px w-24 bg-roble" aria-hidden="true"></div>
     </header>
 
     <div class="grid gap-x-10 gap-y-12 pt-10 lg:grid-cols-12">
-      <!-- Numbered senses: the term, then the claim. -->
-      <ol class="lg:col-span-5">
-        <li class="ruled-bottom flex gap-5 pb-6">
-          <span class="shrink-0 font-mono text-cap text-lead tabular">1.</span>
-          <p class="text-caliza">
-            Metal denso y maleable. Se extrajo de la Sierra de Gádor durante
-            décadas; Berja vivió de él.
-          </p>
-        </li>
-        <li class="ruled-bottom flex gap-5 py-6">
-          <span class="shrink-0 font-mono text-cap text-lead tabular">2.</span>
-          <p class="text-caliza">
-            Taller donde el corte se mide antes de hacerse. Tijera, navaja y
-            máquina; nada de prisa.
-          </p>
-        </li>
-      </ol>
+      <!-- The slat wall, as an actual slat wall. -->
+      <div class="lamas hidden w-full lg:col-span-1 lg:block" aria-hidden="true"></div>
 
-      <div class="lg:col-span-4">
-        <p class="font-mono text-cap leading-normal text-lead">
-          {business.name} abre en la Avenida José Barrionuevo Peña desde la misma
-          idea con la que se bajaba el mineral de la sierra: trabajo medido,
-          hecho a mano y comprobable. Tres barberos, una tarifa publicada y
-          {business.reviewCount} reseñas con nombre y apellido.
+      <div class="lg:col-span-5">
+        <!-- The one script gesture of the page: their own tagline, in the
+             hand of their own logo. -->
+        <p class="script text-sect" style="font-size: var(--step-3);">Estilo y Elegancia</p>
+        <p class="mt-8 text-cal-dim">
+          Suelo de mármol negro, pared de listones de roble y un panel de luz
+          hexagonal en el techo. Tres sillones, una mesa de palé y una monstera.
+          En la Avenida José Barrionuevo Peña desde 2020.
         </p>
-        <p class="mt-6 font-mono text-cap uppercase tracking-wide text-caliza">
-          {business.tagline}
+        <p class="mt-5 text-cal-dim">
+          Lo que repiten las {business.reviewCount} reseñas: profesionalidad,
+          detalle y buen trato. Lo demás es el corte.
         </p>
       </div>
 
-      <!-- Placeholder-resolution frame: capped at 420px so it never breaks. -->
-      <figure class="lg:col-span-3">
-        <div class="relative aspect-card overflow-hidden border border-lead-lo">
+      <figure class="lg:col-span-6">
+        <div class="relative aspect-[4/3] overflow-hidden border border-veta bg-marmol-2" data-lama-reveal>
           <Image
             src={shopImages.salon.src}
             alt={shopImages.salon.alt}
-            width={420}
-            height={560}
-            widths={[320, 420]}
-            sizes="(min-width: 1024px) 320px, 60vw"
+            width={880}
+            height={660}
+            widths={[440, 660, 880]}
+            sizes="(min-width: 1024px) 44vw, 90vw"
             format="avif"
-            quality={72}
-            class="h-full w-full object-cover grayscale"
+            quality={74}
+            class="h-full w-full object-cover"
           />
         </div>
-        <figcaption class="mt-3 font-mono text-cap text-lead">
-          El salón · Berja
+        <figcaption class="mt-3 flex justify-between font-body text-cap text-humo">
+          <span>El salón</span><span>Berja</span>
         </figcaption>
       </figure>
     </div>
 
-    <!-- The team: three barbers, with who does what in plain numbers. -->
-    <ul class="ruled-top mt-16 grid gap-x-10 pt-10 sm:grid-cols-3">
+    <!-- The team. -->
+    <ul class="ruled-top mt-16 grid gap-x-10 gap-y-10 pt-10 sm:grid-cols-3">
       {
         barbers.map((b) => (
-          <li class="flex items-baseline gap-4 py-4 sm:block">
-            <h3 class="font-display uppercase text-caliza" style="font-size: var(--step-1); font-variation-settings: 'wght' 700, 'wdth' 100;">
-              {b.name}
-            </h3>
-            <p class="font-mono text-cap text-lead sm:mt-2">{b.role} · {b.share}</p>
+          <li class="flex items-center gap-5">
+            <div class="aro relative h-16 w-16 shrink-0 overflow-hidden bg-marmol-2">
+              {b.img && (
+                <Image
+                  src={b.img}
+                  alt={`${b.name}, barbero`}
+                  width={128}
+                  height={128}
+                  format="avif"
+                  quality={72}
+                  class="h-full w-full object-cover"
+                />
+              )}
+            </div>
+            <div>
+              <h3 class="display text-sub" style="font-variation-settings: 'wght' 600;">{b.name}</h3>
+              <p class="mt-1 font-body text-cap text-humo">{b.role} · {b.share}</p>
+            </div>
           </li>
         ))
       }

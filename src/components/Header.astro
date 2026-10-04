@@ -11,15 +11,15 @@ const links = [
   { href: '#servicios', label: 'Servicios' },
   { href: '#archivo', label: 'Archivo' },
   { href: '#resenas', label: 'Reseñas' },
-  { href: '#oficio', label: 'El oficio' },
+  { href: '#local', label: 'El local' },
   { href: '#donde', label: 'Dónde' },
 ];
 ---
 
-<header class="fixed inset-x-0 top-0 z-40 border-b border-lead-lo bg-ink/90 backdrop-blur-[2px]">
-  <div class="frame flex h-16 items-center justify-between gap-6">
-    <a href="#hero-title" class="shrink-0 whitespace-nowrap font-mono text-cap uppercase tracking-wide text-caliza">
-      {business.legalName}<span class="text-gules">™</span>
+<header class="fixed inset-x-0 top-0 z-40 border-b border-veta bg-marmol/90 ">
+  <div class="frame flex h-16 items-center justify-between gap-3 sm:gap-6">
+    <a href="#hero" class="shrink-0 whitespace-nowrap font-display text-cap font-semibold uppercase tracking-wider text-cal" aria-label={business.legalName}>
+      Azedin <span class="text-roble">Barber</span>
     </a>
 
     <nav aria-label="Principal" class="hidden items-center gap-7 lg:flex">
@@ -27,7 +27,7 @@ const links = [
         links.map((l) => (
           <a
             href={l.href}
-            class="font-mono text-cap uppercase tracking-wide text-lead transition-colors duration-150 ease-plomo hover:text-caliza"
+            class="font-body text-cap uppercase tracking-wide text-humo transition-colors duration-120 ease-marmol hover:text-cal"
           >
             {l.label}
           </a>
@@ -40,12 +40,12 @@ const links = [
         href={business.instagramUrl}
         target="_blank"
         rel="noopener noreferrer"
-        class="hidden font-mono text-cap uppercase tracking-wide text-lead transition-colors duration-150 ease-plomo hover:text-caliza sm:block"
+        class="hidden font-body text-cap uppercase tracking-wide text-humo transition-colors duration-120 ease-marmol hover:text-cal sm:block"
       >
         Instagram
       </a>
       <a
-        class="btn btn-primary !min-h-0 h-10 px-4"
+        class="btn btn-primary !min-h-0 hidden h-10 px-4 sm:inline-flex"
         href={business.booksyUrl}
         target="_blank"
         rel="noopener noreferrer">Reservar</a
@@ -64,17 +64,17 @@ const links = [
   <nav
     id="mobile-nav"
     aria-label="Principal móvil"
-    class="hidden border-t border-lead-lo bg-ink lg:!hidden"
+    class="hidden border-t border-veta bg-marmol lg:!hidden"
     data-nav-panel
   >
     <ul class="frame py-4">
       {
         links.map((l) => (
-          <li class="border-b border-lead-lo last:border-0">
+          <li class="border-b border-veta last:border-0">
             <a
               href={l.href}
-              class="block py-4 font-display uppercase text-caliza"
-              style="font-size: var(--step-1); font-variation-settings: 'wght' 600, 'wdth' 100;"
+              class="block py-4 font-display uppercase text-cal"
+              style="font-size: var(--step-1); font-variation-settings: 'wght' 600;"
               data-nav-link
             >
               {l.label}
