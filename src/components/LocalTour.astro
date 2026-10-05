@@ -2,14 +2,22 @@
 /**
  * LocalTour — the shop, walked by scrolling.
  *
- * The client's own 4K walkthrough, cut into 72 stills (WebP, 810px for phones,
- * 1080px for desktop) and painted to a <canvas> as the page scrolls. Scrubbing
- * a <video> is unreliable on iOS and laggy everywhere; a frame sequence is
- * exact on every device, and the visitor controls the pace.
+ * Every sharp frame of the client's 4K walkthrough — all 216, at the real
+ * 24 fps cadence, nothing skipped and nothing blended — painted to a <canvas>
+ * as the page scrolls. Scrubbing a <video> is unreliable on iOS and laggy
+ * everywhere; a frame sequence is exact on every device.
  *
- * Loading: the first frame is a real <img> and the LCP. The rest stream in only
- * after the page is interactive, nearest-first, so a slow phone still gets a
- * coherent (if coarser) walk instead of a blank canvas.
+ * Fluidity rules learned the hard way:
+ *  - Never cross-fade stills: when the camera moves between two frames the
+ *    blend shows two rooms at once. Fluidity comes from frame density.
+ *  - Frames are decoded (img.decode()) before they are ever drawn, so drawing
+ *    never stalls on decoding.
+ *  - The painted position eases toward the scroll position each display
+ *    frame, so a wheel notch or a thumb flick glides.
+ *
+ * Phones get 660x1173 AVIF (6.5 MB for the whole walk); desktop gets a
+ * pre-cropped 810x900 panel (6.3 MB). Frame 0 is a real <img> and the LCP;
+ * the rest stream in coarse-to-fine after the page is interactive.
  *
  * Chapters are tied to what is actually on screen at that point of the walk —
  * entrance, the chairs and slat wall, the work station, the waiting area —
@@ -18,7 +26,7 @@
 import { business } from '../data/content.js';
 import Logo from './Logo.astro';
 
-const FRAMES = 60;
+const FRAMES = 216;
 const chapters = [
   { at: 0.0, kicker: 'Avenida José Barrionuevo Peña 14', title: 'Barbería en Berja', body: `${business.rating} ★ · ${business.reviewCount} reseñas verificadas en Booksy` },
   { at: 0.28, kicker: 'El salón', title: 'Tres sillones', body: 'Azedin, Samir y Anas. Eliges barbero al reservar.' },
@@ -40,12 +48,14 @@ const chapters = [
          never stretched across a landscape screen. -->
     <div class="tour-media absolute inset-0 md:inset-auto md:bottom-0 md:right-0 md:top-0 md:h-full md:w-[56vw]">
       <picture>
+        <source media="(min-width: 768px)" type="image/avif" srcset="/tour/d/000.avif" />
         <source media="(min-width: 768px)" srcset="/tour/d/000.webp" />
+        <source type="image/avif" srcset="/tour/m/000.avif" />
         <img
           src="/tour/m/000.webp"
           alt="Interior de Barbería Azedin en Berja: sillones, pared de listones de madera y suelo de mármol negro"
-          width="720"
-          height="1280"
+          width="660"
+          height="1173"
           fetchpriority="high"
           decoding="async"
           class="tour-poster absolute inset-0 h-full w-full object-cover object-[50%_35%]"
@@ -105,8 +115,9 @@ const chapters = [
 <style>
   /* Scroll length of the walk. Without JS the section is one screen tall
      and frame 0 stands as a photograph. */
+  /* ~5.5 screens for 216 frames: about one real frame per 20px of scroll. */
   .tour.is-live {
-    height: 420svh;
+    height: 550svh;
   }
   .tour-canvas {
     opacity: 0;
@@ -128,88 +139,67 @@ const chapters = [
     const N = Number(root.dataset.frames);
     const canvas = root.querySelector<HTMLCanvasElement>('.tour-canvas')!;
     const ctx = canvas.getContext('2d', { alpha: false })!;
-    ctx.imageSmoothingQuality = 'high';
     const chapters = [...root.querySelectorAll<HTMLElement>('.tour-chapter')];
-    const progress = root.querySelector<HTMLElement>('.tour-progress');
-    const dir = window.matchMedia('(min-width: 768px)').matches ? 'd' : 'm';
+    const progressBar = root.querySelector<HTMLElement>('.tour-progress');
+    const desktop = window.matchMedia('(min-width: 768px)').matches;
+    const dir = desktop ? 'd' : 'm';
     const frames: (HTMLImageElement | null)[] = new Array(N).fill(null);
-    let raf = 0;
 
-    const src = (i: number) => `/tour/${dir}/${String(i).padStart(3, '0')}.webp`;
+    const src = (i: number) => `/tour/${dir}/${String(i).padStart(3, '0')}.avif`;
 
-    // Canvas backing store matches its CSS box at device pixel ratio (capped).
     function size() {
       const dpr = Math.min(window.devicePixelRatio || 1, 2);
       const r = canvas.getBoundingClientRect();
       canvas.width = Math.round(r.width * dpr);
       canvas.height = Math.round(r.height * dpr);
-      // Resizing a canvas resets its 2D state.
       ctx.imageSmoothingQuality = 'high';
-      paint(progressAt());
+      drawn = -1;
+      paint(shown);
     }
 
-    // object-fit: cover, done by hand.
+    // object-fit: cover. Desktop frames are pre-cropped to the panel, so this
+    // is near 1:1 there; phones bias the crop upward to keep the ceiling.
     function draw(img: HTMLImageElement) {
       const cw = canvas.width, ch = canvas.height;
       const s = Math.max(cw / img.naturalWidth, ch / img.naturalHeight);
       const w = img.naturalWidth * s, h = img.naturalHeight * s;
-      // Bias the vertical crop upward so the hexagonal ceiling stays in frame.
-      ctx.drawImage(img, (cw - w) / 2, (ch - h) * 0.35, w, h);
+      ctx.drawImage(img, (cw - w) / 2, (ch - h) * (desktop ? 0.5 : 0.35), w, h);
     }
 
-    // Nearest loaded frame at or below / at or above i.
-    function loadedBelow(i: number) {
-      for (let k = i; k >= 0; k--) if (frames[k]) return k;
-      return -1;
-    }
-    function loadedAbove(i: number) {
-      for (let k = i; k < N; k++) if (frames[k]) return k;
+    function nearestLoaded(i: number) {
+      for (let d = 0; d < N; d++) {
+        if (frames[i - d]) return i - d;
+        if (frames[i + d]) return i + d;
+      }
       return -1;
     }
 
+    // The sticky stage is 100svh (the SMALL viewport, stable while the
+    // address bar slides). Measuring travel against the stage height instead
+    // of window.innerHeight (which changes as the bar hides) keeps progress
+    // from jumping mid-swipe on phones.
+    const stage = root.querySelector<HTMLElement>('.tour-stage')!;
     function progressAt() {
       const r = root!.getBoundingClientRect();
-      const travel = r.height - window.innerHeight;
+      const travel = r.height - stage.offsetHeight;
       return travel > 0 ? Math.min(1, Math.max(0, -r.top / travel)) : 0;
     }
 
-    // Two things make the walk fluid instead of steppy:
-    //  1. Inertia: the shown position eases toward the scroll position every
-    //     display frame (critically damped, frame-rate independent), so a
-    //     flick of the thumb glides instead of jumping.
-    //  2. Sub-frame blending: between two stills the next one is cross-faded
-    //     in proportion to the fractional position, so 60 stills read as
-    //     continuous motion rather than 60 hard cuts.
-    let shown = 0; // smoothed progress actually painted
-    let target = 0; // where the scroll says we are
-    let lastT = 0;
-    let lastPainted = -1;
+    let shown = 0;   // eased progress actually painted
+    let target = 0;  // progress the scroll asks for
+    let drawn = -1;  // index of the frame on the canvas
     let activeChapter = -1;
+    let raf = 0;
+    let lastT = 0;
 
-    function render(p: number) {
-      const f = p * (N - 1);
-      const lo = loadedBelow(Math.floor(f));
-      const hi = loadedAbove(Math.ceil(f));
-      const a = lo >= 0 ? lo : hi;
-      const b = hi >= 0 ? hi : lo;
-      if (a < 0) return;
-      // Skip work when nothing visible would change (≈ 1/200 of a frame).
-      const key = Math.round(f * 200);
-      if (key !== lastPainted) {
-        lastPainted = key;
-        ctx.globalAlpha = 1;
-        draw(frames[a]!);
-        if (b !== a) {
-          const mix = (f - a) / (b - a);
-          if (mix > 0.004) {
-            ctx.globalAlpha = mix;
-            draw(frames[b]!);
-            ctx.globalAlpha = 1;
-          }
-        }
+    function paint(p: number) {
+      const want = Math.round(p * (N - 1));
+      const i = frames[want] ? want : nearestLoaded(want);
+      if (i >= 0 && i !== drawn) {
+        draw(frames[i]!);
+        drawn = i;
       }
-      if (progress) progress.style.transform = `scaleX(${p})`;
-      // Chapter = the last one whose start we have passed.
+      if (progressBar) progressBar.style.transform = `scaleX(${p})`;
       let active = 0;
       chapters.forEach((c, k) => { if (p >= Number(c.dataset.at)) active = k; });
       if (active !== activeChapter) {
@@ -223,12 +213,12 @@ const chapters = [
     }
 
     function tick(t: number) {
-      const dt = lastT ? Math.min(0.064, (t - lastT) / 1000) : 1 / 60;
+      const dt = lastT ? Math.min(0.05, (t - lastT) / 1000) : 1 / 60;
       lastT = t;
-      // Exponential smoothing with a ~90 ms time constant.
-      shown += (target - shown) * (1 - Math.exp(-dt / 0.09));
-      if (Math.abs(target - shown) < 0.00015) shown = target;
-      render(shown);
+      // Frame-rate-independent exponential ease, ~110 ms time constant.
+      shown += (target - shown) * (1 - Math.exp(-dt / 0.11));
+      if (Math.abs(target - shown) < 1 / (N * 4)) shown = target;
+      paint(shown);
       if (shown !== target) raf = requestAnimationFrame(tick);
       else { raf = 0; lastT = 0; }
     }
@@ -238,40 +228,42 @@ const chapters = [
       if (!raf) raf = requestAnimationFrame(tick);
     }
 
-    function paint(p: number) {
-      // Immediate paint (resize, a frame just arrived): no easing.
-      shown = target = p;
-      lastPainted = -1;
-      render(p);
-    }
-
-    function load(i: number) {
-      return new Promise<void>((res) => {
-        const img = new Image();
-        img.decoding = 'async';
-        img.onload = () => {
-          frames[i] = img;
-          // A frame near the current position just arrived: repaint.
-          if (Math.abs(i - shown * (N - 1)) < 3) { lastPainted = -1; render(shown); }
-          res();
-        };
-        img.onerror = () => res();
-        img.src = src(i);
-      });
+    // Decode off the critical path before a frame is ever drawn.
+    async function load(i: number) {
+      const img = new Image();
+      img.src = src(i);
+      try {
+        await img.decode();
+      } catch {
+        return;
+      }
+      frames[i] = img;
+      // If this frame is closer to where we are than what is on screen, show it.
+      const want = Math.round(shown * (N - 1));
+      if (drawn < 0 || Math.abs(i - want) < Math.abs(drawn - want)) { drawn = -1; paint(shown); }
     }
 
     async function start() {
+      // Frame 0 doubles as the AVIF support test: if it cannot be decoded,
+      // the still photograph stays and nothing else is downloaded.
       await load(0);
+      if (!frames[0]) return;
       root!.classList.add('is-live');
+      shown = target = progressAt();
       size();
       window.addEventListener('scroll', onScroll, { passive: true });
-      window.addEventListener('resize', size);
+      // Only real resizes (width change / rotation) re-measure the canvas;
+      // address-bar height changes do not, to avoid re-allocating it mid-swipe.
+      let lastW = window.innerWidth;
+      window.addEventListener('resize', () => {
+        if (window.innerWidth !== lastW) { lastW = window.innerWidth; size(); }
+      });
 
-      // Coarse-to-fine: every 8th, then every 4th, 2nd, then the rest. A slow
-      // connection gets a complete (if steppy) walk early instead of half a walk.
-      const order: number[] = [];
-      for (const step of [8, 4, 2, 1]) for (let i = 0; i < N; i += step) if (!order.includes(i)) order.push(i);
-      const queue = order.filter((i) => i !== 0);
+      // Coarse-to-fine: every 16th, 8th, 4th, 2nd, then the rest. A slow line
+      // gets a complete (if coarser) walk early instead of half a walk.
+      const seen = new Set<number>([0]);
+      const queue: number[] = [];
+      for (const step of [16, 8, 4, 2, 1]) for (let i = 0; i < N; i += step) if (!seen.has(i)) { seen.add(i); queue.push(i); }
       const workers = 6;
       await Promise.all(Array.from({ length: workers }, async () => {
         while (queue.length) await load(queue.shift()!);

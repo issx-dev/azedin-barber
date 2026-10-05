@@ -24,18 +24,10 @@ let lenisRaf;
 async function initLenis() {
   const { default: Lenis } = await import('lenis');
   if (!mm) return;
-  // syncTouch: on phones the native flick is replaced by the same eased
-  // inertia as desktop, so the scroll tour glides instead of stuttering.
-  // syncTouchLerp is gentler than desktop lerp because a thumb flick already
-  // carries momentum.
-  lenis = new Lenis({
-    autoRaf: false,
-    lerp: 0.085,
-    syncTouch: true,
-    syncTouchLerp: 0.075,
-    touchInertiaExponent: 1.7,
-    wheelMultiplier: 0.9,
-  });
+  // Wheel and trackpad only. Touch keeps the native scroll: on phones it is
+  // already smooth, and taking it over (syncTouch) fought the pinned reel
+  // and broke scrolling there. The tour eases its own frames on every device.
+  lenis = new Lenis({ autoRaf: false, lerp: 0.085, wheelMultiplier: 0.9 });
   lenis.on('scroll', ScrollTrigger.update);
   lenisRaf = (t) => lenis?.raf(t * 1000);
   gsap.ticker.add(lenisRaf);
@@ -127,8 +119,9 @@ function init() {
     });
   });
 
-  // Smooth scroll on every viewport, touch included.
-  mm.add('(prefers-reduced-motion: no-preference)', () => {
+  // Smooth wheel scrolling only where there is a fine pointer (mouse,
+  // trackpad). Touch devices keep native scroll.
+  mm.add('(pointer: fine) and (prefers-reduced-motion: no-preference)', () => {
     initLenis();
     return () => teardownLenis();
   });

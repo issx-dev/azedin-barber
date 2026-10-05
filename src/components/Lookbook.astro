@@ -31,7 +31,7 @@ const total = String(galleryItems.length).padStart(2, '0');
 
     <!-- No-JS: native scroller with snap. With JS: driven by the page scroll. -->
     <div class="reel-viewport mt-8 overflow-x-auto md:mt-12" tabindex="0" aria-label="Galería de cortes, desplazable">
-      <ul class="reel-rail flex w-max gap-4 px-[11vw] md:gap-8 md:px-[calc(50vw-160px)]">
+      <ul class="reel-rail relative flex w-max gap-4 px-[11vw] md:gap-8 md:px-[calc(50vw-160px)]">
         {
           galleryItems.map((item, i) => (
             <li class="reel-card w-[78vw] shrink-0 snap-center sm:w-[44vw] md:w-[clamp(240px,22vw,320px)]" data-i={i}>
@@ -140,6 +140,9 @@ const total = String(galleryItems.length).padStart(2, '0');
   import gsap from 'gsap';
   import { ScrollTrigger } from 'gsap/ScrollTrigger';
   gsap.registerPlugin(ScrollTrigger);
+  // Mobile browsers resize the viewport when the address bar hides/shows.
+  // Recomputing the pin on each of those mid-scroll makes the page jump.
+  ScrollTrigger.config({ ignoreMobileResize: true });
 
   const root = document.querySelector<HTMLElement>('[data-reel]');
   const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
@@ -189,42 +192,58 @@ const total = String(galleryItems.length).padStart(2, '0');
       focus();
     } else {
       root.classList.add('is-live');
-      // Travel is computed so that card k sits exactly at the screen centre
-      // at progress k/(n-1): the focused cut is always fully on screen, and
-      // the rail starts with card 0 centred and ends with the last centred.
-      const centreOf = (c: HTMLElement) => c.offsetLeft + c.offsetWidth / 2;
-      const offsetFor = (k: number) => centreOf(cards[k]) - window.innerWidth / 2;
-      const travel = () => offsetFor(cards.length - 1) - offsetFor(0);
-      gsap.set(rail, { x: () => -offsetFor(0) });
-      gsap.to(rail, {
-        x: () => -offsetFor(cards.length - 1),
+      // Card centres in rail coordinates (offsetLeft is rail-relative: the
+      // rail is `relative`). Untransformed layout, so CSS scale on the cards
+      // never skews them.
+      const centres = () => cards.map((c) => c.offsetLeft + c.offsetWidth / 2);
+      // Rail x that puts screen-centre on rail-coordinate `cx`.
+      // The rail's horizontal start inside the viewport. Its viewport box is
+      // (layout left + current translateX); subtracting the translate gives
+      // the layout left. Horizontal only, so pin state (fixed vs static,
+      // which shifts vertical offsets) does not affect it.
+      const railLeft = () => rail.getBoundingClientRect().left - (Number(gsap.getProperty(rail, 'x')) || 0);
+      const xFor = (cx: number) => window.innerWidth / 2 - railLeft() - cx;
+
+      // One card per STEP px of scroll, constant on every screen size, so a
+      // thumb flick always moves about the same number of cuts.
+      // Based on the stage (100svh, the stable small viewport) rather than
+      // window.innerHeight, which changes as a phone's address bar slides.
+      const STEP = () => Math.min(420, Math.max(300, stage.offsetHeight * 0.4));
+      const travel = () => STEP() * (cards.length - 1);
+
+      // Map progress -> rail x piecewise-linearly through the card centres,
+      // so at progress k/(n-1) card k is exactly centred, whatever the widths
+      // and gaps. A single linear tween drifted off by the gap ratio.
+      const state = { p: 0 };
+      const apply = () => {
+        const c = centres();
+        const f = state.p * (cards.length - 1);
+        const k = Math.min(cards.length - 2, Math.floor(f));
+        const t = f - k;
+        const cx = c[k] + (c[k + 1] - c[k]) * t;
+        gsap.set(rail, { x: xFor(cx) });
+        if (progress) progress.style.transform = `scaleX(${state.p})`;
+        focus(state.p);
+      };
+
+      gsap.to(state, {
+        p: 1,
         ease: 'none',
+        onUpdate: apply,
         scrollTrigger: {
           trigger: root,
           pin: stage,
           start: 'top top',
           end: () => '+=' + travel(),
-          scrub: 1, // a little lag = a glide, not a ratchet
-          // When the thumb stops, glide to the nearest cut so one is always
-          // centred, never left between two.
-          snap: {
-            snapTo: 1 / Math.max(1, cards.length - 1),
-            duration: { min: 0.25, max: 0.6 },
-            delay: 0.12,
-            ease: 'power2.inOut',
-          },
+          // No `snap`: it scrolls the window while a thumb is still driving
+          // it, and the two fought — that was the mobile breakage.
+          scrub: 0.5,
           invalidateOnRefresh: true,
           anticipatePin: 1,
-        },
-        // Fires on every animated frame of the (lagged) scrub, so the focused
-        // card and the counter match what is actually on screen, not where the
-        // scrollbar already is.
-        onUpdate() {
-          if (progress) progress.style.transform = `scaleX(${this.progress()})`;
-          focus();
+          onRefresh: apply,
         },
       });
-      focus();
+      apply();
       document.fonts?.ready.then(() => ScrollTrigger.refresh());
       window.addEventListener('load', () => ScrollTrigger.refresh(), { once: true });
     }
