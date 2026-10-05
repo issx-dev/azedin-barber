@@ -1,0 +1,42 @@
+---
+/**
+ * Marquee — the one piece of ambient motion in the whole site.
+ *
+ * Pure CSS, 0 KB of JS, and it keeps working with JS disabled. Lifted from
+ * winstonstudio.dk, which repeats its booking CTA four times and has no motion
+ * library at all: their identity rests on type, colour and copy.
+ */
+import { business } from '../data/content.js';
+
+const phrase = 'Reserva tu cita';
+const items = Array.from({ length: 8 });
+---
+
+<a
+  href={business.booksyUrl}
+  target="_blank"
+  rel="noopener noreferrer"
+  class="ruled-top ruled-bottom group relative block overflow-hidden bg-marmol-2 py-5"
+  aria-label={`${phrase} en Booksy`}
+>
+  <!-- `contain: paint` clips the oversized track locally, so the animation can
+       never leak into the document's scroll width. -->
+  <div
+    class="flex w-max animate-marquee gap-10 motion-reduce:animate-none"
+    style="contain: paint;"
+    aria-hidden="true"
+  >
+    {
+      items.map(() => (
+        <span class="flex shrink-0 items-center gap-10">
+          <span class="font-display uppercase text-cal transition-colors duration-240 ease-marmol group-hover:text-roble" style="font-size: var(--step-1); font-variation-settings: 'wght' 600;">
+            {phrase}
+          </span>
+          <span class="font-body text-cap text-roble">●</span>
+        </span>
+      ))
+    }
+  </div>
+  <!-- Readable, non-duplicated text for assistive tech and no-motion users. -->
+  <span class="sr-only">{phrase}</span>
+</a>

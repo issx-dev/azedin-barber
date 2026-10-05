@@ -10,7 +10,7 @@
     Referrer-Policy = "strict-origin-when-cross-origin"
     Permissions-Policy = "camera=(), microphone=(), geolocation=()"
     Strict-Transport-Security = "max-age=63072000; includeSubDomains; preload"
-    Content-Security-Policy = "default-src 'self'; script-src 'self' 'unsafe-inline' https://*.booksy.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: https:; connect-src 'self' https://*.booksy.com; frame-src https://www.google.com https://*.booksy.com"
+    Content-Security-Policy = "default-src 'self'; script-src 'self' 'unsafe-inline' https://*.booksy.com; style-src 'self' 'unsafe-inline'; font-src 'self'; img-src 'self' data: blob: https:; media-src 'self'; connect-src 'self' https://*.booksy.com https://feeds.behold.so https://graph.instagram.com; frame-src https://www.google.com https://*.booksy.com"
 
 [[headers]]
   for = "/_astro/*"

@@ -1,77 +1,66 @@
 ---
 /**
- * Services — Architectural 1px Steel Matrix on Dark Marble (#0C0A09).
+ * Services — the ledger.
  *
- * Clean architectural list: NAME + TIME stacked on left, PRICE on right.
- * Separated by edge-to-edge 1px steel borders (border-steel-faint).
+ * Prices are visible without a click, because that is the one thing a
+ * barbershop customer is actually looking for. Rendered as a mine docket:
+ * numbered rows, dot leaders, tabular numerals. Not three cards with scissors.
  */
-import { services } from '../data/content.js';
-import CTA from './CTA.astro';
+import { services, business } from '../data/content.js';
+import BarberPole from './BarberPole.astro';
 ---
 
-<section
-  id="servicios"
-  class="relative overflow-hidden bg-bg-deep text-cream border-t border-steel-faint py-24 sm:py-32"
-  aria-labelledby="servicios-heading"
->
-  <div class="max-w-4xl mx-auto px-6 md:px-10">
-
-    <!-- Header -->
-    <div class="mb-14">
-      <p
-        data-fade
-        class="text-[13px] md:text-[14.5px] tracking-[0.15em] uppercase text-ink-dim font-medium mb-4"
-      >
-        Lo que ofrecemos
+<section id="servicios" class="relative py-20 md:py-30" aria-labelledby="servicios-title">
+  <div class="frame">
+    <header class="ruled-bottom flex flex-wrap items-end justify-between gap-6 pb-8">
+      <div>
+        <p class="eyebrow mb-4">Tarifa</p>
+        <h2 id="servicios-title" class="text-sect display text-cal">Precios</h2>
+      </div>
+      <p class="font-body text-cap text-humo">
+        Todos los servicios, 30 min<br />Sin recargo por reserva online
       </p>
-      <h2
-        id="servicios-heading"
-        data-reveal
-        class="font-display display-large text-cream"
-      >
-        Servicios
-      </h2>
+    </header>
+
+    <div class="grid gap-x-16 lg:grid-cols-[1fr_auto]">
+    <ul class="mt-4">
+      {
+        services.map((s) => (
+          <li class="ledger-row" data-tour-row>
+            <span class="font-body text-cap text-humo tabular">{s.num}</span>
+            <span class="flex min-w-0 items-baseline gap-4">
+              <span
+                class="min-w-0 font-display uppercase text-cal"
+                style="font-size: var(--step-1); font-variation-settings: 'wght' 600;"
+              >
+                {s.name}
+              </span>
+              <span class="ledger-leader hidden min-w-6 flex-1 sm:block" aria-hidden="true"></span>
+              {s.note && <span class="hidden shrink-0 font-body text-cap text-humo lg:block">{s.note}</span>}
+            </span>
+            <span class="ledger-price whitespace-nowrap" style="font-size: var(--step-1);">
+              {s.price ? `${s.price} €` : 'Consultar'}
+            </span>
+          </li>
+        ))
+      }
+    </ul>
+    <!-- The pole, as on the façade: a sign that says "barber" before any word. -->
+    <BarberPole
+      class="relative mx-auto mt-10 hidden lg:block"
+      width="150px"
+      height="460px"
+      speed={0.22}
+    />
     </div>
 
-    <!-- Service list — 1px steel matrix -->
-    <div
-      data-stagger
-      role="list"
-      aria-label="Lista de servicios y precios"
-      class="flex flex-col border-t border-steel-faint"
-    >
-      {services.map((service) => (
-        <div
-          class="service-row flex items-center justify-between py-6 border-b border-steel-faint group transition-colors duration-200"
-          role="listitem"
-        >
-          <!-- Left: Name + Duration stacked -->
-          <div class="flex flex-col gap-1">
-            <span class="font-display font-bold text-lg md:text-xl tracking-tight text-cream group-hover:text-oak transition-colors duration-200">
-              {service.name}
-            </span>
-            <span class="text-ink-dim text-[12px] font-mono tracking-wider">
-              {service.time}
-            </span>
-          </div>
-
-          <!-- Right: Price -->
-          <div class="flex items-center gap-6">
-            <span class="font-display font-light text-2xl md:text-3xl text-cream tracking-tight">
-              {service.price}
-            </span>
-          </div>
-        </div>
-      ))}
-    </div>
-
-    <!-- CTA (hidden on mobile to maintain single bottom conversion shell) -->
-    <div class="mt-14 hidden md:flex items-center gap-6">
-      <CTA label="Reservar cita" />
-      <p class="text-ink-dim text-[11px] tracking-wide">
-        Reserva en segundos a través de Booksy
+    <div class="mt-10 flex flex-wrap items-center gap-4">
+      <a class="btn btn-primary" href={business.booksyUrl} target="_blank" rel="noopener noreferrer">
+        Reservar en Booksy
+      </a>
+      <p class="font-body text-cap text-humo">
+        Elige barbero y hora. {business.reviewCount} reseñas verificadas.
       </p>
     </div>
-
   </div>
 </section>

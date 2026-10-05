@@ -1,9 +1,14 @@
 ---
-import '@fontsource-variable/instrument-sans';
-import '@fontsource/fraunces/500-italic.css';
+// Cinzel: the Roman capitals of the logo's "BARBER". Hanken: body.
+// Pinyon (the script) is imported only by the component that uses it.
+import '@fontsource-variable/cinzel';
+import '@fontsource-variable/hanken-grotesk';
 import '../styles/global.css';
-import MobileStickyCTA from '../components/MobileStickyCTA.astro';
-import BackToTop from '../components/BackToTop.astro';
+
+// Resolved through Vite so the preload points at the real hashed asset.
+import cinzelWoff from '@fontsource-variable/cinzel/files/cinzel-latin-wght-normal.woff2?url';
+
+import { business, services, hours, reviews } from '../data/content.js';
 
 export interface Props {
   title?: string;
@@ -11,163 +16,151 @@ export interface Props {
 }
 
 const {
-  title = 'Azedin Barber — Barbería en Berja, Almería | Cortes y Barba',
-  description = 'Reserva tu corte con Azedin o Samir. Fades, cortes de tendencia y arreglo de barba. 5.0★ en Booksy. Berja, Almería.',
+  title = `${business.name} — Barbería en Berja, Almería | Corte y barba`,
+  description = `${business.tagline}. Corte y barba de precisión en Berja, Almería. ${business.rating}★ con ${business.reviewCount} reseñas verificadas. Reserva online con Azedin, Samir o Anas.`,
 } = Astro.props;
 
-const canonicalUrl = new URL(Astro.url.pathname, Astro.site || 'https://azedinbarber.com').href;
-const ogImageUrl = new URL('/og-image.jpg', Astro.site || 'https://azedinbarber.com').href;
+const site = Astro.site ?? 'https://azedinbarber.com';
+const canonicalUrl = new URL(Astro.url.pathname, site).href;
+const ogImageUrl = new URL('/og-image.jpg', site).href;
+
+// Schema is generated from content.js so it can never drift from the page.
+const dayMap = {
+  Lunes: 'Monday',
+  Martes: 'Tuesday',
+  Miércoles: 'Wednesday',
+  Jueves: 'Thursday',
+  Viernes: 'Friday',
+  Sábado: 'Saturday',
+  Domingo: 'Sunday',
+};
+
+const openingHours = hours.flatMap((h) =>
+  h.slots.map((slot) => {
+    const [opens, closes] = slot.split('–').map((s) => s.trim());
+    return {
+      '@type': 'OpeningHoursSpecification',
+      dayOfWeek: `https://schema.org/${dayMap[h.day]}`,
+      opens,
+      closes,
+    };
+  })
+);
+
+const schema = {
+  '@context': 'https://schema.org',
+  '@type': 'BarberShop',
+  '@id': `${site}#barbershop`,
+  name: business.legalName,
+  alternateName: business.name,
+  slogan: business.tagline,
+  image: ogImageUrl,
+  url: site,
+  telephone: business.phoneRaw,
+  priceRange: '€8–€17',
+  currenciesAccepted: 'EUR',
+  address: {
+    '@type': 'PostalAddress',
+    streetAddress: business.address,
+    addressLocality: business.town,
+    addressRegion: business.province,
+    postalCode: business.postalCode,
+    addressCountry: 'ES',
+  },
+  geo: { '@type': 'GeoCoordinates', latitude: business.lat, longitude: business.lng },
+  hasMap: `https://www.google.com/maps/place/?q=place_id:${business.placeId}`,
+  openingHoursSpecification: openingHours,
+  aggregateRating: {
+    '@type': 'AggregateRating',
+    ratingValue: '5.0',
+    reviewCount: String(business.reviewCount),
+    bestRating: '5',
+  },
+  review: reviews.slice(0, 4).map((r) => ({
+    '@type': 'Review',
+    author: { '@type': 'Person', name: r.author },
+    datePublished: r.date,
+    reviewBody: r.quote,
+    reviewRating: { '@type': 'Rating', ratingValue: '5', bestRating: '5' },
+  })),
+  makesOffer: services
+    .filter((s) => s.price)
+    .map((s) => ({
+      '@type': 'Offer',
+      itemOffered: { '@type': 'Service', name: s.name },
+      price: s.price,
+      priceCurrency: 'EUR',
+    })),
+  potentialAction: {
+    '@type': 'ReserveAction',
+    target: { '@type': 'EntryPoint', urlTemplate: business.booksyUrl },
+  },
+  // TikTok is abandoned and Facebook does not exist: linking them would be a lie.
+  sameAs: [business.instagramUrl, business.booksyProfileUrl],
+};
 ---
 
-<!DOCTYPE html>
+<!doctype html>
 <html lang="es">
-<head>
-  <meta charset="UTF-8" />
-  <link rel="preload" as="font" type="font/woff2" crossorigin href="/fonts/bricolage-grotesque-latin-wght-normal.woff2">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>{title}</title>
-  <meta name="description" content={description} />
-  <meta name="theme-color" content="#0C0A09" />
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
-  <!-- Favicon -->
-  <link rel="icon" type="image/x-icon" href="/favicon.ico" />
-  <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png" />
-  <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png" />
+    <!-- Only the display face is preloaded; body text can swap with matched metrics. -->
+    <!-- LCP: first still of the walk-through, sized per breakpoint. -->
+    <link rel="preload" as="image" href="/tour/m/000.webp" media="(max-width: 767px)" fetchpriority="high" />
+    <link rel="preload" as="image" href="/tour/d/000.webp" media="(min-width: 768px)" fetchpriority="high" />
+    <link rel="preload" as="font" type="font/woff2" crossorigin href={cinzelWoff} />
 
-  <!-- Canonical URL -->
-  <link rel="canonical" href={canonicalUrl} />
+    <title>{title}</title>
+    <meta name="description" content={description} />
+    <meta name="theme-color" content="#0F0F14" />
+    <link rel="canonical" href={canonicalUrl} />
 
-  <!-- Geo Tags for Local SEO -->
-  <meta name="geo.region" content="ES-AN" />
-  <meta name="geo.platename" content="Berja, Almería, España" />
-  <meta name="geo.position" content="36.8458;-2.9496" />
-  <meta name="ICBM" content="36.8458, -2.9496" />
+    <link rel="icon" type="image/x-icon" href="/favicon.ico" />
+    <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png" />
+    <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png" />
 
-  <!-- Open Graph -->
-  <meta property="og:title" content={title} />
-  <meta property="og:description" content={description} />
-  <meta property="og:type" content="website" />
-  <meta property="og:url" content={canonicalUrl} />
-  <meta property="og:locale" content="es_ES" />
-  <meta property="og:site_name" content="Azedin Barber" />
-  <meta property="og:image" content={ogImageUrl} />
-  <meta property="og:image:width" content="1200" />
-  <meta property="og:image:height" content="630" />
-  <meta property="og:image:alt" content="Azedin Barber — Barbería en Berja, Almería" />
+    <meta name="geo.region" content="ES-AN" />
+    <meta name="geo.placename" content="Berja, Almería, España" />
+    <meta name="geo.position" content={`${business.lat};${business.lng}`} />
+    <meta name="ICBM" content={`${business.lat}, ${business.lng}`} />
 
-  <!-- Twitter Cards -->
-  <meta name="twitter:card" content="summary_large_image" />
-  <meta name="twitter:title" content={title} />
-  <meta name="twitter:description" content={description} />
-  <meta name="twitter:image" content={ogImageUrl} />
+    <meta property="og:title" content={title} />
+    <meta property="og:description" content={description} />
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content={canonicalUrl} />
+    <meta property="og:locale" content="es_ES" />
+    <meta property="og:site_name" content={business.name} />
+    <meta property="og:image" content={ogImageUrl} />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:image:alt" content={`${business.name} — Berja, Almería`} />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content={title} />
+    <meta name="twitter:description" content={description} />
+    <meta name="twitter:image" content={ogImageUrl} />
 
-  <!-- Fuentes self-hosted. Bricolage cargada inline en global.css via @font-face.
-       Instrument Sans Variable + Fraunces via @fontsource (servidas localmente desde
-       node_modules en build, sin CDN externo). No quedan recursos de fonts.googleapis.com. -->
-  <noscript>
-    <style>
-      [data-reveal], [data-fade], [data-stagger], [data-stagger] > *, [data-hero-text] { opacity: 1 !important; transform: none !important; clip-path: none !important; }
-    </style>
-  </noscript>
-  <script type="application/ld+json" is:inline>
-    {
-      "@context": "https://schema.org",
-      "@type": "BarberShop",
-      "name": "Azedin Barber",
-      "image": "https://azedinbarber.com/og-image.jpg",
-      "url": "https://azedinbarber.com/",
-      "priceRange": "€8-€17",
-      "address": {
-        "@type": "PostalAddress",
-        "streetAddress": "Avenida José Barrionuevo Peña 14",
-        "addressLocality": "Berja",
-        "addressRegion": "Almería",
-        "postalCode": "04760",
-        "addressCountry": "ES"
-      },
-      "geo": {
-        "@type": "GeoCoordinates",
-        "latitude": 36.8458,
-        "longitude": -2.9496
-      },
-      "aggregateRating": {
-        "@type": "AggregateRating",
-        "ratingValue": "5.0",
-        "reviewCount": "142"
-      },
-      "sameAs": [
-        "https://www.instagram.com/azedinbarber/",
-        "https://www.tiktok.com/@azedin.barber",
-        "https://booksy.com/es-es/141862_azedin-barber_barberia_26195_castala"
-      ]
-    }
-  </script>
-</head>
+    <script type="application/ld+json" set:html={JSON.stringify(schema)} is:inline />
+  </head>
 
-<body class="bg-bg-deep text-ink font-body antialiased overflow-x-hidden">
-  <a href="#main-content" class="sr-only focus:not-sr-only focus:fixed focus:top-4 focus:left-4 focus:z-[1000] focus:bg-oak focus:text-bg-deep focus:px-4 focus:py-2 focus:rounded">Saltar al contenido</a>
-  <slot />
-  <MobileStickyCTA />
-  <BackToTop />
+  <body>
+    <a
+      href="#main-content"
+      class="sr-only focus:not-sr-only focus:fixed focus:left-4 focus:top-4 focus:z-50 focus:border focus:border-cal-dim focus:bg-marmol focus:px-4 focus:py-2 focus:font-body focus:text-cap focus:uppercase focus:text-cal"
+      >Saltar al contenido</a
+    >
+    <slot />
 
-  <!-- ─── Global event bus ─────────────────────────────────────────────── -->
-  <script is:inline>
-    document.addEventListener('click', function(e) {
-      // Smart Booksy link router for mobile app deep-linking
-      var booksyLink = e.target.closest('[data-booksy-link]');
-      if (booksyLink) {
-        var isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent) || window.innerWidth < 768;
-        if (isMobile) {
-          booksyLink.href = 'https://azedinbarber.booksy.com/a';
-        }
-        return;
+    <script>
+      // Motion is an enhancement, never a dependency: loaded after first paint
+      // and only where it earns its 44 KB. If this never runs, the page is
+      // already complete.
+      if (window.matchMedia('(prefers-reduced-motion: no-preference)').matches) {
+        const load = () => import('../scripts/motion.js');
+        if ('requestIdleCallback' in window) requestIdleCallback(load, { timeout: 2000 });
+        else window.addEventListener('load', load);
       }
-      // Mobile nav trigger
-      var navTrigger = e.target.closest('[data-nav-trigger]');
-      if (navTrigger) {
-        window.dispatchEvent(new CustomEvent('nav:open'));
-      }
-    });
-
-    // Header scroll state
-    (function() {
-      var header = document.getElementById('site-header');
-      var headerLine = document.getElementById('header-line');
-      var hero = document.getElementById('hero');
-      if (!header || !hero) return;
-      var observer = new IntersectionObserver(function(entries) {
-        if (!entries[0].isIntersecting) {
-          header.classList.add('scrolled');
-          if (headerLine) headerLine.style.opacity = '1';
-        } else {
-          header.classList.remove('scrolled');
-          if (headerLine) headerLine.style.opacity = '0';
-        }
-      }, { rootMargin: '-60px 0px 0px 0px' });
-      observer.observe(hero);
-    })();
-  </script>
-
-  <script>
-    // 1. Native CSS reveals using IntersectionObserver
-    const revealObserver = new IntersectionObserver((entries, observer) => {
-      entries.forEach(entry => {
-        if (entry.isIntersecting) {
-          entry.target.classList.add('is-visible');
-          observer.unobserve(entry.target);
-        }
-      });
-    }, { rootMargin: '0px 0px -40px 0px', threshold: 0 });
-
-    const animatedElements = document.querySelectorAll(
-      '[data-reveal], [data-fade], [data-stagger], [data-hero-text]'
-    );
-    animatedElements.forEach(el => revealObserver.observe(el));
-
-    // 2. Load Lenis/GSAP animations only on desktop
-    if (window.matchMedia('(min-width: 768px)').matches) {
-      import('../scripts/animations.js');
-    }
-  </script>
-</body>
+    </script>
+  </body>
 </html>

@@ -1,64 +1,91 @@
 ---
+/**
+ * El local — the room, and the three people in it.
+ *
+ * No invented metaphor: the shop's own materials are the argument. Marble
+ * floor, oak slats, hexagonal light. The team gets a ring-light avatar each
+ * because the ring light is in the room; Anas has no portrait yet, so he gets
+ * the ring alone rather than a stock silhouette.
+ */
 import { Image } from 'astro:assets';
-import aboutImg from '../assets/img/corte-pelo-azedin.jpeg';
+import { business, barbers, shopImages } from '../data/content.js';
+import '@fontsource/pinyon-script';
 ---
 
-<section id="about" class="bg-bg-deep text-cream py-24 md:py-36 border-t border-steel-faint">
-  <div class="mx-auto max-w-5xl px-6 md:px-10">
-
-    <!-- 1. Header (Top centered hierarchy for both mobile & desktop) -->
-    <div data-reveal class="text-center mb-10 md:mb-14">
-      <p class="text-[12px] md:text-[13.5px] tracking-[0.2em] uppercase text-steel font-medium mb-3">
-        Sobre nosotros
-      </p>
-      <h2 class="font-display display-large text-cream leading-none">
-        Nuestra historia
+<section id="local" class="relative py-20 md:py-30" aria-labelledby="local-title">
+  <div class="frame">
+    <header class="ruled-bottom pb-8">
+      <p class="eyebrow mb-4">Desde 2020</p>
+      <h2 id="local-title" class="text-sect display">
+        El equipo
       </h2>
-    </div>
+      <div class="veta-draw mt-6 h-px w-24 bg-roble" aria-hidden="true"></div>
+    </header>
 
-    <!-- 2. Photo Block (Middle centered widescreen presentation) -->
-    <div data-reveal="up" class="relative group mb-12 md:mb-16">
-      <div class="relative aspect-[4/3] sm:aspect-[16/10] md:aspect-[16/9] max-h-[540px] w-full overflow-hidden rounded-sm border border-steel/15 shadow-2xl bg-bg-panel">
-        <Image 
-          src={aboutImg} 
-          alt="Azedin en acción ejecutando un corte de precisión en el salón de Berja" 
-          widths={[480, 800, 1200, 1600]}
-          sizes="(max-width: 768px) 100vw, 1100px"
-          quality={82}
-          format="avif"
-          loading="eager"
-          class="w-full h-full object-cover photo-preset transition-transform duration-300 ease-out group-hover:scale-105"
-          style="object-position: center 30%;"
-        />
-      </div>
-    </div>
+    <div class="grid gap-x-10 gap-y-12 pt-10 lg:grid-cols-12">
+      <!-- The slat wall, as an actual slat wall. -->
+      <div class="lamas hidden w-full lg:col-span-1 lg:block" aria-hidden="true"></div>
 
-    <!-- 3. Story Narrative, Quote & Action (Bottom centered presentation) -->
-    <div data-reveal class="max-w-2xl mx-auto text-center flex flex-col items-center space-y-8">
-      <p class="font-sans text-ink-dim text-[15px] md:text-base leading-relaxed">
-        Desde el primer día, en Azedin Barber creamos un espacio donde la tradición barbera se encuentra con la técnica moderna y la precisión. Cada corte y arreglo de barba es una firma de calidad.
-      </p>
-
-      <!-- Serif Quote with subtle steel hairline borders -->
-      <div class="w-full py-6 border-y border-steel-faint">
-        <blockquote class="font-serif-quote text-cream text-xl sm:text-2xl italic leading-relaxed">
-          "Ofrecer a cada persona el corte que se merece."
-        </blockquote>
-        <span class="block mt-3 text-[10px] tracking-[0.25em] uppercase font-mono text-steel">
-          — AZEDIN · FUNDADOR
-        </span>
+      <div class="lg:col-span-5">
+        <!-- The one script gesture of the page: their own tagline, in the
+             hand of their own logo. -->
+        <p class="script text-sect" style="font-size: var(--step-3);">Estilo y Elegancia</p>
+        <p class="mt-8 text-cal-dim">
+          Azedin abrió la barbería en 2020 en la Avenida José Barrionuevo Peña.
+          Hoy sois tres en el salón: Azedin, Samir y Anas. Al reservar eliges con
+          quién.
+        </p>
+        <p class="mt-5 text-cal-dim">
+          Las {business.reviewCount} reseñas de Booksy repiten lo mismo:
+          profesionalidad, detalle y buen trato.
+        </p>
       </div>
 
-      <div class="pt-2">
-        <a
-          href="#ubicacion"
-          class="btn-outline-thin text-[11px] px-8 py-3.5"
-          aria-label="Ver ubicación y horarios"
-        >
-          UBICACIÓN Y HORARIOS ›
-        </a>
-      </div>
+      <figure class="lg:col-span-6">
+        <div class="relative aspect-[4/3] overflow-hidden border border-veta bg-marmol-2" data-lama-reveal>
+          <Image
+            src={shopImages.salon.src}
+            alt={shopImages.salon.alt}
+            width={880}
+            height={660}
+            widths={[440, 660, 880]}
+            sizes="(min-width: 1024px) 44vw, 90vw"
+            format="avif"
+            quality={74}
+            class="h-full w-full object-cover"
+          />
+        </div>
+        <figcaption class="mt-3 flex justify-between font-body text-cap text-humo">
+          <span>El salón</span><span>Berja</span>
+        </figcaption>
+      </figure>
     </div>
 
+    <!-- The team. -->
+    <ul class="ruled-top mt-16 grid gap-x-10 gap-y-10 pt-10 sm:grid-cols-3">
+      {
+        barbers.map((b) => (
+          <li class="flex items-center gap-5">
+            <div class="aro relative h-16 w-16 shrink-0 overflow-hidden bg-marmol-2">
+              {b.img && (
+                <Image
+                  src={b.img}
+                  alt={`${b.name}, barbero`}
+                  width={128}
+                  height={128}
+                  format="avif"
+                  quality={72}
+                  class="h-full w-full object-cover"
+                />
+              )}
+            </div>
+            <div>
+              <h3 class="display text-sub" style="font-variation-settings: 'wght' 600;">{b.name}</h3>
+              <p class="mt-1 font-body text-cap text-humo">{b.role} · {b.share}</p>
+            </div>
+          </li>
+        ))
+      }
+    </ul>
   </div>
 </section>
