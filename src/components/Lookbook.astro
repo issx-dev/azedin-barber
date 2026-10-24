@@ -52,12 +52,12 @@ const total = String(galleryItems.length).padStart(2, '0');
                     <Image
                       src={item.src}
                       alt={item.alt}
-                      width={480}
-                      height={853}
-                      widths={[320, 480]}
+                      width={1200}
+                      height={2133}
+                      widths={[640, 960, 1200]}
                       sizes="(min-width: 768px) 320px, 78vw"
                       format="avif"
-                      quality={70}
+                      quality={78}
                       loading={i < 3 ? 'eager' : 'lazy'}
                       style={`object-position: ${item.focus}`}
                       class="absolute inset-0 h-full w-full object-cover"

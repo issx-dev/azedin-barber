@@ -5,14 +5,16 @@
  * Verified 2026-10-03.
  */
 
-// --- Placeholder imagery -----------------------------------------------------
-// These are Instagram-resolution frames (360–481px wide). They are a stopgap:
-// never render them above ~420px of layout width or they break on retina.
-// Replace with the 1080x1920 originals from the shop's phone when they arrive.
+// --- Photography -------------------------------------------------------------
+// The named cortes are 1179–4032px. img01–img06 are ~1200px phone frames.
+// Render the archivo at most 1200px wide; a new shoot is what gets this to a 10.
 import corteSkinFade from '../assets/img/corte-skin-fade-degradado.jpeg';
 import corteCropTop from '../assets/img/corte-crop-top-texturizado.jpeg';
 import corteAfeitadoClasico from '../assets/img/corte-afeitado-clasico-navaja.jpeg';
 import corteMidFade from '../assets/img/corte-mid-fade-degradado-medio.jpeg';
+import corteLowFade from '../assets/img/corte-low-fade-degradado-bajo.jpeg';
+import corteArregloBarba from '../assets/img/corte-arreglo-barba-perfilado.jpeg';
+import salonEnCorte from '../assets/img/corte-pelo-azedin.jpeg';
 import barberiaInteriorSalon from '../assets/img/barberia-interior-salon.jpeg';
 import barberiaInteriorRecepcion from '../assets/img/barberia-interior-recepcion.jpeg';
 import personaAzedin from '../assets/img/barbero-azedin-master-barber-berja.jpeg';
@@ -22,8 +24,6 @@ import lookbookImg02 from '../assets/img/img02.jpg';
 import lookbookImg03 from '../assets/img/img03.jpg';
 import lookbookImg04 from '../assets/img/img04.jpg';
 import lookbookImg06 from '../assets/img/img06.jpg';
-import lookbookImg07 from '../assets/img/img07.jpg';
-import lookbookImg08 from '../assets/img/img08.jpg';
 
 /** True once the shop sends full-resolution photography. Gates hero imagery. */
 export const HAS_HIRES_PHOTOGRAPHY = false;
@@ -216,13 +216,21 @@ export const galleryItems = [
   { label: 'Wolf cut', barber: 'Azedin', alt: 'Vídeo: wolf cut en primer plano', video: '/video/corte-wolf.mp4', poster: '/video/corte-wolf.webp' },
   { label: 'Burst Fade', barber: 'Samir', alt: 'Burst fade', src: lookbookImg04, width: 1080, height: 1350, focus: 'center 30%' },
   { label: 'Crop Top', barber: 'Azedin', alt: 'Crop top texturizado', src: corteCropTop, width: 1755, height: 2340, focus: 'center 30%' },
-  { label: 'High & Tight', barber: 'Samir', alt: 'High and tight fade', src: lookbookImg07, width: 1080, height: 1350, focus: 'center 30%' },
-  { label: 'Perfilado', barber: 'Azedin', alt: 'Perfilado de barba y degradado', src: lookbookImg08, width: 1080, height: 1350, focus: 'center 30%' },
+  { label: 'Low Fade', barber: 'Azedin', alt: 'Crop con low fade', src: corteLowFade, width: 1755, height: 2340, focus: 'center 28%' },
+  { label: 'French crop', barber: 'Azedin', alt: 'French crop con degradado', src: corteArregloBarba, width: 1179, height: 2556, focus: 'center 30%' },
   { label: 'Afeitado a navaja', barber: 'Azedin', alt: 'Afeitado clásico con navaja', src: corteAfeitadoClasico, width: 1755, height: 2340, focus: 'center 38%' },
   { label: 'Mid Fade clásico', barber: 'Azedin', alt: 'Mid fade degradado medio', src: corteMidFade, width: 1440, height: 1800, focus: 'center 30%' },
 ];
 
 export const shopImages = {
-  salon: { src: barberiaInteriorSalon, width: 1200, height: 900, alt: 'Interior del salón' },
+  // The empty-chair frame is 1176px wide. This one is the room while a cut
+  // is happening, and it is the sharpest interior on disk (4032×3024).
+  salon: {
+    src: salonEnCorte,
+    width: 4032,
+    height: 3024,
+    alt: 'Corte en el salón de Berja: suelo de mármol negro y pared de lamas de roble',
+  },
+  salonVacio: { src: barberiaInteriorSalon, width: 1176, height: 661, alt: 'Sillones del salón, sin clientes' },
   reception: { src: barberiaInteriorRecepcion, width: 1200, height: 900, alt: 'Recepción' },
 };

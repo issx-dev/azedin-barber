@@ -42,16 +42,18 @@ import '@fontsource/pinyon-script';
       </div>
 
       <figure class="lg:col-span-6">
-        <div class="relative aspect-[4/3] overflow-hidden border border-veta bg-marmol-2" data-lama-reveal>
+        <div class="relative aspect-[16/10] overflow-hidden border border-veta bg-marmol-2" data-lama-reveal>
           <Image
             src={shopImages.salon.src}
             alt={shopImages.salon.alt}
-            width={880}
-            height={660}
-            widths={[440, 660, 880]}
+            width={1600}
+            height={1000}
+            widths={[800, 1200, 1600]}
             sizes="(min-width: 1024px) 44vw, 90vw"
             format="avif"
-            quality={74}
+            quality={78}
+            loading="eager"
+            style="object-position: center 38%;"
             class="h-full w-full object-cover"
           />
         </div>
@@ -71,8 +73,9 @@ import '@fontsource/pinyon-script';
                 <Image
                   src={b.img}
                   alt={`${b.name}, barbero`}
-                  width={128}
-                  height={128}
+                  width={192}
+                  height={192}
+                  widths={[128, 192]}
                   format="avif"
                   quality={72}
                   class="h-full w-full object-cover"

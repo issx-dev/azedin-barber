@@ -4,11 +4,9 @@
  *
  * Three layers, each short enough to read at a glance:
  *   1. The number: 5,0 and 179, set large. That alone is the argument.
- *   2. One featured quote that rotates every 6 s (the four long ones), with
- *      name, service and date — still verifiable, never more than ~25 words
- *      on screen at once.
- *   3. One belt of one-line reviews. Pure CSS, pauses on hover/focus,
- *      stops under reduced-motion.
+ *   2. One featured quote. The other three are there if you tap a dash.
+ *      Nothing rotates: the tour is the only motion on the page.
+ *   3. Short reviews in a still grid. A looping belt clipped words in half.
  */
 import { reviews, shortReviews, reviewThemes, business } from '../data/content.js';
 
@@ -39,10 +37,10 @@ const fmt = (iso: string) => new Date(iso).toLocaleDateString('es-ES', { month: 
       </div>
 
       <!-- 2. One quote at a time — Cormorant italic, not body sans. -->
-      <div class="rev-rotator relative min-h-[14rem] border-l border-veta pl-6 md:min-h-[12rem] md:pl-10" aria-live="polite">
+      <div class="rev-rotator border-l border-veta pl-6 md:pl-10" aria-live="polite">
         {
           featured.map((r, i) => (
-            <figure class="rev-slide absolute inset-0" data-i={i} style={i === 0 ? '' : 'opacity:0;visibility:hidden'}>
+            <figure class="rev-slide" data-i={i} hidden={i === 0 ? undefined : true}>
               <blockquote>
                 <p
                   class="font-display text-cal"
@@ -61,7 +59,7 @@ const fmt = (iso: string) => new Date(iso).toLocaleDateString('es-ES', { month: 
             </figure>
           ))
         }
-        <div class="absolute -bottom-8 left-0 flex gap-1 md:left-0" role="tablist" aria-label="Elegir reseña">
+        <div class="mt-6 flex gap-1" role="tablist" aria-label="Elegir reseña">
           {
             featured.map((r, i) => (
               <button
@@ -79,23 +77,17 @@ const fmt = (iso: string) => new Date(iso).toLocaleDateString('es-ES', { month: 
     </div>
   </div>
 
-  <!-- 3. One belt — hairline rules, no card chrome. -->
-  <div class="mt-24" aria-label="Más reseñas de clientes">
-    <div class="rev-belt group flex overflow-hidden">
-      {
-        [0, 1].map((copy) => (
-          <ul class="rev-track flex shrink-0 gap-8 pr-8" aria-hidden={copy === 1 ? 'true' : undefined}>
-            {shortReviews.map((r) => (
-              <li class="flex shrink-0 items-baseline gap-3 border-b border-veta pb-3">
-                <span class="whitespace-nowrap font-body text-cal">“{r.quote}”</span>
-                <span class="whitespace-nowrap font-body text-cap uppercase tracking-wide text-humo">{r.author}</span>
-              </li>
-            ))}
-          </ul>
-        ))
-      }
-    </div>
-  </div>
+  <!-- 3. Short reviews, still. Each quote wraps; nothing is sliced mid-word. -->
+  <ul class="mt-20 grid gap-x-12 gap-y-8 border-t border-veta pt-10 sm:grid-cols-2 lg:grid-cols-3" aria-label="Más reseñas de clientes">
+    {
+      shortReviews.slice(0, 6).map((r) => (
+        <li class="border-b border-veta pb-4">
+          <p class="font-body text-cal" style="text-wrap: pretty;">“{r.quote}”</p>
+          <p class="mt-2 font-body text-cap uppercase tracking-wide text-humo">{r.author}</p>
+        </li>
+      ))
+    }
+  </ul>
 
   <p class="frame mt-10 font-body text-cap text-humo">
     Todas de clientes con reserva confirmada.
@@ -106,26 +98,6 @@ const fmt = (iso: string) => new Date(iso).toLocaleDateString('es-ES', { month: 
 </section>
 
 <style>
-  .rev-track {
-    animation: rev-left 60s linear infinite;
-  }
-  .rev-belt:hover .rev-track,
-  .rev-belt:focus-within .rev-track {
-    animation-play-state: paused;
-  }
-  @keyframes rev-left {
-    to { transform: translateX(-100%); }
-  }
-  @media (prefers-reduced-motion: reduce) {
-    .rev-track { animation: none; }
-    .rev-belt { overflow-x: auto; }
-  }
-  .rev-slide {
-    transition: opacity 420ms var(--ease-led), visibility 0s linear 420ms;
-  }
-  .rev-slide.is-on {
-    transition: opacity 420ms var(--ease-led), visibility 0s;
-  }
   .rev-dot::after {
     content: '';
     position: absolute;
@@ -147,32 +119,16 @@ const fmt = (iso: string) => new Date(iso).toLocaleDateString('es-ES', { month: 
   if (root) {
     const slides = [...root.querySelectorAll<HTMLElement>('.rev-slide')];
     const dots = [...root.querySelectorAll<HTMLButtonElement>('.rev-dot')];
-    const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
     let i = 0;
-    let timer = 0;
 
     function show(n: number) {
       i = (n + slides.length) % slides.length;
       slides.forEach((s, k) => {
-        const on = k === i;
-        s.classList.toggle('is-on', on);
-        s.style.opacity = on ? '1' : '0';
-        s.style.visibility = on ? 'visible' : 'hidden';
+        s.hidden = k !== i;
       });
       dots.forEach((d, k) => d.setAttribute('aria-selected', String(k === i)));
     }
-    function play() {
-      if (reduced) return;
-      clearInterval(timer);
-      timer = window.setInterval(() => show(i + 1), 6000);
-    }
-    dots.forEach((d) => d.addEventListener('click', () => { show(Number(d.dataset.i)); play(); }));
-    // Never rotate while someone is reading it.
-    root.addEventListener('mouseenter', () => clearInterval(timer));
-    root.addEventListener('mouseleave', play);
-    root.addEventListener('focusin', () => clearInterval(timer));
-    // Only rotate while visible.
-    new IntersectionObserver(([e]) => (e.isIntersecting ? play() : clearInterval(timer))).observe(root);
+    dots.forEach((d) => d.addEventListener('click', () => show(Number(d.dataset.i))));
     show(0);
   }
 </script>

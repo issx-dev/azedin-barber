@@ -45,10 +45,11 @@ const fallback = galleryItems.filter((g) => g.src).slice(0, 6);
               <Image
                 src={g.src}
                 alt={g.alt}
-                width={320}
-                height={320}
+                width={640}
+                height={640}
+                widths={[320, 480, 640]}
                 format="avif"
-                quality={65}
+                quality={74}
                 loading="lazy"
                 style={`object-position: ${g.focus}`}
                 class="h-full w-full object-cover transition-transform duration-700 ease-marmol group-hover:scale-[1.04]"

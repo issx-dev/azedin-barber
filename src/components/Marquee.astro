@@ -1,41 +1,27 @@
 ---
 /**
- * Marquee — the one piece of ambient motion in the whole site.
+ * One still booking line between the walk and the prices.
  *
- * Pure CSS, 0 KB of JS, and it keeps working with JS disabled. Lifted from
- * winstonstudio.dk, which repeats its booking CTA four times and has no motion
- * library at all: their identity rests on type, colour and copy.
+ * The tour is the only motion on the page. A looping ticker on top of it
+ * turns the shop into a demo. Winston repeats a booking phrase in type and
+ * does not animate it; here one line is enough, because the header, the
+ * ledger and the sticky bar already carry the same action.
  */
 import { business } from '../data/content.js';
 
 const phrase = 'Reserva tu cita';
-const items = Array.from({ length: 8 });
 ---
 
 <a
   href={business.booksyUrl}
   target="_blank"
   rel="noopener noreferrer"
-  class="ruled-top ruled-bottom group relative block overflow-x-hidden bg-marmol-2 py-6 md:py-5"
-  aria-label={`${phrase} en Booksy`}
+  class="ruled-top ruled-bottom group block bg-marmol-2 py-6 text-center md:py-5"
 >
-  <!-- Clip only horizontally so tall Capitals never crop on mobile. -->
-  <div
-    class="flex w-max animate-marquee items-center gap-10 motion-reduce:animate-none"
-    style="contain: inline-size;"
-    aria-hidden="true"
+  <span
+    class="font-display uppercase leading-none text-cal transition-colors duration-240 ease-marmol group-hover:text-roble"
+    style="font-size: var(--step-1); font-variation-settings: 'wght' 600;"
   >
-    {
-      items.map(() => (
-        <span class="flex shrink-0 items-center gap-10 leading-none">
-          <span class="font-display uppercase leading-none text-cal transition-colors duration-240 ease-marmol group-hover:text-roble" style="font-size: var(--step-1); font-variation-settings: 'wght' 600;">
-            {phrase}
-          </span>
-          <span class="font-body text-cap leading-none text-roble">●</span>
-        </span>
-      ))
-    }
-  </div>
-  <!-- Readable, non-duplicated text for assistive tech and no-motion users. -->
-  <span class="sr-only">{phrase}</span>
+    {phrase}
+  </span>
 </a>
