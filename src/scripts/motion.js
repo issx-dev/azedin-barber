@@ -24,9 +24,8 @@ let lenisRaf;
 async function initLenis() {
   const { default: Lenis } = await import('lenis');
   if (!mm) return;
-  // Wheel and trackpad only. Touch keeps the native scroll: on phones it is
-  // already smooth, and taking it over (syncTouch) fought the pinned reel
-  // and broke scrolling there. The tour eases its own frames on every device.
+  // Wheel and trackpad only. Touch keeps the native scroll. The tour eases
+  // its own frames on every device.
   lenis = new Lenis({ autoRaf: false, lerp: 0.085, wheelMultiplier: 0.9 });
   lenis.on('scroll', ScrollTrigger.update);
   lenisRaf = (t) => lenis?.raf(t * 1000);

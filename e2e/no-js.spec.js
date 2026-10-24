@@ -10,5 +10,5 @@ test('page renders critical sections without javascript', async ({ page }) => {
   await expect(page.getByRole('heading', { name: 'El equipo' })).toBeVisible();
   await expect(page.getByRole('heading', { name: 'Dónde' })).toBeVisible();
   await expect(page.locator('#servicios .ledger-row').first()).toBeVisible();
-  await expect(page.locator('#archivo .reel-card').first()).toBeVisible();
+  await expect(page.locator('#archivo .archivo-card').first()).toBeVisible();
 });

@@ -207,19 +207,19 @@ export const reviewThemes = ['Profesionalidad', 'Detalle', 'Buen trato', 'Puntua
 // Placeholder frames. `focus` sets object-position so the haircut, not the
 // ceiling, survives the crop.
 export const galleryItems = [
-  { label: 'Fade a máquina', barber: 'Azedin', alt: 'Vídeo: fade a máquina en primer plano', video: '/video/corte-fade.mp4', poster: '/video/corte-fade.webp' },
+  { label: 'Low Fade', barber: 'Azedin', alt: 'Crop con low fade', src: corteLowFade, width: 1755, height: 2340, focus: 'center 28%' },
+  { label: 'Crop Top', barber: 'Azedin', alt: 'Crop top texturizado', src: corteCropTop, width: 1755, height: 2340, focus: 'center 30%' },
+  { label: 'Afeitado a navaja', barber: 'Azedin', alt: 'Afeitado clásico con navaja', src: corteAfeitadoClasico, width: 1755, height: 2340, focus: 'center 38%' },
+  { label: 'French crop', barber: 'Azedin', alt: 'French crop con degradado', src: corteArregloBarba, width: 1179, height: 2556, focus: 'center 30%' },
+  { label: 'Mid Fade clásico', barber: 'Azedin', alt: 'Mid fade degradado medio', src: corteMidFade, width: 1440, height: 1800, focus: 'center 30%' },
   { label: 'Skin Fade', barber: 'Azedin', alt: 'Skin fade degradado', src: corteSkinFade, width: 1179, height: 2071, focus: 'center 30%' },
-  { label: 'Mid Fade', barber: 'Azedin', alt: 'Mid fade degradado', src: lookbookImg06, width: 1080, height: 1350, focus: 'center 30%' },
+  { label: 'Textured Crop', barber: 'Samir', alt: 'Crop texturizado', src: lookbookImg01, width: 1080, height: 1350, focus: 'center 28%' },
   { label: 'Modern Mule', barber: 'Azedin', alt: 'Mule moderno con fade', src: lookbookImg03, width: 1080, height: 1350, focus: 'center 30%' },
   { label: 'Taper Fade', barber: 'Azedin', alt: 'Taper fade con barba', src: lookbookImg02, width: 1080, height: 1350, focus: 'center 30%' },
-  { label: 'Textured Crop', barber: 'Samir', alt: 'Crop texturizado', src: lookbookImg01, width: 1080, height: 1350, focus: 'center 28%' },
-  { label: 'Wolf cut', barber: 'Azedin', alt: 'Vídeo: wolf cut en primer plano', video: '/video/corte-wolf.mp4', poster: '/video/corte-wolf.webp' },
   { label: 'Burst Fade', barber: 'Samir', alt: 'Burst fade', src: lookbookImg04, width: 1080, height: 1350, focus: 'center 30%' },
-  { label: 'Crop Top', barber: 'Azedin', alt: 'Crop top texturizado', src: corteCropTop, width: 1755, height: 2340, focus: 'center 30%' },
-  { label: 'Low Fade', barber: 'Azedin', alt: 'Crop con low fade', src: corteLowFade, width: 1755, height: 2340, focus: 'center 28%' },
-  { label: 'French crop', barber: 'Azedin', alt: 'French crop con degradado', src: corteArregloBarba, width: 1179, height: 2556, focus: 'center 30%' },
-  { label: 'Afeitado a navaja', barber: 'Azedin', alt: 'Afeitado clásico con navaja', src: corteAfeitadoClasico, width: 1755, height: 2340, focus: 'center 38%' },
-  { label: 'Mid Fade clásico', barber: 'Azedin', alt: 'Mid fade degradado medio', src: corteMidFade, width: 1440, height: 1800, focus: 'center 30%' },
+  { label: 'Mid Fade', barber: 'Azedin', alt: 'Mid fade degradado', src: lookbookImg06, width: 1080, height: 1350, focus: 'center 30%' },
+  { label: 'Fade a máquina', barber: 'Azedin', alt: 'Vídeo: fade a máquina en primer plano', video: '/video/corte-fade.mp4', poster: '/video/corte-fade.webp' },
+  { label: 'Wolf cut', barber: 'Azedin', alt: 'Vídeo: wolf cut en primer plano', video: '/video/corte-wolf.mp4', poster: '/video/corte-wolf.webp' },
 ];
 
 export const shopImages = {

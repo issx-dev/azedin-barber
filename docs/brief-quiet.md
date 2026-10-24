@@ -20,4 +20,5 @@ What this branch changes, and what it cannot:
 - The ticker, the review belt and the 6s rotator stop. They were a demo stacked on the tour.
 - The salon still is the photograph of a real cut on the marble, not the empty chairs.
 - The archivo encodes the existing files at retina size, and two unused sharp frames replace two softer ones.
+- The archivo is a still grid. The pinned reel dimmed every cut except one. The two clips stay as posters.
 - A 10 still needs a proper photo set. These files are the best already on disk. This branch does not invent a shoot.

@@ -9,14 +9,13 @@
  * itself whenever they post. The browser fetches it on each visit (cached
  * 10 min per tab), so new posts appear with no rebuild.
  *
- * Until that URL exists, the grid shows the shop's own recent work linking to
- * the profile: the section is never empty or broken.
+ * Until that URL exists, the section is the handle and the follow link.
+ * The archivo already shows the cuts; a second mosaic of the same frames
+ * only repeated them.
  */
-import { Image } from 'astro:assets';
-import { business, galleryItems } from '../data/content.js';
+import { business } from '../data/content.js';
 
 const FEED_URL = import.meta.env.PUBLIC_IG_FEED_URL ?? '';
-const fallback = galleryItems.filter((g) => g.src).slice(0, 6);
 ---
 
 <section id="instagram" class="relative py-20 md:py-30" aria-labelledby="ig-title">
@@ -31,34 +30,11 @@ const fallback = galleryItems.filter((g) => g.src).slice(0, 6);
       </a>
     </header>
 
-    <ul class="ig-grid mt-10 grid grid-cols-3 gap-1 md:grid-cols-6 md:gap-2" data-feed={FEED_URL}>
-      {
-        fallback.map((g) => (
-          <li>
-            <a
-              href={business.instagramUrl}
-              target="_blank"
-              rel="noopener noreferrer"
-              class="group relative block aspect-square overflow-hidden bg-marmol-2"
-              aria-label={`${g.label} — ver en Instagram`}
-            >
-              <Image
-                src={g.src}
-                alt={g.alt}
-                width={640}
-                height={640}
-                widths={[320, 480, 640]}
-                format="avif"
-                quality={74}
-                loading="lazy"
-                style={`object-position: ${g.focus}`}
-                class="h-full w-full object-cover transition-transform duration-700 ease-marmol group-hover:scale-[1.04]"
-              />
-            </a>
-          </li>
-        ))
-      }
-    </ul>
+    {
+      FEED_URL && (
+        <ul class="ig-grid mt-10 grid grid-cols-3 gap-1 md:grid-cols-6 md:gap-2" data-feed={FEED_URL} />
+      )
+    }
   </div>
 </section>
 
