@@ -19,7 +19,7 @@ const total = String(galleryItems.length).padStart(2, '0');
 ---
 
 <section id="archivo" class="relative" aria-labelledby="archivo-title" data-reel>
-  <div class="reel-stage flex min-h-[100svh] flex-col justify-center overflow-hidden py-20 md:py-0">
+  <div class="reel-stage flex min-h-[100svh] flex-col justify-center overflow-hidden bg-marmol py-20 md:py-0">
     <header class="frame flex items-end justify-between gap-6">
       <div>
         <p class="eyebrow mb-3">Trabajos recientes</p>
@@ -260,7 +260,8 @@ const total = String(galleryItems.length).padStart(2, '0');
           // it, and the two fought — that was the mobile breakage.
           scrub: 0.5,
           invalidateOnRefresh: true,
-          anticipatePin: 1,
+          // No anticipatePin: a flick pinned this panel over Precios while
+          // the stage was still transparent, so the two sections painted together.
           onRefresh: apply,
         },
       });
