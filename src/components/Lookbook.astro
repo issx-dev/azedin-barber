@@ -208,7 +208,8 @@ const total = String(galleryItems.length).padStart(2, '0');
       // thumb flick always moves about the same number of cuts.
       // Based on the stage (100svh, the stable small viewport) rather than
       // window.innerHeight, which changes as a phone's address bar slides.
-      const STEP = () => Math.min(420, Math.max(300, stage.offsetHeight * 0.4));
+      // Phones already walked the shop. A short step still moves one cut per flick.
+      const STEP = () => (window.innerWidth < 768 ? 180 : Math.min(420, Math.max(300, stage.offsetHeight * 0.4)));
       const travel = () => STEP() * (cards.length - 1);
 
       // Map progress -> rail x piecewise-linearly through the card centres,

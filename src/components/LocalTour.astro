@@ -69,16 +69,17 @@ const chapters = [
       <div class="pointer-events-none absolute inset-y-0 left-0 hidden w-2/5 bg-gradient-to-r from-marmol via-marmol/60 to-transparent md:block" aria-hidden="true"></div>
     </div>
 
-    <!-- Phones: legibility only where the text sits. -->
-    <div class="pointer-events-none absolute inset-x-0 bottom-0 h-[42%] bg-gradient-to-t from-marmol via-marmol/70 to-transparent md:hidden" aria-hidden="true"></div>
-    <div class="pointer-events-none absolute inset-x-0 top-0 h-40 bg-gradient-to-b from-marmol via-marmol/80 to-transparent" aria-hidden="true"></div>
+    <!-- Phones: a short solid floor under the copy. The room stays visible above it. -->
+    <div class="pointer-events-none absolute inset-x-0 bottom-0 h-[46%] bg-gradient-to-t from-marmol from-25% via-marmol/85 to-transparent md:hidden" aria-hidden="true"></div>
+    <div class="pointer-events-none absolute inset-x-0 top-0 h-28 bg-gradient-to-b from-marmol via-marmol/70 to-transparent md:hidden" aria-hidden="true"></div>
+    <div class="pointer-events-none absolute inset-x-0 top-0 hidden h-40 bg-gradient-to-b from-marmol via-marmol/80 to-transparent md:block" aria-hidden="true"></div>
 
     <!-- pt-24 keeps the logo clear of the fixed header on short screens. -->
     <div class="frame relative flex h-full flex-col justify-end pb-[max(2.5rem,env(safe-area-inset-bottom))] pt-24 md:justify-center md:pb-0">
       <div class="md:max-w-[min(46vw,560px)]">
         <h1 id="hero-title" class="m-0">
           <span class="sr-only">{business.legalName}, barbería en Berja</span>
-          <Logo class="h-auto w-[min(64vw,440px)] text-cal" data-logo />
+          <Logo class="h-auto w-[min(46vw,440px)] text-cal" data-logo />
         </h1>
 
         <!-- Chapters: stacked in one grid cell, swapped by scroll position. -->
@@ -91,9 +92,9 @@ const chapters = [
                 style={i === 0 ? '' : 'opacity:0'}
                 aria-hidden={i === 0 ? undefined : 'true'}
               >
-                <p class="eyebrow text-cal-dim">{c.kicker}</p>
+                <p class="eyebrow text-cal">{c.kicker}</p>
                 <p class="display mt-3 text-h3">{c.title}</p>
-                <p class="mt-3 text-cal-dim">{c.body}</p>
+                <p class="mt-3 text-cal">{c.body}</p>
               </div>
             ))
           }
@@ -104,7 +105,7 @@ const chapters = [
             Reservar
           </a>
           <div class="flex items-center gap-3" aria-hidden="true">
-            <span class="eyebrow text-humo">Recorre el local</span>
+            <span class="eyebrow text-cal">Recorre el local</span>
             <span class="relative block h-px w-24 bg-veta">
               <span class="tour-progress absolute inset-y-0 left-0 block w-full origin-left scale-x-0 bg-roble"></span>
             </span>
@@ -118,9 +119,15 @@ const chapters = [
 <style>
   /* Scroll length of the walk. Without JS the section is one screen tall
      and frame 0 stands as a photograph. */
-  /* ~6.5 screens for 216 frames: denser scrub (~one frame per ~16px on 844px). */
+  /* Phones: ~3.2 screens. One frame every ~12px is still a walk, not a slideshow.
+     Desktop keeps the long scrub, about one frame per 16px. */
   .tour.is-live {
-    height: 650svh;
+    height: 320svh;
+  }
+  @media (min-width: 768px) {
+    .tour.is-live {
+      height: 650svh;
+    }
   }
   .tour-canvas {
     opacity: 0;
