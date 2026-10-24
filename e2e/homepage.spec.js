@@ -1,36 +1,33 @@
 import { test, expect } from '@playwright/test';
 
-test('homepage renders hero and services sections', async ({ page }) => {
+test('homepage renders the walkthrough, prices, and rating', async ({ page }) => {
   await page.goto('/', { waitUntil: 'domcontentloaded' });
 
-  // Hero section / Barbers section with barber names should be visible (h3 elements)
-  await expect(page.locator('h3', { hasText: 'Azedin' }).first()).toBeVisible({ timeout: 10000 });
-  await expect(page.locator('h3', { hasText: 'Samir' }).first()).toBeVisible({ timeout: 10000 });
-
-  // Services section should be visible
+  await expect(page.locator('#hero')).toBeVisible();
+  await expect(page.locator('#hero img').first()).toBeAttached();
   await expect(page.locator('#servicios')).toBeVisible();
-
-  // Trust strip should show rating (span element)
-  await expect(page.locator('span', { hasText: '5.0' }).first()).toBeVisible();
+  await expect(page.locator('#servicios .ledger-row').first()).toBeVisible();
+  await expect(page.getByText('5,0').first()).toBeVisible();
 });
 
-test('sections appear in correct editorial order', async ({ page }) => {
+test('sections follow the booking order', async ({ page }) => {
   await page.goto('/', { waitUntil: 'domcontentloaded' });
 
-  // Verify section order: Hero → Barbers → Reviews → Lookbook → Services → Location
-  const lookbook = page.locator('#lookbook');
-  const reviews = page.locator('#reseñas');
-  const services = page.locator('#servicios');
-  const location = page.locator('#ubicacion');
+  const servicios = page.locator('#servicios');
+  const archivo = page.locator('#archivo');
+  const resenas = page.locator('#resenas');
+  const local = page.locator('#local');
+  const donde = page.locator('#donde');
 
-  // All sections should be present
-  await expect(lookbook).toBeVisible();
-  await expect(reviews).toBeVisible();
-  await expect(services).toBeVisible();
-  await expect(location).toBeVisible();
+  await expect(servicios).toBeVisible();
+  await expect(archivo).toBeVisible();
+  await expect(resenas).toBeVisible();
+  await expect(local).toBeVisible();
+  await expect(donde).toBeVisible();
 
-  // Verify Reviews appears BEFORE Lookbook (editorial order)
-  const reviewsBox = await reviews.boundingBox();
-  const lookbookBox = await lookbook.boundingBox();
-  expect(reviewsBox.y).toBeLessThan(lookbookBox.y);
+  const y = async (locator) => (await locator.boundingBox()).y;
+  expect(await y(servicios)).toBeLessThan(await y(archivo));
+  expect(await y(archivo)).toBeLessThan(await y(resenas));
+  expect(await y(resenas)).toBeLessThan(await y(local));
+  expect(await y(local)).toBeLessThan(await y(donde));
 });

@@ -5,8 +5,10 @@ test.use({ javaScriptEnabled: false });
 test('page renders critical sections without javascript', async ({ page }) => {
   await page.goto('/', { waitUntil: 'domcontentloaded' });
 
-  await expect(page.locator('h2', { hasText: 'Quién te espera' })).toBeVisible();
-  await expect(page.locator('h2', { hasText: 'Lookbook' })).toBeVisible();
-  await expect(page.locator('h2', { hasText: 'Servicios' })).toBeVisible();
-  await expect(page.locator('h2', { hasText: 'Reseñas' })).toBeVisible();
+  await expect(page.getByRole('heading', { name: 'Precios' })).toBeVisible();
+  await expect(page.getByRole('heading', { name: 'Archivo' })).toBeVisible();
+  await expect(page.getByRole('heading', { name: 'El equipo' })).toBeVisible();
+  await expect(page.getByRole('heading', { name: 'Dónde' })).toBeVisible();
+  await expect(page.locator('#servicios .ledger-row').first()).toBeVisible();
+  await expect(page.locator('#archivo .reel-card').first()).toBeVisible();
 });

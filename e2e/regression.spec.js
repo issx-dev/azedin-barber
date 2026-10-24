@@ -1,164 +1,78 @@
 import { test, expect } from '@playwright/test';
 
-test.describe('Regression — Visibility & Animations', () => {
-
-  test('all data-stagger containers become visible after scroll', async ({ page }) => {
+test.describe('Regression — current page', () => {
+  test('ledger rows stay visible after scrolling the page', async ({ page }) => {
     await page.setViewportSize({ width: 390, height: 844 });
     await page.goto('/', { waitUntil: 'domcontentloaded' });
     await page.evaluate(() => window.scrollTo(0, document.body.scrollHeight));
-    await page.waitForTimeout(1500);
-
-    const containers = page.locator('[data-stagger]');
-    const count = await containers.count();
-    expect(count).toBeGreaterThan(0);
-
-    for (let i = 0; i < count; i++) {
-      const opacity = await containers.nth(i).evaluate(el => getComputedStyle(el).opacity);
-      expect(Number(opacity), `data-stagger #${i} invisible`).toBeGreaterThan(0);
-    }
-  });
-
-  test('Services section rows are rendered and visible', async ({ page }) => {
-    await page.setViewportSize({ width: 390, height: 844 });
-    await page.goto('/', { waitUntil: 'domcontentloaded' });
     await page.locator('#servicios').scrollIntoViewIfNeeded();
-    await page.waitForTimeout(1000);
 
-    const rows = page.locator('#servicios .service-row');
-    const count = await rows.count();
-    expect(count).toBeGreaterThanOrEqual(4);
-
-    for (let i = 0; i < count; i++) {
-      await expect(rows.nth(i)).toBeVisible();
-    }
+    const rows = page.locator('#servicios .ledger-row');
+    expect(await rows.count()).toBeGreaterThanOrEqual(4);
+    await expect(rows.first()).toBeVisible();
   });
 
-  test('Location hours list is rendered and visible', async ({ page }) => {
+  test('location lists the week', async ({ page }) => {
     await page.setViewportSize({ width: 390, height: 844 });
     await page.goto('/', { waitUntil: 'domcontentloaded' });
-    await page.locator('#ubicacion').scrollIntoViewIfNeeded();
-    await page.waitForTimeout(1000);
+    await page.locator('#donde').scrollIntoViewIfNeeded();
 
-    const hoursContainer = page.locator('#ubicacion [data-stagger]');
-    await expect(hoursContainer).toBeVisible();
-    const opacity = await hoursContainer.evaluate(el => getComputedStyle(el).opacity);
-    expect(Number(opacity)).toBeGreaterThan(0);
+    const days = page.locator('#donde dt');
+    expect(await days.count()).toBe(7);
+    await expect(days.first()).toBeVisible();
   });
-});
 
-test.describe('Regression — Video', () => {
-
-  test('mobile video element exists and loads mobile source', async ({ page }) => {
+  test('the hero is a still, not a video element', async ({ page }) => {
     await page.setViewportSize({ width: 390, height: 844 });
     await page.goto('/', { waitUntil: 'domcontentloaded' });
-    await page.waitForTimeout(2000);
 
-    const video = page.locator('video#hero-video');
-    await expect(video).toBeAttached();
-    const src = await video.evaluate(el => el.currentSrc);
-    expect(src).toContain('instalaciones-mobile');
+    await expect(page.locator('video#hero-video')).toHaveCount(0);
+    await expect(page.locator('#hero img').first()).toBeAttached();
+    await expect(page.locator('[data-tour]')).toBeVisible();
   });
 
-  test('desktop video element exists and loads desktop source', async ({ page }) => {
-    await page.setViewportSize({ width: 1440, height: 900 });
-    await page.goto('/', { waitUntil: 'domcontentloaded' });
-    await page.waitForTimeout(2000);
-
-    const video = page.locator('video#hero-video');
-    await expect(video).toBeAttached();
-    const src = await video.evaluate(el => el.currentSrc);
-    expect(src).toContain('instalaciones-desktop');
-  });
-});
-
-test.describe('Regression — Header Logo & Layout', () => {
-
-  test('logo does not overflow header container height', async ({ page }) => {
+  test('header logo fits the bar and is not blend-screen', async ({ page }) => {
     await page.setViewportSize({ width: 390, height: 844 });
-    await page.goto('/');
+    await page.goto('/', { waitUntil: 'domcontentloaded' });
 
-    const logo = page.locator('.nav-logo-img');
-    const headerRow = page.locator('#site-header .flex').first();
-
+    const header = page.locator('[data-header]');
+    const logo = page.locator('header a[aria-label]');
+    const headerBox = await header.boundingBox();
     const logoBox = await logo.boundingBox();
-    const headerBox = await headerRow.boundingBox();
-
-    expect(logoBox).not.toBeNull();
-    expect(headerBox).not.toBeNull();
-    expect(logoBox.height).toBeLessThanOrEqual(headerBox.height);
-  });
-
-  test('logo has no mix-blend-mode screen artifact', async ({ page }) => {
-    await page.goto('/');
-    const blend = await page.locator('.nav-logo-img').evaluate(
-      el => getComputedStyle(el).mixBlendMode
-    );
+    expect(logoBox.height).toBeGreaterThan(0);
+    expect(logoBox.height).toBeLessThanOrEqual(headerBox.height + 1);
+    const blend = await logo.evaluate((el) => getComputedStyle(el).mixBlendMode);
     expect(blend).not.toBe('screen');
   });
-});
 
-test.describe('Regression — Review Dots', () => {
-
-  test('active dot applies GPU composited scaleX transform', async ({ page }) => {
+  test('review dots are a 44px target', async ({ page }) => {
     await page.setViewportSize({ width: 390, height: 844 });
-    await page.goto('/');
+    await page.goto('/', { waitUntil: 'domcontentloaded' });
+    await page.locator('#resenas').scrollIntoViewIfNeeded();
 
-    await page.evaluate(() => {
-      const btn = document.querySelector('[data-reviews-dot]');
-      if (btn) btn.setAttribute('data-active', 'true');
-    });
-
-    const dot = page.locator('.reviews-dot').first();
-    const transform = await dot.evaluate(el => getComputedStyle(el).transform);
-    expect(transform).toContain('matrix(');
+    const dot = page.locator('.rev-dot').first();
+    await expect(dot).toBeVisible();
+    const box = await dot.boundingBox();
+    expect(box.width).toBeGreaterThanOrEqual(44);
+    expect(box.height).toBeGreaterThanOrEqual(44);
   });
-});
 
-test.describe('Regression — Lookbook Toggle', () => {
-
-  test('mobile: clicking "Ver más" reveals extra items', async ({ page }) => {
-    await page.setViewportSize({ width: 390, height: 844 });
-    await page.goto('/');
-    await page.locator('#lookbook').scrollIntoViewIfNeeded();
-    await page.waitForTimeout(500);
-
-    const btn = page.locator('#lookbook-toggle-btn');
-    await expect(btn).toBeVisible();
-    await btn.click();
-
-    const extras = page.locator('.lookbook-extra');
-    const count = await extras.count();
-    expect(count).toBeGreaterThan(0);
-
-    for (let i = 0; i < count; i++) {
-      await expect(extras.nth(i)).toBeVisible();
-    }
-  });
-});
-
-test.describe('Regression — Direct Booking Links & Smart Routing', () => {
-
-  test('desktop: booking links point to booksy web url', async ({ page }) => {
+  test('booking links open Booksy in a new tab', async ({ page }) => {
     await page.setViewportSize({ width: 1440, height: 900 });
-    await page.goto('/');
+    await page.goto('/', { waitUntil: 'domcontentloaded' });
 
-    const bookingLink = page.locator('[data-booksy-link]').first();
-    await expect(bookingLink).toBeVisible();
-    const href = await bookingLink.getAttribute('href');
-    expect(href).toContain('booksy.com');
-    const target = await bookingLink.getAttribute('target');
-    expect(target).toBe('_blank');
+    const link = page.locator('a[href*="azedinbarber.booksy.com"][target="_blank"]').first();
+    await expect(link).toBeVisible();
+    await expect(link).toHaveAttribute('href', /azedinbarber\.booksy\.com/);
   });
 
-  test('mobile: clicking booking link routes to booksy app deep link', async ({ page }) => {
+  test('mobile booking link points at the Booksy profile', async ({ page }) => {
     await page.setViewportSize({ width: 390, height: 844 });
-    await page.goto('/');
+    await page.goto('/', { waitUntil: 'domcontentloaded' });
 
-    const bookingLink = page.locator('[data-booksy-link]:visible').first();
-    await expect(bookingLink).toBeVisible();
-    await bookingLink.click();
-
-    const href = await bookingLink.getAttribute('href');
-    expect(href).toContain('azedinbarber.booksy.com/a');
+    const link = page.locator('#hero a[href*="azedinbarber.booksy.com"]').first();
+    await expect(link).toBeVisible();
+    await expect(link).toHaveAttribute('target', '_blank');
+    await expect(link).toHaveAttribute('href', /azedinbarber\.booksy\.com\/a/);
   });
 });

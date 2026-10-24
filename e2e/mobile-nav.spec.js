@@ -1,123 +1,55 @@
 import { test, expect } from '@playwright/test';
 
-test.describe('Mobile Navigation', () => {
-  test.use({ viewport: { width: 375, height: 812 } });
+const anchors = ['#servicios', '#archivo', '#resenas', '#local', '#donde'];
 
-  test('hamburger triggers fullscreen overlay', async ({ page }) => {
-    await page.goto('/');
-
-    // Hamburger button should be visible on mobile
-    const hamburger = page.locator('[data-nav-trigger]');
-    await expect(hamburger).toBeVisible({ timeout: 5000 });
-
-    // Click hamburger
-    await hamburger.click();
-
-    // MobileNav overlay should appear (panel slides in via transform)
-    const overlay = page.locator('[role="dialog"][aria-label="Menú de navegación"]');
-    await expect(overlay).toBeVisible({ timeout: 5000 });
-
-    // Panel should not be translated off-screen when open
-    // Wait for the CSS transition to settle (support 2D, 3D and fractional matrices)
-    await page.waitForFunction(() => {
-      const el = document.querySelector('[role="dialog"][aria-label="Menú de navegación"]');
-      if (!el) return false;
-      const t = getComputedStyle(el).transform;
-      return t === 'none' || t.includes('matrix(1, 0, 0, 1, 0') || t.includes('matrix3d(1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1');
-    }, { timeout: 5000 });
-
-    expect(await hamburger.getAttribute('aria-expanded')).toBe('true');
+test.describe('Mobile navigation', () => {
+  test.beforeEach(async ({ page }) => {
+    await page.setViewportSize({ width: 390, height: 844 });
+    await page.goto('/', { waitUntil: 'domcontentloaded' });
   });
 
-  test('overlay contains all section anchors', async ({ page }) => {
-    await page.goto('/');
+  test('menu opens the disclosure', async ({ page }) => {
+    const toggle = page.locator('[data-nav-toggle]');
+    const panel = page.locator('#mobile-nav');
+    await expect(toggle).toBeVisible();
+    await expect(panel).toBeHidden();
 
-    // Open mobile nav
-    const hamburger = page.locator('[data-nav-trigger]');
-    await expect(hamburger).toBeVisible({ timeout: 5000 });
-    await hamburger.click();
-
-    const overlay = page.locator('[role="dialog"][aria-label="Menú de navegación"]');
-    await expect(overlay).toBeVisible({ timeout: 5000 });
-
-    // All 4 anchors should be present
-    await expect(overlay.locator('a[href="#lookbook"]')).toBeVisible();
-    await expect(overlay.locator('a[href="#servicios"]')).toBeVisible();
-    await expect(overlay.locator('a[href="#reseñas"]')).toBeVisible();
-    await expect(overlay.locator('a[href="#ubicacion"]')).toBeVisible();
+    await toggle.click();
+    await expect(toggle).toHaveAttribute('aria-expanded', 'true');
+    await expect(panel).toBeVisible();
+    await expect(toggle).toHaveText('Cerrar');
   });
 
-  test('anchor click closes overlay', async ({ page }) => {
-    await page.goto('/');
-
-    // Open mobile nav
-    const hamburger = page.locator('[data-nav-trigger]');
-    await expect(hamburger).toBeVisible({ timeout: 5000 });
-    await hamburger.click();
-
-    const overlay = page.locator('[role="dialog"][aria-label="Menú de navegación"]');
-    await expect(overlay).toBeVisible({ timeout: 5000 });
-
-    // Click an anchor
-    await overlay.locator('a[href="#lookbook"]').click();
-
-    // Panel should slide out (translateX(100%))
-    await expect(async () => {
-      const transform = await overlay.evaluate((el) => getComputedStyle(el).transform);
-      expect(transform).not.toBe('none');
-      expect(await hamburger.getAttribute('aria-expanded')).toBe('false');
-    }).toPass({ timeout: 5000 });
+  test('panel lists the section anchors', async ({ page }) => {
+    await page.locator('[data-nav-toggle]').click();
+    for (const href of anchors) {
+      await expect(page.locator(`#mobile-nav a[href="${href}"]`)).toBeVisible();
+    }
   });
 
-  test('Escape key closes overlay', async ({ page }) => {
-    await page.goto('/');
-
-    // Open mobile nav
-    const hamburger = page.locator('[data-nav-trigger]');
-    await expect(hamburger).toBeVisible({ timeout: 5000 });
-    await hamburger.click();
-
-    const overlay = page.locator('[role="dialog"][aria-label="Menú de navegación"]');
-    await expect(overlay).toBeVisible({ timeout: 5000 });
-
-    // Wait for transition to settle (ensures React effect registers keydown listener)
-    await page.waitForFunction(() => {
-      const el = document.querySelector('[role="dialog"][aria-label="Menú de navegación"]');
-      if (!el) return false;
-      const t = getComputedStyle(el).transform;
-      return t === 'none' || t.includes('matrix(1, 0, 0, 1, 0') || t.includes('matrix3d(1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1');
-    }, { timeout: 5000 });
-
-    // Press Escape
-    await page.locator('[aria-label="Cerrar menú"]').press('Escape');
-
-    // Panel should slide out
-    await expect(async () => {
-      const transform = await overlay.evaluate((el) => getComputedStyle(el).transform);
-      expect(transform).not.toBe('none');
-      expect(await hamburger.getAttribute('aria-expanded')).toBe('false');
-    }).toPass({ timeout: 5000 });
+  test('anchor click closes the panel', async ({ page }) => {
+    const toggle = page.locator('[data-nav-toggle]');
+    await toggle.click();
+    await page.locator('#mobile-nav a[href="#servicios"]').click();
+    await expect(page.locator('#mobile-nav')).toBeHidden();
+    await expect(toggle).toHaveAttribute('aria-expanded', 'false');
   });
 
-  test('close button closes overlay', async ({ page }) => {
-    await page.goto('/');
+  test('Escape closes the panel', async ({ page }) => {
+    const toggle = page.locator('[data-nav-toggle]');
+    await toggle.click();
+    await expect(page.locator('#mobile-nav')).toBeVisible();
+    await page.keyboard.press('Escape');
+    await expect(page.locator('#mobile-nav')).toBeHidden();
+    await expect(toggle).toHaveText('Menú');
+  });
 
-    // Open mobile nav
-    const hamburger = page.locator('[data-nav-trigger]');
-    await expect(hamburger).toBeVisible({ timeout: 5000 });
-    await hamburger.click();
-
-    const overlay = page.locator('[role="dialog"][aria-label="Menú de navegación"]');
-    await expect(overlay).toBeVisible({ timeout: 5000 });
-
-    // Click close button
-    await page.locator('[aria-label="Cerrar menú"]').click();
-
-    // Panel should slide out
-    await expect(async () => {
-      const transform = await overlay.evaluate((el) => getComputedStyle(el).transform);
-      expect(transform).not.toBe('none');
-      expect(await hamburger.getAttribute('aria-expanded')).toBe('false');
-    }).toPass({ timeout: 5000 });
+  test('Cerrar closes the panel', async ({ page }) => {
+    const toggle = page.locator('[data-nav-toggle]');
+    await toggle.click();
+    await expect(toggle).toHaveText('Cerrar');
+    await toggle.click();
+    await expect(page.locator('#mobile-nav')).toBeHidden();
+    await expect(toggle).toHaveAttribute('aria-expanded', 'false');
   });
 });
