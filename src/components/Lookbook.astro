@@ -7,8 +7,9 @@
  * card is ~78vw, so one cut fills the screen and the next peeks in.
  *
  * Six cuts, the ones sharp enough to judge. The card in the centre is on
- * the chair. The ones beside it sit back, but they stay readable: a 0.3
- * brightness filter turned the neighbours into black rectangles.
+ * the chair: full size, full light. Neighbours ease back to about half
+ * brightness as they leave the centre, so the cut in front stays obvious
+ * and the next one is still a cut, not a black rectangle.
  * Without JS the rail is a native horizontal scroller with snap points.
  */
 import { Image } from 'astro:assets';
@@ -114,14 +115,16 @@ const total = String(galleryItems.length).padStart(2, '0');
       opacity 420ms var(--ease-led),
       transform 420ms var(--ease-marmol);
   }
-  /* Off-focus cards sit back: the photo dims and the card shrinks a touch.
-     Only the media dims — captions keep full contrast (WCAG AA). */
+  /* Resting pose before the first scroll frame. JS then drives scale and
+     brightness from distance to the chair, every frame, so the CSS transition
+     would only lag the finger. Captions stay undimmed (WCAG AA). */
   [data-reel].is-live .reel-card {
-    transform: scale(0.94);
+    transform: scale(0.9);
+    transition: none;
   }
   [data-reel].is-live .reel-card .reel-media {
-    filter: brightness(0.62) saturate(0.9);
-    transition: filter 420ms var(--ease-led);
+    filter: brightness(0.45) saturate(0.68);
+    transition: none;
   }
   [data-reel].is-live .reel-card.is-on {
     transform: scale(1);
@@ -204,18 +207,34 @@ const total = String(galleryItems.length).padStart(2, '0');
       const railLeft = () => rail.getBoundingClientRect().left - (Number(gsap.getProperty(rail, 'x')) || 0);
       const xFor = (cx: number) => window.innerWidth / 2 - railLeft() - cx;
 
-      // One card per STEP px of scroll, constant on every screen size, so a
-      // thumb flick always moves about the same number of cuts.
-      // Based on the stage (100svh, the stable small viewport) rather than
-      // window.innerHeight, which changes as a phone's address bar slides.
-      // Phones already walked the shop. A short step still moves one cut per flick.
-      const STEP = () => (window.innerWidth < 768 ? 180 : Math.min(420, Math.max(300, stage.offsetHeight * 0.4)));
+      // One card per STEP px of scroll. Phones need a real beat on each cut:
+      // 180px blew six cuts past the chair before the eye could settle.
+      // Desktop stays tied to the stage (100svh), not window.innerHeight,
+      // which changes as a phone's address bar slides.
+      const STEP = () => (window.innerWidth < 768 ? 360 : Math.min(420, Math.max(300, stage.offsetHeight * 0.4)));
       const travel = () => STEP() * (cards.length - 1);
 
       // Map progress -> rail x piecewise-linearly through the card centres,
       // so at progress k/(n-1) card k is exactly centred, whatever the widths
       // and gaps. A single linear tween drifted off by the gap ratio.
       const state = { p: 0 };
+      // Neighbour falls to 0.9 scale and ~0.45 brightness. The value follows
+      // the fractional index, so the handoff glides instead of popping.
+      const pose = (f: number) => {
+        cards.forEach((card, i) => {
+          const fall = Math.min(1, Math.abs(i - f));
+          card.style.transform = `scale(${(1 - fall * 0.1).toFixed(4)})`;
+          const media = card.querySelector<HTMLElement>('.reel-media');
+          if (!media) return;
+          if (fall < 0.04) {
+            media.style.filter = 'none';
+          } else {
+            const bright = (1 - fall * 0.55).toFixed(3);
+            const sat = (1 - fall * 0.32).toFixed(3);
+            media.style.filter = `brightness(${bright}) saturate(${sat})`;
+          }
+        });
+      };
       const apply = () => {
         const c = centres();
         const f = state.p * (cards.length - 1);
@@ -224,6 +243,7 @@ const total = String(galleryItems.length).padStart(2, '0');
         const cx = c[k] + (c[k + 1] - c[k]) * t;
         gsap.set(rail, { x: xFor(cx) });
         if (progress) progress.style.transform = `scaleX(${state.p})`;
+        pose(f);
         focus(state.p);
       };
 
