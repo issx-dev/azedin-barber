@@ -38,40 +38,40 @@ hexagonal fría + una caligrafía**. El rojo nunca existió.
 
 Tres voces, cada una con un trabajo y un límite duro.
 
-| Rol | Familia | Por qué | Paquete (verificado en npm 5.3.0) |
+| Rol | Familia | Por qué | Paquete |
 | --- | --- | --- | --- |
-| **Wordmark** | El propio logo como SVG/PNG (`logo-02.PNG`) | La caligrafía del logo es un dibujo, no se reconstruye con fuente | — |
-| **Gesto script** (máx. 1 por página) | `Pinyon Script` 400 | Copperplate más cercano al trazo del logo; sólo para una palabra suelta en el hero (p. ej. *desde Berja*) o el nombre del barbero en el lookbook | `@fontsource/pinyon-script` |
-| **Display** | `Cinzel Variable` 500–700 | Misma genealogía romana que el "BARBER" del logo. Siempre MAYÚSCULAS + tracking ancho | `@fontsource-variable/cinzel` |
-| **Body / UI** | `Hanken Grotesk Variable` 400–600 | Ya instalada y auto-hospedada; neutra, no compite con Cinzel | `@fontsource-variable/hanken-grotesk` (ya en `package.json`) |
+| **Wordmark** | Logo SVG (`Logo.astro`, del archivo del cliente) | La caligrafía es un dibujo; nunca se reconstruye con webfont | — |
+| **Gesto script** (máx. 1 por página) | `Pinyon Script` 400 | Copperplate cercano al trazo del logo; una palabra suelta a display size | `@fontsource/pinyon-script` |
+| **Display** | `Cormorant Variable` 500–700 | Serif clásica de alto contraste (atelier); MAYÚSCULAS + tracking abierto. Sustituye Cinzel (stack "AI luxury barber") | `@fontsource-variable/cormorant` |
+| **Body / UI** | `Source Sans 3 Variable` 400–600 | Sans de oficio, legible en UI; no Inter/Geist/dashboard | `@fontsource-variable/source-sans-3` |
 
 Reglas:
 
-- Cinzel **nunca** en minúsculas, **nunca** por debajo de `--step-1`; en tamaños
-  pequeños se cambia a Hanken 600 con `tracking-wide` (así el eyebrow sigue
-  pareciendo "BARBER" sin usar una romana a 13px).
+- Cormorant **nunca** en minúsculas para títulos de sección, **nunca** por debajo
+  de `--step-1`; en tamaños pequeños se usa Source Sans 3 600 + `tracking-wide`
+  (eyebrows, captions).
 - Pinyon sólo a `--step-3` o superior y siempre en `#ECECEA`; nunca para
-  precios, botones o texto de párrafo. Si una página ya lleva el logo grande
-  en el hero, no se añade Pinyon encima: el logo ya es el gesto.
-- Tracking positivo solo en Cinzel y eyebrows (`0.18em`–`0.3em`); Hanken a 0.
-- Escala fluida (clamp), ratio ~1.25 en texto y salto de escala brutal al
-  display, igual que el logo (script 5× BARBER):
+  precios, botones o párrafo. Si el hero ya lleva el logo grande, no se añade
+  Pinyon encima: el logo ya es el gesto.
+- Tracking positivo solo en Cormorant display y eyebrows (`0.18em`–`0.3em`);
+  Source Sans 3 a 0.
+- Header y footer usan el **Logo SVG**, no tipografía para "Azedin".
+- Escala fluida (clamp), ratio ~1.25 en texto y salto brutal al display:
 
 ```css
 --step--1: clamp(0.8125rem, 0.78rem + 0.15vw, 0.875rem);   /* captions, horario */
 --step-0:  clamp(1.0625rem, 1rem + 0.25vw, 1.1875rem);     /* body */
 --step-1:  clamp(1.25rem, 1.1rem + 0.7vw, 1.625rem);       /* sub, precios */
---step-2:  clamp(1.75rem, 1.3rem + 1.8vw, 2.75rem);        /* h3, Cinzel min */
+--step-2:  clamp(1.75rem, 1.3rem + 1.8vw, 2.75rem);        /* h3, Cormorant min */
 --step-3:  clamp(2.5rem, 1.6rem + 3.4vw, 4.5rem);          /* h2 */
---step-poster: clamp(3.25rem, 12vw, 11rem);                 /* h1 Cinzel o Pinyon */
+--step-poster: clamp(3.25rem, 12vw, 11rem);                 /* h1 Cormorant o Pinyon */
 ```
 
-Line-height: Cinzel 0.95 (tiene ascendentes cortas), Hanken 1.55 body / 1.35 sub,
-Pinyon 1.0 (sus rasgos salen de la caja; dar `padding-inline` 0.15em para
-que la n final no se corte).
+Line-height: Cormorant 0.95, Source Sans 3 1.55 body / 1.35 sub,
+Pinyon 1.0 (`padding-inline` 0.15em para que la n final no se corte).
 
-Fallback con métricas ajustadas (CLS 0) para Hanken ya existe en `global.css`;
-añadir el mismo patrón para Cinzel con `local('Georgia')`, `size-adjust: 104%`.
+Fallbacks con métricas ajustadas (CLS 0) en `global.css`: Source Sans 3 → Arial;
+Cormorant → Georgia.
 
 ---
 
@@ -173,9 +173,9 @@ colors: {
   pino: '#D9C979', salvia: '#8FA070',
 },
 fontFamily: {
-  display: ['"Cinzel Variable"', 'Georgia', 'serif'],
+  display: ['"Cormorant Variable"', '"Cormorant fallback"', 'Georgia', 'serif'],
   script: ['"Pinyon Script"', 'cursive'],
-  body: ['"Hanken Grotesk Variable"', '"Hanken fallback"', 'ui-sans-serif', 'sans-serif'],
+  body: ['"Source Sans 3 Variable"', '"Source Sans 3 fallback"', 'ui-sans-serif', 'sans-serif'],
 },
 borderRadius: { none: '0', DEFAULT: '0', sm: '2px', full: '9999px' },
 boxShadow: { none: 'none', reflejo: 'inset 0 1px 0 0 rgb(236 236 234 / 0.06)' },
@@ -187,11 +187,10 @@ transitionTimingFunction: {
 transitionDuration: { 120: '120ms', 240: '240ms', 420: '420ms', 700: '700ms' },
 ```
 
-Instalar: `pnpm add @fontsource-variable/cinzel @fontsource/pinyon-script` y
-quitar `@fontsource-variable/archivo`, `@fontsource-variable/instrument-sans`,
-`@fontsource/fraunces` (ya no se usan). Pinyon se carga con
-`font-display: swap` y **sólo** en la ruta que lo usa (import en el componente
-hero, no en el layout) — pesa ~40 KB y es un gesto, no una dependencia.
+Instalar: `pnpm add @fontsource-variable/cormorant @fontsource-variable/source-sans-3 @fontsource/pinyon-script`
+y quitar Cinzel / Hanken / Instrument Sans / Fraunces (ya no se usan). Pinyon
+se carga con `font-display: swap` y **sólo** en la ruta que lo usa (import en
+el componente, no en el layout) — pesa ~40 KB y es un gesto, no una dependencia.
 
 ---
 
@@ -246,7 +245,8 @@ grain WebGL, glassmorphism con blur.
 
 ### 3.5 Logo: uso
 - Mínimo 140px de ancho (por debajo, el script pierde el bucle de la A);
-  en nav móvil usar sólo el "BARBER" en Cinzel + un `aria-label` completo.
+  en nav usar el Logo SVG (`Logo.astro`) + `aria-label` completo, nunca tipografía
+  para "Azedin".
 - Área de respeto = altura de la "B" de BARBER a cada lado.
 - Siempre `cal` sobre `marmol`/foto oscura. Nunca sobre madera (`roble`):
   1.98:1.
@@ -410,7 +410,7 @@ Cargar con `<script>` de Astro (módulo, deferido) sólo en `index.astro`; el
 1. `tokens.css` nuevo + sustituir bloque `:root` de `global.css`.
 2. `tailwind.config.mjs`: reemplazar `colors`, `fontFamily`, `boxShadow`,
    `letterSpacing`, `transitionTimingFunction` por los de §2.5.
-3. `pnpm add @fontsource-variable/cinzel @fontsource/pinyon-script && pnpm remove @fontsource-variable/archivo @fontsource-variable/instrument-sans @fontsource/fraunces`.
+3. `pnpm add @fontsource-variable/cormorant @fontsource-variable/source-sans-3 @fontsource/pinyon-script && pnpm remove @fontsource-variable/cinzel @fontsource-variable/hanken-grotesk @fontsource-variable/instrument-sans @fontsource/fraunces`.
 4. Buscar y eliminar: `gules`, `oro`, `caliza`, `ink`, `lead`, `shadow-hard`,
    `font-mono`, `tracking-tight` (el display romano no se aprieta).
 5. Vectorizar `logo-02.PNG` → `src/assets/logo.svg` con `data-logo-path`.

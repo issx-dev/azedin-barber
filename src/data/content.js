@@ -35,7 +35,7 @@ export const business = {
   // for themselves on their own channel; the Google form stays for SEO/schema.
   name: 'Barbería Azedin',
   legalName: 'Azedin Barber',
-  owner: 'Azeddine Alla Alallou',
+  owner: 'Azedin',
   tagline: 'Estilo y Elegancia', // their own words, from the Instagram bio
   town: 'Berja',
   province: 'Almería',

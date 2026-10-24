@@ -9,7 +9,7 @@
    ===========================================================================
    What this file enforces so no component has to remember it:
    - Radius 0. Depth is a 1px reflection, like the floor. No blur, no grain.
-   - One accent (oak). Positive tracking only on Cinzel and eyebrows.
+   - One accent (oak). Positive tracking only on Cormorant display and eyebrows.
    - The four motifs (.panal .lamas .veta .aro) are all things in the room.
    ======================================================================== */
 
@@ -52,18 +52,18 @@
 
   /* Metric-matched fallbacks so font-display:swap cannot shift the layout. */
   @font-face {
-    font-family: 'Hanken fallback';
+    font-family: 'Source Sans 3 fallback';
     src: local('Arial');
-    size-adjust: 97%;
+    size-adjust: 98%;
     ascent-override: 92%;
     descent-override: 24%;
     line-gap-override: 0%;
   }
   @font-face {
-    font-family: 'Cinzel fallback';
+    font-family: 'Cormorant fallback';
     src: local('Georgia');
-    size-adjust: 104%;
-    ascent-override: 88%;
+    size-adjust: 102%;
+    ascent-override: 90%;
     descent-override: 22%;
     line-gap-override: 0%;
   }
@@ -126,12 +126,12 @@
     border-bottom: var(--rule) solid var(--c-veta);
   }
 
-  /* Eyebrow: Hanken, not Cinzel — 12px floor so mobile stays legible. */
+  /* Eyebrow: Source Sans 3, not Cormorant — 12px floor so mobile stays legible. */
   .eyebrow {
     @apply font-body text-[0.75rem] font-semibold uppercase tracking-wide text-humo;
   }
 
-  /* Display rules: Cinzel is always capitals with open tracking, like BARBER. */
+  /* Display: Cormorant capitals with open tracking (atelier, not Trajan-by-default). */
   .display {
     @apply font-display uppercase tracking-wide text-cal;
     font-variation-settings: 'wght' 600;

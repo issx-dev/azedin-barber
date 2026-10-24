@@ -1,12 +1,12 @@
 ---
-// Cinzel: the Roman capitals of the logo's "BARBER". Hanken: body.
+// Cormorant: display titles. Source Sans 3: body/UI.
 // Pinyon (the script) is imported only by the component that uses it.
-import '@fontsource-variable/cinzel';
-import '@fontsource-variable/hanken-grotesk';
+import '@fontsource-variable/cormorant';
+import '@fontsource-variable/source-sans-3';
 import '../styles/global.css';
 
 // Resolved through Vite so the preload points at the real hashed asset.
-import cinzelWoff from '@fontsource-variable/cinzel/files/cinzel-latin-wght-normal.woff2?url';
+import displayWoff from '@fontsource-variable/cormorant/files/cormorant-latin-wght-normal.woff2?url';
 
 import { business, services, hours, reviews } from '../data/content.js';
 
@@ -110,7 +110,7 @@ const schema = {
     <!-- LCP: first still of the walk-through — AVIF matches <picture> preference so the preload is consumed. -->
     <link rel="preload" as="image" type="image/avif" href="/tour/m/000.avif" media="(max-width: 767px)" fetchpriority="high" />
     <link rel="preload" as="image" type="image/avif" href="/tour/d/000.avif" media="(min-width: 768px)" fetchpriority="high" />
-    <link rel="preload" as="font" type="font/woff2" crossorigin href={cinzelWoff} />
+    <link rel="preload" as="font" type="font/woff2" crossorigin href={displayWoff} />
 
     <title>{title}</title>
     <meta name="description" content={description} />
