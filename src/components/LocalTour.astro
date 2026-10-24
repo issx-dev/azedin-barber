@@ -22,9 +22,8 @@
  * pre-cropped panel (~6.6 MB). Frame 0 is a real <img> and the LCP; the
  * rest stream from the scrub head outward after the page is interactive.
  *
- * Chapters are tied to what is actually on screen at that point of the walk —
- * entrance, the chairs and slat wall, the work station, the waiting area —
- * and use plain labels. No slogans.
+ * Chapters carry a fact for that stretch of the walk: the street, the room,
+ * the price, who cuts. They do not caption the furniture.
  */
 import { business } from '../data/content.js';
 import Logo from './Logo.astro';
@@ -33,8 +32,8 @@ const FRAMES = 216;
 const chapters = [
   { at: 0.0, kicker: 'Avenida José Barrionuevo Peña 14', title: 'Barbería en Berja', body: `${business.rating} ★ · ${business.reviewCount} reseñas verificadas en Booksy` },
   { at: 0.28, kicker: 'El salón', title: 'Lamas de roble', body: 'Un sillón. La calle, en el espejo.' },
-  { at: 0.55, kicker: 'Los puestos', title: 'Dos sillones', body: 'Cada cita, 30 minutos. Corte desde 13 €.' },
-  { at: 0.8, kicker: 'El tercer puesto', title: 'Aro de luz', body: 'Azedin, Samir y Anas. Eliges con quién.' },
+  { at: 0.55, kicker: 'La cita', title: 'Desde 13 €', body: '30 minutos. Corte y barba, 17 €.' },
+  { at: 0.8, kicker: 'Azedin, Samir y Anas', title: 'El barbero', body: 'Lo eliges al reservar.' },
 ];
 ---
 
