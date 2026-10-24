@@ -1,244 +1,170 @@
 ---
 /**
- * Reviews — Hybrid carousel.
+ * Reseñas — a crowd of voices, not a wall of paragraphs.
  *
- * - Mobile (≤767px): CSS scroll-snap horizontal carousel, no autoplay.
- *   Dots indicator below syncs to the closest article on scroll; clicking
- *   a dot scrolls the corresponding article into the viewport center.
- *   No fade edges — the user reads each review at their own pace.
- * - Desktop (≥768px): marquee autoplay (42s loop), fade edges at viewport
- *   boundaries. Track is duplicated for seamless loop. Pause on hover
- *   (existing) and on keyboard focus (a11y) via global.css focus rule.
+ * Three layers, each short enough to read at a glance:
+ *   1. The number: 5,0 and 179, set large. That alone is the argument.
+ *   2. One featured quote that rotates every 6 s (the four long ones), with
+ *      name, service and date — still verifiable, never more than ~25 words
+ *      on screen at once.
+ *   3. Two belts of one-line reviews drifting in opposite directions. Pure
+ *      CSS, pauses on hover/focus, stops under reduced-motion.
  */
-import { reviews, business } from '../data/content.js';
-import StarRating from './StarRating.astro';
+import { reviews, shortReviews, reviewThemes, business } from '../data/content.js';
 
-// Duplicate only for desktop marquee seamless loop
-const track = [...reviews, ...reviews];
+const featured = reviews.slice(0, 4);
+const half = Math.ceil(shortReviews.length / 2);
+const beltA = shortReviews.slice(0, half);
+const beltB = shortReviews.slice(half);
+const fmt = (iso: string) => new Date(iso).toLocaleDateString('es-ES', { month: 'short', year: 'numeric' });
 ---
 
-<section
-  id="reseñas"
-  class="relative overflow-hidden py-[clamp(5rem,10vw,8rem)]"
-  aria-labelledby="reviews-heading"
->
+<section id="resenas" class="relative overflow-hidden py-20 md:py-30" aria-labelledby="resenas-title">
+  <div class="frame">
+    <div class="grid gap-x-16 gap-y-12 lg:grid-cols-[auto_1fr] lg:items-center">
+      <!-- 1. The number. -->
+      <div>
+        <p class="eyebrow mb-4">Reseñas verificadas · {business.reviewSource}</p>
+        <h2 id="resenas-title" class="sr-only">Reseñas</h2>
+        <p class="font-display leading-none text-cal" style="font-size: clamp(5rem, 14vw, 10rem); font-variation-settings: 'wght' 600;">
+          {business.rating}
+        </p>
+        <p class="mt-4 flex items-center gap-3">
+          <span class="text-pino tracking-wide" aria-hidden="true">★★★★★</span>
+          <span class="font-body text-cap text-cal-dim tabular">{business.reviewCount} reseñas</span>
+        </p>
+        <ul class="mt-6 flex flex-wrap gap-2" aria-label="Lo que más se repite">
+          {reviewThemes.slice(0, 3).map((t) => <li class="pill">{t}</li>)}
+        </ul>
+      </div>
 
-  <!-- Header -->
-  <div class="px-6 md:px-10 max-w-4xl mx-auto mb-16">
-    <p
-      data-reveal="up"
-      class="text-[10px] tracking-[0.3em] uppercase text-ink-dim font-semibold mb-4"
-    >
-      Lo que dicen
-    </p>
-    <h2
-      id="reviews-heading"
-      data-reveal
-      class="font-display display-large text-cream"
-    >
-      Reseñas
-    </h2>
-  </div>
-
-  <!-- Mobile: scroll-snap carousel — no autoplay, no fade edges -->
-  <div class="md:hidden" aria-label="Carrusel de reseñas">
-    <div
-      id="reviews-scroll"
-      class="reviews-scroll flex gap-6 overflow-x-auto snap-x snap-mandatory pb-4 -mx-1 px-1"
-    >
-      {reviews.map((review) => (
-        <article
-          class="reviews-article shrink-0 w-[85vw] max-w-[480px] snap-center border-l border-border-hi pl-7 select-text"
-          aria-label={`Reseña de cliente: ${review.service} con ${review.barber}`}
-        >
-          <span
-            class="font-display text-[3.5rem] text-ink-dim leading-[0.7] block mb-2 select-none"
-            style="opacity: 0.18;"
-            aria-hidden="true"
-          >
-            &ldquo;
-          </span>
-          <blockquote class="font-serif-quote text-[clamp(1.1rem,4vw,1.5rem)] text-cream leading-snug tracking-[-0.01em] mb-5">
-            {review.quote}
-          </blockquote>
-          <footer class="flex items-center gap-3">
-            <span class="text-[10px] uppercase tracking-[0.18em] font-semibold text-ink-dim">
-              {review.barber}
-            </span>
-            <span class="text-border-hi text-[10px]">&middot;</span>
-            <span class="text-[11px] text-ink-dim">{review.service}</span>
-          </footer>
-        </article>
-      ))}
-    </div>
-
-    <!-- Mobile dots indicator -->
-    <div
-      class="flex items-center justify-center gap-2 mt-8"
-      role="group"
-      aria-label="Navegación de reseñas"
-    >
-      {reviews.map((_, i) => (
-        <button
-          data-reviews-dot
-          data-dot-index={i}
-          class="min-w-[44px] min-h-[44px] flex items-center justify-center group"
-          aria-label={`Ver reseña ${i + 1}`}
-          aria-controls="reviews-scroll"
-        >
-          <span class="reviews-dot rounded-full group-focus-visible:outline-none group-focus-visible:ring-2 group-focus-visible:ring-steel"></span>
-        </button>
-      ))}
+      <!-- 2. One quote at a time. -->
+      <div class="rev-rotator relative min-h-[13rem] border-l border-veta pl-6 md:min-h-[11rem] md:pl-10" aria-live="polite">
+        {
+          featured.map((r, i) => (
+            <figure class="rev-slide absolute inset-0 pl-6 md:pl-10" data-i={i} style={i === 0 ? '' : 'opacity:0;visibility:hidden'}>
+              <blockquote>
+                <p class="font-body text-cal" style="font-size: var(--step-2); line-height: 1.25; text-wrap: balance; max-width: 30ch;">
+                  “{r.quote}”
+                </p>
+              </blockquote>
+              <figcaption class="mt-5 font-body text-cap text-humo tabular">
+                <span class="text-cal">{r.author}</span> · {r.service} con {r.barber} · {fmt(r.date)}
+              </figcaption>
+            </figure>
+          ))
+        }
+        <div class="absolute -bottom-8 left-6 flex gap-2 md:left-10" role="tablist" aria-label="Elegir reseña">
+          {
+            featured.map((r, i) => (
+              <button
+                type="button"
+                class="rev-dot h-px w-8 bg-veta transition-colors duration-240"
+                role="tab"
+                aria-label={`Reseña de ${r.author}`}
+                aria-selected={i === 0 ? 'true' : 'false'}
+                data-i={i}
+              />
+            ))
+          }
+        </div>
+      </div>
     </div>
   </div>
 
-  <!-- Desktop: marquee autoplay with fade edges + keyboard-focus pause -->
-  <div class="hidden md:block relative overflow-hidden" aria-label="Carrusel de reseñas">
-    <div
-      class="absolute left-0 top-0 bottom-0 w-24 z-[2] pointer-events-none"
-      style="background: linear-gradient(to right, var(--color-bg-deep), transparent);"
-      aria-hidden="true"
-    ></div>
-    <div
-      class="absolute right-0 top-0 bottom-0 w-24 z-[2] pointer-events-none"
-      style="background: linear-gradient(to left, var(--color-bg-deep), transparent);"
-      aria-hidden="true"
-    ></div>
-
-    <div
-      class="marquee-track flex gap-8 w-max py-2"
-      tabindex="0"
-    >
-      {track.map((review, i) => (
-        <article
-          class="shrink-0 w-[min(88vw,480px)] border-l border-border-hi pl-7"
-          aria-hidden={i >= reviews.length ? 'true' : undefined}
-          aria-label={`Reseña de cliente: ${review.service} con ${review.barber}`}
-        >
-          <span
-            class="font-display text-[5rem] text-ink-dim leading-[0.7] block mb-2 select-none"
-            style="opacity: 0.18;"
-            aria-hidden="true"
-          >
-            &ldquo;
-          </span>
-          <blockquote class="font-serif-quote text-[clamp(1.1rem,2.5vw,1.4rem)] text-cream leading-snug tracking-[-0.01em] mb-5">
-            {review.quote}
-          </blockquote>
-          <footer class="flex items-center gap-3">
-            <span class="text-[10px] uppercase tracking-[0.18em] font-semibold text-ink-dim">
-              {review.barber}
-            </span>
-            <span class="text-border-hi text-[10px]">&middot;</span>
-            <span class="text-[11px] text-ink-dim">{review.service}</span>
-          </footer>
-        </article>
-      ))}
-    </div>
+  <!-- 3. The belts. -->
+  <div class="mt-24 space-y-4" aria-label="Más reseñas de clientes">
+    {
+      [beltA, beltB].map((belt, b) => (
+        <div class="rev-belt group flex overflow-hidden" data-dir={b === 0 ? 'left' : 'right'}>
+          {[0, 1].map((copy) => (
+            <ul class="rev-track flex shrink-0 gap-4 pr-4" aria-hidden={copy === 1 ? 'true' : undefined}>
+              {belt.map((r) => (
+                <li class="flex shrink-0 items-baseline gap-3 border border-veta bg-marmol-2 px-5 py-3 shadow-reflejo">
+                  <span class="whitespace-nowrap font-body text-cal">“{r.quote}”</span>
+                  <span class="whitespace-nowrap font-body text-cap text-humo">{r.author}</span>
+                </li>
+              ))}
+            </ul>
+          ))}
+        </div>
+      ))
+    }
   </div>
 
-  <!-- Rating badge -->
-  <div class="px-6 md:px-10 max-w-4xl mx-auto mt-16">
-    <div
-      data-fade
-      class="flex flex-col sm:flex-row items-start sm:items-center gap-5"
-    >
-      <StarRating count={5} size={16} />
-      <span class="font-display text-cream text-2xl font-bold">{business.rating}</span>
-      <span class="text-ink-dim text-[12px]">{business.reviewCount}</span>
-      <a
-        href={business.booksyUrl}
-        target="_blank"
-        rel="noopener noreferrer"
-        class="text-[11px] text-steel/60 hover:text-steel transition-colors duration-180 uppercase tracking-[0.14em] font-semibold underline underline-offset-4 decoration-steel-faint"
-        aria-label="Ver todas las reseñas en Booksy"
-      >
-        Ver en Booksy →
-      </a>
-    </div>
-  </div>
-
+  <p class="frame mt-10 font-body text-cap text-humo">
+    Todas de clientes con reserva confirmada.
+    <a href={business.booksyProfileUrl} target="_blank" rel="noopener noreferrer" class="text-cal underline decoration-veta underline-offset-4 hover:decoration-roble">
+      Ver las {business.reviewCount} en Booksy
+    </a>
+  </p>
 </section>
 
 <style>
-  /* Hide scrollbar on the mobile scroll-snap track */
-  .reviews-scroll {
-    scrollbar-gutter: stable;
-    scrollbar-width: none;
-    -ms-overflow-style: none;
+  .rev-track {
+    animation: rev-left 60s linear infinite;
   }
-  .reviews-scroll::-webkit-scrollbar {
-    display: none;
+  .rev-belt[data-dir='right'] .rev-track {
+    animation-name: rev-right;
+    animation-duration: 70s;
   }
-
-  /* Review dot indicator — smooth GPU-composited capsule transition */
-  .reviews-dot {
-    display: inline-block;
-    width: 0.375rem;
-    height: 0.375rem;
-    border-radius: 9999px;
-    background-color: var(--color-steel-dim);
-    transform: translateZ(0);
-    transition: width 250ms var(--ease-out), background-color 250ms var(--ease-out);
-    will-change: width, background-color;
+  .rev-belt:hover .rev-track,
+  .rev-belt:focus-within .rev-track {
+    animation-play-state: paused;
   }
-
-  .group:hover .reviews-dot {
-    background-color: var(--color-steel);
+  @keyframes rev-left {
+    to { transform: translateX(-100%); }
   }
-
-  [data-active="true"] .reviews-dot,
-  .min-w-\[44px\][data-active="true"] .reviews-dot,
-  .reviews-dot[data-active="true"] {
-    width: 1.5rem;
-    background-color: var(--color-cream);
+  @keyframes rev-right {
+    from { transform: translateX(-100%); }
+    to { transform: translateX(0); }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .rev-track { animation: none; }
+    .rev-belt { overflow-x: auto; }
+  }
+  .rev-slide {
+    transition: opacity 420ms var(--ease-led), visibility 0s linear 420ms;
+  }
+  .rev-slide.is-on {
+    transition: opacity 420ms var(--ease-led), visibility 0s;
+  }
+  .rev-dot[aria-selected='true'] {
+    background: var(--c-roble);
   }
 </style>
 
 <script>
-  // Mobile dots ↔ scroll position sync.
-  // On scroll, mark the article whose center is closest to the viewport
-  // center as active; clicking a dot scrolls that article to center.
-  document.addEventListener('DOMContentLoaded', () => {
-    const scroll = document.getElementById('reviews-scroll');
-    if (!scroll) return;
-    const articles = [...scroll.querySelectorAll('.reviews-article')];
-    const dots = [...document.querySelectorAll('[data-reviews-dot]')];
-    if (!articles.length || !dots.length) return;
+  const root = document.querySelector<HTMLElement>('.rev-rotator');
+  if (root) {
+    const slides = [...root.querySelectorAll<HTMLElement>('.rev-slide')];
+    const dots = [...root.querySelectorAll<HTMLButtonElement>('.rev-dot')];
+    const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    let i = 0;
+    let timer = 0;
 
-    let activeIdx = -1;
-
-    const observer = new IntersectionObserver((entries) => {
-      let maxRatio = 0;
-      let newActive = activeIdx;
-      entries.forEach(entry => {
-        if (entry.isIntersecting && entry.intersectionRatio > maxRatio) {
-          maxRatio = entry.intersectionRatio;
-          const idx = articles.indexOf(entry.target);
-          if (idx !== -1) {
-            newActive = idx;
-          }
-        }
+    function show(n: number) {
+      i = (n + slides.length) % slides.length;
+      slides.forEach((s, k) => {
+        const on = k === i;
+        s.classList.toggle('is-on', on);
+        s.style.opacity = on ? '1' : '0';
+        s.style.visibility = on ? 'visible' : 'hidden';
       });
-      if (newActive !== activeIdx && newActive !== -1) {
-        activeIdx = newActive;
-        dots.forEach((d, i) =>
-          d.setAttribute('data-active', i === activeIdx ? 'true' : 'false')
-        );
-      }
-    }, {
-      root: scroll,
-      threshold: [0.3, 0.5, 0.7, 0.9]
-    });
-
-    articles.forEach(a => observer.observe(a));
-
-    dots.forEach((dot, i) => {
-      dot.addEventListener('click', () => {
-        const a = articles[i];
-        if (!a) return;
-        a.scrollIntoView({ behavior: 'smooth', inline: 'center', block: 'nearest' });
-      });
-    });
-  });
+      dots.forEach((d, k) => d.setAttribute('aria-selected', String(k === i)));
+    }
+    function play() {
+      if (reduced) return;
+      clearInterval(timer);
+      timer = window.setInterval(() => show(i + 1), 6000);
+    }
+    dots.forEach((d) => d.addEventListener('click', () => { show(Number(d.dataset.i)); play(); }));
+    // Never rotate while someone is reading it.
+    root.addEventListener('mouseenter', () => clearInterval(timer));
+    root.addEventListener('mouseleave', play);
+    root.addEventListener('focusin', () => clearInterval(timer));
+    // Only rotate while visible.
+    new IntersectionObserver(([e]) => (e.isIntersecting ? play() : clearInterval(timer))).observe(root);
+    show(0);
+  }
 </script>

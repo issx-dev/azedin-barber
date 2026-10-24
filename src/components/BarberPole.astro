@@ -1,0 +1,98 @@
+---
+/**
+ * BarberPole — photoreal 3D pole (three.js, PBR glass + chrome).
+ *
+ * three.js is ~120 KB gzip, so it is never on the critical path: the module is
+ * imported only when the pole comes within 300px of the viewport, only with
+ * WebGL available, and never under reduced-motion (a still render is shown via
+ * CSS fallback instead). The render loop pauses off-screen and on hidden tabs.
+ */
+export interface Props {
+  width?: string;
+  height?: string;
+  speed?: number;
+  class?: string;
+  label?: string;
+}
+const {
+  width = '120px',
+  height = '420px',
+  speed = 0.25,
+  class: className = 'relative',
+  label = 'Rulo de barbero',
+} = Astro.props;
+---
+
+<div
+  class:list={[className, 'barber-pole']}
+  style={`--pole-w:${width};--pole-h:${height};`}
+  data-barber-pole
+  data-speed={speed}
+  role="img"
+  aria-label={label}
+>
+  <canvas class="barber-pole__canvas" aria-hidden="true"></canvas>
+</div>
+
+<style>
+  .barber-pole {
+    width: var(--pole-w);
+    height: var(--pole-h);
+  }
+  .barber-pole__canvas {
+    display: block;
+    width: 100%;
+    height: 100%;
+    opacity: 0;
+    transition: opacity 700ms var(--ease-led, ease);
+  }
+  .barber-pole.is-ready .barber-pole__canvas {
+    opacity: 1;
+  }
+</style>
+
+<script>
+  function hasWebGL() {
+    try {
+      const c = document.createElement('canvas');
+      return !!(c.getContext('webgl2') || c.getContext('webgl'));
+    } catch {
+      return false;
+    }
+  }
+
+  const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  document.querySelectorAll<HTMLElement>('[data-barber-pole]').forEach((root) => {
+    if (!hasWebGL()) return;
+    const canvas = root.querySelector<HTMLCanvasElement>('canvas')!;
+    let api: { start(): void; stop(): void; renderOnce(): void } | null = null;
+    let visible = false;
+
+    const io = new IntersectionObserver(
+      async ([e]) => {
+        visible = e.isIntersecting;
+        if (visible && !api) {
+          const { mountPole } = await import('../scripts/pole.js');
+          api = mountPole(canvas, { speed: Number(root.dataset.speed) || 0.25 });
+          root.classList.add('is-ready');
+          if (reduced) {
+            api.renderOnce(); // a still, lit render; no loop
+            return;
+          }
+        }
+        if (!api || reduced) return;
+        if (visible && !document.hidden) api.start();
+        else api.stop();
+      },
+      { rootMargin: '300px 0px' }
+    );
+    io.observe(root);
+
+    document.addEventListener('visibilitychange', () => {
+      if (!api || reduced) return;
+      if (document.hidden) api.stop();
+      else if (visible) api.start();
+    });
+  });
+</script>

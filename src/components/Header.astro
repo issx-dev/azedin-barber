@@ -1,116 +1,133 @@
 ---
 /**
- * Header — Fixed nav with logo, desktop links, CTA, and mobile hamburger.
- * Transitions from transparent to blur+dark after 60px scroll.
+ * Header — flat nav, no dropdowns, booking always visible.
  *
- * The logo uses the actual azedin-logo.jpg (small, 2.9KB) — displays it
- * at a tasteful size in the header. We treat it as a raster logo since
- * vectorizing in Astro build is complex.
+ * Deliberately NOT copying Winston's desktop hamburger: for a local business,
+ * hiding the menu costs bookings. The booking button is solid and permanent.
  */
-import logoSrc from '../assets/img/logo-azedin-barber-transparente.png';
-import CTA from './CTA.astro';
-import { Image } from 'astro:assets';
+import { business } from '../data/content.js';
 
-const navLinks = [
-  { href: '#lookbook',  label: 'Lookbook'  },
-  { href: '#servicios', label: 'Servicios' },
-  { href: '#reseñas',   label: 'Reseñas'   },
-  { href: '#ubicacion', label: 'Ubicación' },
+const links = [
+  { href: '#servicios', label: 'Precios' },
+  { href: '#archivo', label: 'Archivo' },
+  { href: '#resenas', label: 'Reseñas' },
+  { href: '#local', label: 'Equipo' },
+  { href: '#donde', label: 'Dónde' },
 ];
 ---
 
-<header
-  id="site-header"
-  class="fixed top-0 left-0 right-0 z-[100] transition-[background-color,backdrop-filter] duration-300"
-  style="transition-timing-function: var(--ease-out);"
->
-  <div class="flex items-center justify-between px-6 md:px-10 h-[68px]">
-
-    <!-- Logo -->
-    <a href="#hero" class="flex items-center group" aria-label="Azedin Barber — Inicio">
-      <Image
-        src={logoSrc}
-        alt="Azedin Barber"
-        class="nav-logo-img"
-        loading="eager"
-        fetchpriority="high"
-        width={110}
-        height={44}
-        format="webp"
-        quality={80}
-      />
+<header class="site-header fixed inset-x-0 top-0 z-50 border-b border-transparent" data-header>
+  <div class="frame flex h-16 items-center justify-between gap-3 sm:gap-6">
+    <a href="#hero" class="shrink-0 whitespace-nowrap font-display text-cap font-semibold uppercase tracking-wider text-cal" aria-label={business.legalName}>
+      Azedin <span class="text-roble">Barber</span>
     </a>
 
-    <!-- Desktop navigation -->
-    <nav class="hidden md:flex items-center gap-8" aria-label="Navegación principal">
-      {navLinks.map(link => (
-        <a
-          href={link.href}
-          class="text-[11px] uppercase tracking-[0.16em] font-semibold text-ink-dim hover:text-cream transition-colors duration-180"
-          style="transition-timing-function: var(--ease-out);"
-        >
-          {link.label}
-        </a>
-      ))}
+    <nav aria-label="Principal" class="hidden items-center gap-7 lg:flex">
+      {
+        links.map((l) => (
+          <a
+            href={l.href}
+            class="font-body text-cap uppercase tracking-wide text-humo transition-colors duration-120 ease-marmol hover:text-cal"
+          >
+            {l.label}
+          </a>
+        ))
+      }
     </nav>
 
-    <!-- CTA + hamburger -->
-    <div class="flex items-center gap-4">
-<CTA
-          label="Reservar cita"
-          extraClass="hidden md:inline-flex text-[10px] px-5 py-2.5"
-        />
-
-      <!-- Mobile hamburger -->
-      <button
-        data-nav-trigger
-        class="md:hidden flex flex-col items-center justify-center gap-[4px] w-[44px] h-[44px] bg-transparent border-none cursor-pointer group"
-        aria-label="Abrir menú"
-        aria-expanded="false"
-        aria-controls="mobile-nav"
+    <div class="flex items-center gap-3">
+      <a
+        href={business.instagramUrl}
+        target="_blank"
+        rel="noopener noreferrer"
+        class="hidden font-body text-cap uppercase tracking-wide text-humo transition-colors duration-120 ease-marmol hover:text-cal sm:block"
       >
-        <span class="block w-5 h-[2px] bg-cream rounded-full transition-all duration-200 group-hover:bg-oak"></span>
-        <span class="block w-5 h-[2px] bg-cream rounded-full transition-all duration-200 group-hover:bg-oak"></span>
-        <span class="block w-5 h-[2px] bg-cream rounded-full transition-all duration-200 group-hover:bg-oak"></span>
-      </button>
+        Instagram
+      </a>
+      <a
+        class="btn btn-primary !min-h-0 hidden h-10 px-4 sm:inline-flex"
+        href={business.booksyUrl}
+        target="_blank"
+        rel="noopener noreferrer">Reservar</a
+      >
+      <button
+        type="button"
+        class="btn btn-ghost !min-h-0 h-10 px-4 lg:hidden"
+        data-nav-toggle
+        aria-expanded="false"
+        aria-controls="mobile-nav">Menú</button
+      >
     </div>
-
   </div>
 
-  <!-- Bottom separator line -->
-  <div class="absolute bottom-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-border to-transparent opacity-0 transition-opacity duration-300" id="header-line"></div>
+  <!-- Mobile nav: a plain disclosure. No JS needed to read it, only to toggle. -->
+  <nav
+    id="mobile-nav"
+    aria-label="Principal móvil"
+    class="hidden border-t border-veta bg-marmol lg:!hidden"
+    data-nav-panel
+  >
+    <ul class="frame py-4">
+      {
+        links.map((l) => (
+          <li class="border-b border-veta last:border-0">
+            <a
+              href={l.href}
+              class="block py-4 font-display uppercase text-cal"
+              style="font-size: var(--step-1); font-variation-settings: 'wght' 600;"
+              data-nav-link
+            >
+              {l.label}
+            </a>
+          </li>
+        ))
+      }
+    </ul>
+  </nav>
 </header>
 
-
-
-<script>
-  document.addEventListener('DOMContentLoaded', () => {
-    const trigger = document.querySelector('[data-nav-trigger]');
-    if (!trigger) return;
-    window.addEventListener('nav:open', () => {
-      trigger.setAttribute('aria-expanded', 'true');
-    });
-    window.addEventListener('nav:close', () => {
-      trigger.setAttribute('aria-expanded', 'false');
-    });
-  });
-</script>
-
 <style>
-  .nav-logo-img {
-    width: 110px;
-    height: 44px;
-    object-fit: contain;
-    
-    filter: invert(1);
-    opacity: 0.94;
-    transition: opacity 200ms var(--ease-out), transform 200ms var(--ease-out);
+  /* Over the tour the header is a thin veil; once you scroll it becomes a
+     solid marble bar, so it never sits transparent over content. */
+  .site-header {
+    background: linear-gradient(to bottom, rgb(15 15 20 / 0.7), rgb(15 15 20 / 0));
+    transition:
+      background-color 240ms var(--ease-marmol),
+      border-color 240ms var(--ease-marmol),
+      box-shadow 240ms var(--ease-marmol);
   }
-  
-  @media (hover: hover) and (pointer: fine) {
-    .nav-logo-img:hover {
-      opacity: 1;
-      transform: scale(1.03);
-    }
+  .site-header.is-solid {
+    background: var(--c-marmol);
+    border-color: var(--c-veta);
+    box-shadow: 0 1px 0 0 rgb(236 236 234 / 0.04);
   }
 </style>
+
+<script>
+  // Solid as soon as the page leaves the very top.
+  const header = document.querySelector<HTMLElement>('[data-header]');
+  const sync = () => header?.classList.toggle('is-solid', window.scrollY > 8);
+  sync();
+  window.addEventListener('scroll', sync, { passive: true });
+
+  // Progressive enhancement: the panel is a plain <nav> that we show/hide.
+  const toggle = document.querySelector('[data-nav-toggle]');
+  const panel = document.querySelector('[data-nav-panel]');
+
+  function setOpen(open: boolean) {
+    if (!toggle || !panel) return;
+    panel.classList.toggle('hidden', !open);
+    toggle.setAttribute('aria-expanded', String(open));
+    toggle.textContent = open ? 'Cerrar' : 'Menú';
+  }
+
+  toggle?.addEventListener('click', () => {
+    setOpen(toggle.getAttribute('aria-expanded') !== 'true');
+  });
+
+  // Close on navigation and on Escape, so focus never gets trapped.
+  panel?.querySelectorAll('[data-nav-link]').forEach((a) => a.addEventListener('click', () => setOpen(false)));
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape') setOpen(false);
+  });
+</script>

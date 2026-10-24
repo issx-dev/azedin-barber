@@ -1,60 +1,48 @@
 ---
 /**
- * MobileStickyCTA — Floating bottom CTA, visible only on mobile.
+ * MobileStickyCTA — persistent booking bar on small screens.
+ *
+ * Shown only when it adds something: after the tour (which has its own
+ * button) and away from sections where it would cover content that moves
+ * under it — the review belts, the Instagram grid, the location block with
+ * its own CTA, and the footer.
  */
 import { business } from '../data/content.js';
-import CTA from './CTA.astro';
 ---
+
 <div
   id="mobile-sticky-cta"
-  class="fixed bottom-0 left-0 right-0 p-3.5 z-[90] md:hidden bg-bg-deep/95 backdrop-blur-md border-t border-steel/15 shadow-2xl transition-transform duration-300 ease-out pointer-events-none"
+  class="pointer-events-none fixed inset-x-0 bottom-0 z-30 translate-y-full border-t border-veta bg-marmol/95 p-3 pb-[max(0.75rem,env(safe-area-inset-bottom))] transition-transform duration-420 ease-led md:hidden motion-reduce:transition-none"
 >
-  <CTA href={business.booksyAppUrl} label="RESERVAR CITA ›" extraClass="w-full shadow-lg pointer-events-auto text-[11px] font-semibold tracking-[0.18em] py-3.5" />
+  <a
+    class="btn btn-primary pointer-events-auto w-full"
+    href={business.booksyUrl}
+    target="_blank"
+    rel="noopener noreferrer">Reservar cita · {business.rating} ★</a
+  >
 </div>
 
 <script>
-  function initMobileCTA() {
-    const cta = document.getElementById('mobile-sticky-cta');
-    const hero = document.getElementById('hero');
-    const locationSection = document.getElementById('ubicacion');
+  const cta = document.getElementById('mobile-sticky-cta');
+  const tour = document.querySelector('[data-tour]');
+  const quiet = ['#resenas', '#donde', '#instagram', 'footer']
+    .map((s) => document.querySelector(s))
+    .filter(Boolean) as Element[];
 
-    if (cta && hero && locationSection) {
-      if (window.innerWidth >= 768) return;
+  if (cta && tour && window.matchMedia('(max-width: 767px)').matches) {
+    let inTour = true;
+    const busy = new Set<Element>();
+    const sync = () => cta.classList.toggle('translate-y-full', inTour || busy.size > 0);
 
-      let isPastHero = false;
-      let isNearBottom = false;
-      let rAFId: number | null = null;
+    new IntersectionObserver(([e]) => {
+      inTour = e.isIntersecting;
+      sync();
+    }).observe(tour);
 
-      const updateCTA = () => {
-        if (rAFId) cancelAnimationFrame(rAFId);
-        rAFId = requestAnimationFrame(() => {
-          if (isPastHero && !isNearBottom) {
-            cta.classList.remove('translate-y-full');
-          } else {
-            cta.classList.add('translate-y-full');
-          }
-        });
-      };
-
-      const heroObserver = new IntersectionObserver((entries) => {
-        isPastHero = !entries[0].isIntersecting;
-        updateCTA();
-      }, { rootMargin: '0px' });
-
-      const locationObserver = new IntersectionObserver((entries) => {
-        isNearBottom = entries[0].isIntersecting;
-        updateCTA();
-      }, { rootMargin: '600px 0px 0px 0px' });
-
-      heroObserver.observe(hero);
-      locationObserver.observe(locationSection);
-    }
-  }
-
-  // Support Astro transitions and direct loads
-  if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', initMobileCTA);
-  } else {
-    initMobileCTA();
+    const io = new IntersectionObserver((entries) => {
+      entries.forEach((e) => (e.isIntersecting ? busy.add(e.target) : busy.delete(e.target)));
+      sync();
+    }, { rootMargin: '0px 0px -20% 0px' });
+    quiet.forEach((el) => io.observe(el));
   }
 </script>

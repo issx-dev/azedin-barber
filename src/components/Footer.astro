@@ -1,148 +1,80 @@
 ---
 /**
- * Footer — Premium Editorial Footer.
+ * Footer — inverted hierarchy.
  *
- * Bricolage Grotesque wordmark + 3-column architecture (Location, Hours, Links/Social)
- * + refined copyright row. Back to top is handled by floating BackToTop component.
+ * The brand name is set small in mono while the CTA shouts: a shop with 179
+ * five-star reviews does not need a giant logo. (Pattern measured on
+ * winstonstudio.dk, who set "Winston Studio™" at 12px next to a 32px CTA.)
  */
-import { business } from '../data/content.js';
-import SocialIcon from './SocialIcon.astro';
+import { business, hours } from '../data/content.js';
+import Logo from './Logo.astro';
+
+const year = new Date().getFullYear();
+const today = hours[(new Date().getDay() + 6) % 7];
 ---
 
-<footer class="border-t border-steel/15 bg-bg-deep text-ink" role="contentinfo">
-  <div class="max-w-6xl mx-auto px-6 md:px-10 pt-16 pb-12">
+<footer class="ruled-top relative bg-marmol-2 py-16 md:py-22">
+  <div class="frame">
+    <!-- The CTA is the loudest thing here. -->
+    <a
+      href={business.booksyUrl}
+      target="_blank"
+      rel="noopener noreferrer"
+      class="group block max-w-measure font-display uppercase text-cal transition-colors duration-240 ease-marmol hover:text-roble"
+      style="font-size: var(--step-3); line-height: 0.95; letter-spacing: -0.03em;"
+    >
+      Reserva tu cita <span class="text-roble group-hover:text-cal">→</span>
+    </a>
 
-    <!-- Top section: Wordmark + Tagline -->
-    <div class="flex flex-col md:flex-row md:items-end justify-between border-b border-steel/15 pb-10 gap-6">
+    <div class="ruled-top mt-14 grid gap-x-10 gap-y-10 pt-10 sm:grid-cols-2 lg:grid-cols-4">
       <div>
-        <p class="footer-wordmark font-display font-bold text-[clamp(2rem,5vw,3.6rem)] tracking-[-0.03em] text-cream leading-none select-none mb-3">
-          AZEDIN BARBER
+        <p class="eyebrow mb-4">Hoy</p>
+        <p class="font-body text-cap tabular text-cal">
+          {today.slots.length ? today.slots.join(' · ') : 'Cerrado'}
         </p>
-        <p class="text-[13px] md:text-sm text-steel font-medium tracking-wide">
-          Cortes de pelo, fades y arreglo de barba con precisión artesanal.
+        <p class="mt-1 font-body text-cap text-humo">{today.day}</p>
+      </div>
+
+      <div>
+        <p class="eyebrow mb-4">Dirección</p>
+        <p class="font-body text-cap text-cal">{business.address}</p>
+        <p class="mt-1 font-body text-cap text-humo">
+          {business.postalCode} {business.town}
         </p>
       </div>
 
-      <a
-        href={business.booksyUrl}
-        target="_blank"
-        rel="noopener noreferrer"
-        data-booksy-link
-        class="btn-oak text-[11px] px-6 py-3 self-start md:self-auto"
-      >
-        Reservar Cita en Booksy
-      </a>
-    </div>
-
-    <!-- Middle section: 3 Columns Grid -->
-    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-10 py-12 border-b border-steel/15 text-sm">
-
-      <!-- Col 1: Ubicación & Contacto -->
-      <div class="flex flex-col gap-3">
-        <h3 class="text-xs uppercase tracking-[0.2em] text-steel font-semibold">
-          Ubicación & Contacto
-        </h3>
-        <p class="text-ink-dim leading-relaxed">
-          Avenida José Barrionuevo Peña 14<br />
-          04760, Berja · Almería
-        </p>
-        <a
-          href={`tel:${business.phoneRaw}`}
-          class="inline-flex items-center gap-2 text-cream hover:text-oak transition-colors duration-200 text-xs font-semibold"
-          aria-label={`Llamar a Azedin Barber: ${business.phone}`}
-        >
-          <span>📞 {business.phone}</span>
+      <div>
+        <p class="eyebrow mb-4">Contacto</p>
+        <a href={`tel:${business.phoneRaw}`} class="block font-body text-cap tabular text-cal hover:text-roble">
+          {business.phone}
         </a>
         <a
-          href="https://maps.app.goo.gl/gvjmsWwo8HRToHvi8"
+          href={business.instagramUrl}
           target="_blank"
           rel="noopener noreferrer"
-          class="inline-flex items-center gap-1.5 text-xs text-steel hover:text-cream transition-colors duration-200 uppercase tracking-widest font-semibold pt-1"
-          aria-label="Cómo llegar en Google Maps"
+          class="mt-1 block font-body text-cap text-humo hover:text-cal">@azedinbarber</a
         >
-          <span>Cómo llegar en Google Maps</span>
-          <span aria-hidden="true">↗</span>
-        </a>
       </div>
 
-      <!-- Col 2: Horarios -->
-      <div class="flex flex-col gap-3">
-        <h3 class="text-xs uppercase tracking-[0.2em] text-steel font-semibold">
-          Horarios de Atención
-        </h3>
-        <ul class="space-y-1.5 text-ink-dim text-xs">
-          <li class="flex justify-between border-b border-steel/10 pb-1">
-            <span>Mar – Sáb</span>
-            <span class="text-cream font-medium">10:00–14:00 · 16:00–20:00</span>
-          </li>
-          <li class="flex justify-between border-b border-steel/10 pb-1">
-            <span>Lunes</span>
-            <span class="text-cream font-medium">15:30 – 20:30</span>
-          </li>
-          <li class="flex justify-between">
-            <span>Domingo</span>
-            <span class="text-steel">Cerrado</span>
-          </li>
-        </ul>
+      <div>
+        <p class="eyebrow mb-4">Valoración</p>
+        <p class="font-body text-cap tabular text-cal">{business.rating} ★ · {business.reviewCount}</p>
+        <a
+          href={business.booksyProfileUrl}
+          target="_blank"
+          rel="noopener noreferrer"
+          class="mt-1 block font-body text-cap text-humo hover:text-cal">Reseñas en Booksy</a
+        >
       </div>
-
-      <!-- Col 3: Síguenos & Navegación -->
-      <div class="flex flex-col gap-4">
-        <h3 class="text-xs uppercase tracking-[0.2em] text-steel font-semibold">
-          Síguenos
-        </h3>
-        <div class="flex flex-col gap-2.5">
-          <a
-            href={business.instagramUrl}
-            target="_blank"
-            rel="noopener noreferrer"
-            class="inline-flex items-center gap-3 text-cream hover:text-oak transition-colors duration-200 text-xs"
-            aria-label="Instagram de Azedin Barber @azedinbarber"
-          >
-            <span class="inline-flex items-center justify-center w-8 h-8 rounded-full border border-steel/20">
-              <SocialIcon name="instagram" class="w-3.5 h-3.5 fill-current" />
-            </span>
-            <span class="font-medium tracking-wide">@azedinbarber</span>
-          </a>
-          <a
-            href={business.tiktokUrl}
-            target="_blank"
-            rel="noopener noreferrer"
-            class="inline-flex items-center gap-3 text-cream hover:text-oak transition-colors duration-200 text-xs"
-            aria-label="TikTok de Azedin Barber @azedin.barber"
-          >
-            <span class="inline-flex items-center justify-center w-8 h-8 rounded-full border border-steel/20">
-              <SocialIcon name="tiktok" class="w-3.5 h-3.5 fill-current" />
-            </span>
-            <span class="font-medium tracking-wide">@azedin.barber</span>
-          </a>
-        </div>
-
-        <nav class="flex flex-wrap gap-x-4 gap-y-2 pt-2 text-[11px] uppercase tracking-widest text-steel" aria-label="Navegación pie de página">
-          <a href="#lookbook" class="hover:text-cream transition-colors duration-180">Lookbook</a>
-          <span>·</span>
-          <a href="#servicios" class="hover:text-cream transition-colors duration-180">Servicios</a>
-          <span>·</span>
-          <a href="#reseñas" class="hover:text-cream transition-colors duration-180">Reseñas</a>
-          <span>·</span>
-          <a href="#ubicacion" class="hover:text-cream transition-colors duration-180">Ubicación</a>
-        </nav>
-      </div>
-
     </div>
 
-    <!-- Bottom bar: Copyright -->
-    <div class="pt-8 flex flex-col sm:flex-row items-center justify-between text-[11px] text-ink-dim gap-3">
-      <p class="tracking-wide">
-        &copy; {new Date().getFullYear()} Azedin Barber. Todos los derechos reservados.
+    <!-- The brand whispers. -->
+    <div class="ruled-top mt-12 flex flex-wrap items-baseline justify-between gap-4 pt-6">
+      <p class="flex items-center gap-4 font-body text-cap uppercase tracking-wide text-humo">
+        <Logo class="h-8 w-auto text-cal-dim" />
+        <span>{business.town}, {business.province}</span>
       </p>
-      <p class="text-steel tracking-wide">
-        Berja, Almería · España
-      </p>
+      <p class="font-body text-cap text-humo">© {year} {business.owner}</p>
     </div>
-
   </div>
 </footer>
-
-
-
