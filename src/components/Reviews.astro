@@ -59,7 +59,7 @@ const fmt = (iso: string) => new Date(iso).toLocaleDateString('es-ES', { month: 
             featured.map((r, i) => (
               <button
                 type="button"
-                class="rev-dot h-px w-8 bg-veta transition-colors duration-240"
+                class="rev-dot relative h-11 w-11 bg-transparent"
                 role="tab"
                 aria-label={`Reseña de ${r.author}`}
                 aria-selected={i === 0 ? 'true' : 'false'}
@@ -129,7 +129,18 @@ const fmt = (iso: string) => new Date(iso).toLocaleDateString('es-ES', { month: 
   .rev-slide.is-on {
     transition: opacity 420ms var(--ease-led), visibility 0s;
   }
-  .rev-dot[aria-selected='true'] {
+  .rev-dot::after {
+    content: '';
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    width: 2rem;
+    height: 2px;
+    transform: translate(-50%, -50%);
+    background: var(--c-veta);
+    transition: background-color 240ms var(--ease-led);
+  }
+  .rev-dot[aria-selected='true']::after {
     background: var(--c-roble);
   }
 </style>

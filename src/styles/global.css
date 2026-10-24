@@ -126,10 +126,9 @@
     border-bottom: var(--rule) solid var(--c-veta);
   }
 
-  /* Eyebrow: Hanken, not Cinzel — a Roman capital at 11px stops reading as
-     the logo and starts reading as a template. */
+  /* Eyebrow: Hanken, not Cinzel — 12px floor so mobile stays legible. */
   .eyebrow {
-    @apply font-body text-[0.6875rem] font-semibold uppercase tracking-wide text-humo;
+    @apply font-body text-[0.75rem] font-semibold uppercase tracking-wide text-humo;
   }
 
   /* Display rules: Cinzel is always capitals with open tracking, like BARBER. */

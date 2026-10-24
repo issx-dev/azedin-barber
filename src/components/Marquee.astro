@@ -16,23 +16,22 @@ const items = Array.from({ length: 8 });
   href={business.booksyUrl}
   target="_blank"
   rel="noopener noreferrer"
-  class="ruled-top ruled-bottom group relative block overflow-hidden bg-marmol-2 py-5"
+  class="ruled-top ruled-bottom group relative block overflow-x-hidden bg-marmol-2 py-6 md:py-5"
   aria-label={`${phrase} en Booksy`}
 >
-  <!-- `contain: paint` clips the oversized track locally, so the animation can
-       never leak into the document's scroll width. -->
+  <!-- Clip only horizontally so tall Capitals never crop on mobile. -->
   <div
-    class="flex w-max animate-marquee gap-10 motion-reduce:animate-none"
-    style="contain: paint;"
+    class="flex w-max animate-marquee items-center gap-10 motion-reduce:animate-none"
+    style="contain: inline-size;"
     aria-hidden="true"
   >
     {
       items.map(() => (
-        <span class="flex shrink-0 items-center gap-10">
-          <span class="font-display uppercase text-cal transition-colors duration-240 ease-marmol group-hover:text-roble" style="font-size: var(--step-1); font-variation-settings: 'wght' 600;">
+        <span class="flex shrink-0 items-center gap-10 leading-none">
+          <span class="font-display uppercase leading-none text-cal transition-colors duration-240 ease-marmol group-hover:text-roble" style="font-size: var(--step-1); font-variation-settings: 'wght' 600;">
             {phrase}
           </span>
-          <span class="font-body text-cap text-roble">●</span>
+          <span class="font-body text-cap leading-none text-roble">●</span>
         </span>
       ))
     }

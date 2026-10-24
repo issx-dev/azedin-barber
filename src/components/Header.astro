@@ -18,7 +18,11 @@ const links = [
 
 <header class="site-header fixed inset-x-0 top-0 z-50 border-b border-transparent" data-header>
   <div class="frame flex h-16 items-center justify-between gap-3 sm:gap-6">
-    <a href="#hero" class="shrink-0 whitespace-nowrap font-display text-cap font-semibold uppercase tracking-wider text-cal" aria-label={business.legalName}>
+    <a
+      href="#hero"
+      class="inline-flex min-h-11 shrink-0 items-center whitespace-nowrap font-display text-sm font-semibold uppercase tracking-wider text-cal"
+      aria-label={business.legalName}
+    >
       Azedin <span class="text-roble">Barber</span>
     </a>
 
@@ -27,7 +31,7 @@ const links = [
         links.map((l) => (
           <a
             href={l.href}
-            class="font-body text-cap uppercase tracking-wide text-humo transition-colors duration-120 ease-marmol hover:text-cal"
+            class="inline-flex min-h-11 items-center font-body text-sm uppercase tracking-wide text-cal-dim transition-colors duration-120 ease-marmol hover:text-cal"
           >
             {l.label}
           </a>
@@ -40,19 +44,19 @@ const links = [
         href={business.instagramUrl}
         target="_blank"
         rel="noopener noreferrer"
-        class="hidden font-body text-cap uppercase tracking-wide text-humo transition-colors duration-120 ease-marmol hover:text-cal sm:block"
+        class="hidden min-h-11 items-center font-body text-sm uppercase tracking-wide text-cal-dim transition-colors duration-120 ease-marmol hover:text-cal sm:inline-flex"
       >
         Instagram
       </a>
       <a
-        class="btn btn-primary !min-h-0 hidden h-10 px-4 sm:inline-flex"
+        class="btn btn-primary hidden min-h-11 px-4 sm:inline-flex"
         href={business.booksyUrl}
         target="_blank"
         rel="noopener noreferrer">Reservar</a
       >
       <button
         type="button"
-        class="btn btn-ghost !min-h-0 h-10 px-4 lg:hidden"
+        class="btn btn-ghost min-h-11 px-4 lg:hidden"
         data-nav-toggle
         aria-expanded="false"
         aria-controls="mobile-nav">Menú</button

@@ -45,14 +45,14 @@ const today = hours[(new Date().getDay() + 6) % 7];
 
       <div>
         <p class="eyebrow mb-4">Contacto</p>
-        <a href={`tel:${business.phoneRaw}`} class="block font-body text-cap tabular text-cal hover:text-roble">
+        <a href={`tel:${business.phoneRaw}`} class="block py-3 font-body text-cap tabular text-cal hover:text-roble min-h-[44px] flex items-center">
           {business.phone}
         </a>
         <a
           href={business.instagramUrl}
           target="_blank"
           rel="noopener noreferrer"
-          class="mt-1 block font-body text-cap text-humo hover:text-cal">@azedinbarber</a
+          class="mt-1 flex min-h-11 items-center font-body text-cap text-humo hover:text-cal">@azedinbarber</a
         >
       </div>
 
@@ -63,7 +63,7 @@ const today = hours[(new Date().getDay() + 6) % 7];
           href={business.booksyProfileUrl}
           target="_blank"
           rel="noopener noreferrer"
-          class="mt-1 block font-body text-cap text-humo hover:text-cal">Reseñas en Booksy</a
+          class="mt-1 flex min-h-11 items-center font-body text-cap text-humo hover:text-cal">Reseñas en Booksy</a
         >
       </div>
     </div>
