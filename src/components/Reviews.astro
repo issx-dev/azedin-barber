@@ -7,15 +7,12 @@
  *   2. One featured quote that rotates every 6 s (the four long ones), with
  *      name, service and date — still verifiable, never more than ~25 words
  *      on screen at once.
- *   3. Two belts of one-line reviews drifting in opposite directions. Pure
- *      CSS, pauses on hover/focus, stops under reduced-motion.
+ *   3. One belt of one-line reviews. Pure CSS, pauses on hover/focus,
+ *      stops under reduced-motion.
  */
 import { reviews, shortReviews, reviewThemes, business } from '../data/content.js';
 
 const featured = reviews.slice(0, 4);
-const half = Math.ceil(shortReviews.length / 2);
-const beltA = shortReviews.slice(0, half);
-const beltB = shortReviews.slice(half);
 const fmt = (iso: string) => new Date(iso).toLocaleDateString('es-ES', { month: 'short', year: 'numeric' });
 ---
 
@@ -36,9 +33,9 @@ const fmt = (iso: string) => new Date(iso).toLocaleDateString('es-ES', { month: 
           <span class="text-roble tracking-[0.2em]" aria-hidden="true">★★★★★</span>
           <span class="font-body text-cap text-cal-dim tabular">{business.reviewCount} reseñas</span>
         </p>
-        <ul class="mt-6 flex flex-wrap gap-2" aria-label="Lo que más se repite">
-          {reviewThemes.slice(0, 3).map((t) => <li class="pill">{t}</li>)}
-        </ul>
+        <p class="mt-6 font-body text-cap uppercase tracking-wide text-humo">
+          {reviewThemes.slice(0, 3).join(' · ')}
+        </p>
       </div>
 
       <!-- 2. One quote at a time — Cormorant italic, not body sans. -->
@@ -82,24 +79,22 @@ const fmt = (iso: string) => new Date(iso).toLocaleDateString('es-ES', { month: 
     </div>
   </div>
 
-  <!-- 3. The belts — hairline rules, no card chrome. -->
-  <div class="mt-24 space-y-3" aria-label="Más reseñas de clientes">
-    {
-      [beltA, beltB].map((belt, b) => (
-        <div class="rev-belt group flex overflow-hidden" data-dir={b === 0 ? 'left' : 'right'}>
-          {[0, 1].map((copy) => (
-            <ul class="rev-track flex shrink-0 gap-8 pr-8" aria-hidden={copy === 1 ? 'true' : undefined}>
-              {belt.map((r) => (
-                <li class="flex shrink-0 items-baseline gap-3 border-b border-veta pb-3">
-                  <span class="whitespace-nowrap font-body text-cal">“{r.quote}”</span>
-                  <span class="whitespace-nowrap font-body text-cap uppercase tracking-wide text-humo">{r.author}</span>
-                </li>
-              ))}
-            </ul>
-          ))}
-        </div>
-      ))
-    }
+  <!-- 3. One belt — hairline rules, no card chrome. -->
+  <div class="mt-24" aria-label="Más reseñas de clientes">
+    <div class="rev-belt group flex overflow-hidden">
+      {
+        [0, 1].map((copy) => (
+          <ul class="rev-track flex shrink-0 gap-8 pr-8" aria-hidden={copy === 1 ? 'true' : undefined}>
+            {shortReviews.map((r) => (
+              <li class="flex shrink-0 items-baseline gap-3 border-b border-veta pb-3">
+                <span class="whitespace-nowrap font-body text-cal">“{r.quote}”</span>
+                <span class="whitespace-nowrap font-body text-cap uppercase tracking-wide text-humo">{r.author}</span>
+              </li>
+            ))}
+          </ul>
+        ))
+      }
+    </div>
   </div>
 
   <p class="frame mt-10 font-body text-cap text-humo">
@@ -114,20 +109,12 @@ const fmt = (iso: string) => new Date(iso).toLocaleDateString('es-ES', { month: 
   .rev-track {
     animation: rev-left 60s linear infinite;
   }
-  .rev-belt[data-dir='right'] .rev-track {
-    animation-name: rev-right;
-    animation-duration: 70s;
-  }
   .rev-belt:hover .rev-track,
   .rev-belt:focus-within .rev-track {
     animation-play-state: paused;
   }
   @keyframes rev-left {
     to { transform: translateX(-100%); }
-  }
-  @keyframes rev-right {
-    from { transform: translateX(-100%); }
-    to { transform: translateX(0); }
   }
   @media (prefers-reduced-motion: reduce) {
     .rev-track { animation: none; }

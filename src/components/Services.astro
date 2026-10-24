@@ -7,7 +7,6 @@
  * numbered rows, dot leaders, tabular numerals. Not three cards with scissors.
  */
 import { services, business } from '../data/content.js';
-import BarberPole from './BarberPole.astro';
 ---
 
 <section id="servicios" class="relative py-20 md:py-30" aria-labelledby="servicios-title">
@@ -22,17 +21,13 @@ import BarberPole from './BarberPole.astro';
       </p>
     </header>
 
-    <div class="grid gap-x-16 lg:grid-cols-[1fr_auto]">
     <ul class="mt-4">
       {
         services.map((s) => (
           <li class="ledger-row" data-tour-row>
             <span class="font-body text-cap text-humo tabular">{s.num}</span>
             <span class="flex min-w-0 items-baseline gap-4">
-              <span
-                class="min-w-0 font-display uppercase text-cal"
-                style="font-size: var(--step-1); font-variation-settings: 'wght' 600;"
-              >
+              <span class="min-w-0 font-body font-semibold uppercase tracking-wide text-cal">
                 {s.name}
               </span>
               <span class="ledger-leader hidden min-w-6 flex-1 sm:block" aria-hidden="true"></span>
@@ -45,14 +40,6 @@ import BarberPole from './BarberPole.astro';
         ))
       }
     </ul>
-    <!-- The pole, as on the façade: a sign that says "barber" before any word. -->
-    <BarberPole
-      class="relative mx-auto mt-10 hidden lg:block"
-      width="150px"
-      height="460px"
-      speed={0.22}
-    />
-    </div>
 
     <div class="mt-10 flex flex-wrap items-center gap-4">
       <a class="btn btn-primary" href={business.booksyUrl} target="_blank" rel="noopener noreferrer">
