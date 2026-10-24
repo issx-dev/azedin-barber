@@ -75,26 +75,26 @@ const fmt = (iso: string) => new Date(iso).toLocaleDateString('es-ES', { month: 
         </div>
       </div>
     </div>
+
+    <!-- 3. Short reviews, still, inside the same measure as the number. -->
+    <ul class="mt-16 grid gap-x-12 gap-y-8 border-t border-veta pt-10 sm:grid-cols-2 lg:grid-cols-3" aria-label="Más reseñas de clientes">
+      {
+        shortReviews.slice(0, 6).map((r) => (
+          <li class="border-b border-veta pb-4">
+            <p class="font-body text-cal" style="text-wrap: pretty;">“{r.quote}”</p>
+            <p class="mt-2 font-body text-cap uppercase tracking-wide text-humo">{r.author}</p>
+          </li>
+        ))
+      }
+    </ul>
+
+    <p class="mt-10 font-body text-cap text-humo">
+      Todas de clientes con reserva confirmada.
+      <a href={business.booksyProfileUrl} target="_blank" rel="noopener noreferrer" class="text-cal underline decoration-veta underline-offset-4 hover:decoration-roble">
+        Ver las {business.reviewCount} en Booksy
+      </a>
+    </p>
   </div>
-
-  <!-- 3. Short reviews, still. Each quote wraps; nothing is sliced mid-word. -->
-  <ul class="mt-20 grid gap-x-12 gap-y-8 border-t border-veta pt-10 sm:grid-cols-2 lg:grid-cols-3" aria-label="Más reseñas de clientes">
-    {
-      shortReviews.slice(0, 6).map((r) => (
-        <li class="border-b border-veta pb-4">
-          <p class="font-body text-cal" style="text-wrap: pretty;">“{r.quote}”</p>
-          <p class="mt-2 font-body text-cap uppercase tracking-wide text-humo">{r.author}</p>
-        </li>
-      ))
-    }
-  </ul>
-
-  <p class="frame mt-10 font-body text-cap text-humo">
-    Todas de clientes con reserva confirmada.
-    <a href={business.booksyProfileUrl} target="_blank" rel="noopener noreferrer" class="text-cal underline decoration-veta underline-offset-4 hover:decoration-roble">
-      Ver las {business.reviewCount} en Booksy
-    </a>
-  </p>
 </section>
 
 <style>

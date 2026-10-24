@@ -2,9 +2,8 @@
 /**
  * Archivo — the cuts, still, large enough to judge.
  *
- * The tour is the only motion on the page. A pinned reel dimmed every
- * photo except one. Here each cut is full brightness. The two clips
- * stay as their poster; nothing plays.
+ * The tour is the only motion on the page. Each cut is full brightness,
+ * large enough to judge. Softer frames stay off this grid.
  */
 import { Image } from 'astro:assets';
 import { galleryItems, business } from '../data/content.js';
@@ -33,32 +32,19 @@ import { galleryItems, business } from '../data/content.js';
           <li class="archivo-card">
             <figure>
               <div class="relative aspect-card overflow-hidden border border-veta bg-marmol-2">
-                {item.video ? (
-                  <img
-                    src={item.poster}
-                    alt={item.alt}
-                    width="720"
-                    height="1280"
-                    loading="lazy"
-                    decoding="async"
-                    style="object-position: center 30%"
-                    class="absolute inset-0 h-full w-full object-cover"
-                  />
-                ) : (
-                  <Image
-                    src={item.src}
-                    alt={item.alt}
-                    width={1200}
-                    height={1600}
-                    widths={[640, 960, 1200]}
-                    sizes="(min-width: 1024px) 28vw, (min-width: 640px) 46vw, 92vw"
-                    format="avif"
-                    quality={78}
-                    loading={i < 2 ? 'eager' : 'lazy'}
-                    style={`object-position: ${item.focus}`}
-                    class="absolute inset-0 h-full w-full object-cover"
-                  />
-                )}
+                <Image
+                  src={item.src}
+                  alt={item.alt}
+                  width={1200}
+                  height={1600}
+                  widths={[640, 960, 1200]}
+                  sizes="(min-width: 1024px) 28vw, (min-width: 640px) 46vw, 92vw"
+                  format="avif"
+                  quality={78}
+                  loading={i < 2 ? 'eager' : 'lazy'}
+                  style={`object-position: ${item.focus}`}
+                  class="absolute inset-0 h-full w-full object-cover"
+                />
               </div>
               <figcaption class="mt-4 flex items-baseline justify-between gap-3">
                 <span class="font-display text-cap font-semibold uppercase tracking-wide text-cal">{item.label}</span>

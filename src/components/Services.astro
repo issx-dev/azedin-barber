@@ -26,12 +26,12 @@ import { services, business } from '../data/content.js';
         services.map((s) => (
           <li class="ledger-row" data-tour-row>
             <span class="font-body text-cap text-humo tabular">{s.num}</span>
-            <span class="flex min-w-0 items-baseline gap-4">
+            <span class="flex min-w-0 flex-col gap-1 sm:flex-row sm:items-baseline sm:gap-4">
               <span class="min-w-0 font-body font-semibold uppercase tracking-wide text-cal">
                 {s.name}
               </span>
               <span class="ledger-leader hidden min-w-6 flex-1 sm:block" aria-hidden="true"></span>
-              {s.note && <span class="hidden shrink-0 font-body text-cap text-humo lg:block">{s.note}</span>}
+              {s.note && <span class="font-body text-cap text-humo sm:shrink-0">{s.note}</span>}
             </span>
             <span class="ledger-price whitespace-nowrap" style="font-size: var(--step-1);">
               {s.price ? `${s.price} €` : 'Consultar'}
