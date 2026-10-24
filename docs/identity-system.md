@@ -42,18 +42,18 @@ Tres voces, cada una con un trabajo y un límite duro.
 | --- | --- | --- | --- |
 | **Wordmark** | El propio logo como SVG/PNG (`logo-02.PNG`) | La caligrafía del logo es un dibujo, no se reconstruye con fuente | — |
 | **Gesto script** (máx. 1 por página) | `Pinyon Script` 400 | Copperplate más cercano al trazo del logo; sólo para una palabra suelta en el hero (p. ej. *desde Berja*) o el nombre del barbero en el lookbook | `@fontsource/pinyon-script` |
-| **Display** | `Cinzel Variable` 500–700 | Misma genealogía romana que el "BARBER" del logo. Siempre MAYÚSCULAS + tracking ancho | `@fontsource-variable/cinzel` |
-| **Body / UI** | `Hanken Grotesk Variable` 400–600 | Ya instalada y auto-hospedada; neutra, no compite con Cinzel | `@fontsource-variable/hanken-grotesk` (ya en `package.json`) |
+| **Display** | `EB Garamond Variable` 500–700 | Romana antigua para títulos y la tarifa. Mayúsculas con poco tracking | `@fontsource-variable/eb-garamond` |
+| **Body / UI** | `Source Serif 4 Variable` 400–600 | Serif de lectura. El texto corrido, los botones y las cejas | `@fontsource-variable/source-serif-4` |
 
 Reglas:
 
-- Cinzel **nunca** en minúsculas, **nunca** por debajo de `--step-1`; en tamaños
-  pequeños se cambia a Hanken 600 con `tracking-wide` (así el eyebrow sigue
-  pareciendo "BARBER" sin usar una romana a 13px).
+- Garamond de display **nunca** por debajo de `--step-1`; en tamaños
+  pequeños se cambia a Source Serif 600 con `tracking-wide` (así el eyebrow
+  no usa una romana de título a 13px).
 - Pinyon sólo a `--step-3` o superior y siempre en `#ECECEA`; nunca para
   precios, botones o texto de párrafo. Si una página ya lleva el logo grande
   en el hero, no se añade Pinyon encima: el logo ya es el gesto.
-- Tracking positivo solo en Cinzel y eyebrows (`0.18em`–`0.3em`); Hanken a 0.
+- Tracking positivo en eyebrows (`0.18em`) y un poco en display (`0.06em`); el texto corrido a 0.
 - Escala fluida (clamp), ratio ~1.25 en texto y salto de escala brutal al
   display, igual que el logo (script 5× BARBER):
 
@@ -173,9 +173,9 @@ colors: {
   pino: '#D9C979', salvia: '#8FA070',
 },
 fontFamily: {
-  display: ['"Cinzel Variable"', 'Georgia', 'serif'],
+  display: ['"EB Garamond Variable"', '"EB Garamond fallback"', 'Georgia', 'serif'],
   script: ['"Pinyon Script"', 'cursive'],
-  body: ['"Hanken Grotesk Variable"', '"Hanken fallback"', 'ui-sans-serif', 'sans-serif'],
+  body: ['"Source Serif 4 Variable"', '"Source Serif fallback"', 'Georgia', 'serif'],
 },
 borderRadius: { none: '0', DEFAULT: '0', sm: '2px', full: '9999px' },
 boxShadow: { none: 'none', reflejo: 'inset 0 1px 0 0 rgb(236 236 234 / 0.06)' },

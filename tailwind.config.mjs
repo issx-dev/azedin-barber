@@ -38,12 +38,13 @@ export default {
     },
 
     fontFamily: {
-      // Cinzel shares the Roman-capital genealogy of the "BARBER" in the logo.
-      display: ['"Cinzel Variable"', '"Cinzel fallback"', 'Georgia', 'serif'],
+      // EB Garamond: old-style roman for titles and the tariff.
+      display: ['"EB Garamond Variable"', '"EB Garamond fallback"', 'Georgia', 'serif'],
       // Pinyon is the closest copperplate to the logo's "Azedin": one word per
       // page, at display size only. Imported where used, not in the layout.
       script: ['"Pinyon Script"', 'cursive'],
-      body: ['"Hanken Grotesk Variable"', '"Hanken fallback"', 'ui-sans-serif', 'sans-serif'],
+      // Source Serif 4: a text roman for paragraphs, buttons and eyebrows.
+      body: ['"Source Serif 4 Variable"', '"Source Serif fallback"', 'Georgia', 'serif'],
     },
 
     fontSize: {

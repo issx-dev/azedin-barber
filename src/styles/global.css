@@ -9,7 +9,7 @@
    ===========================================================================
    What this file enforces so no component has to remember it:
    - Radius 0. Depth is a 1px reflection, like the floor. No blur, no grain.
-   - One accent (oak). Positive tracking only on Cinzel and eyebrows.
+   - One accent (oak). Positive tracking only on eyebrows and a little on display.
    - The four motifs (.panal .lamas .veta .aro) are all things in the room.
    ======================================================================== */
 
@@ -52,18 +52,18 @@
 
   /* Metric-matched fallbacks so font-display:swap cannot shift the layout. */
   @font-face {
-    font-family: 'Hanken fallback';
-    src: local('Arial');
-    size-adjust: 97%;
+    font-family: 'Source Serif fallback';
+    src: local('Georgia');
+    size-adjust: 100%;
     ascent-override: 92%;
     descent-override: 24%;
     line-gap-override: 0%;
   }
   @font-face {
-    font-family: 'Cinzel fallback';
+    font-family: 'EB Garamond fallback';
     src: local('Georgia');
-    size-adjust: 104%;
-    ascent-override: 88%;
+    size-adjust: 108%;
+    ascent-override: 90%;
     descent-override: 22%;
     line-gap-override: 0%;
   }
@@ -126,16 +126,16 @@
     border-bottom: var(--rule) solid var(--c-veta);
   }
 
-  /* Eyebrow: Hanken, not Cinzel — a Roman capital at 11px stops reading as
-     the logo and starts reading as a template. */
+  /* Eyebrow stays on the text roman. Garamond at 11px stops reading. */
   .eyebrow {
     @apply font-body text-[0.6875rem] font-semibold uppercase tracking-wide text-humo;
   }
 
-  /* Display rules: Cinzel is always capitals with open tracking, like BARBER. */
+  /* Display: Garamond capitals. A little tracking, not the wide titling space. */
   .display {
-    @apply font-display uppercase tracking-wide text-cal;
-    font-variation-settings: 'wght' 600;
+    @apply font-display uppercase text-cal;
+    letter-spacing: 0.06em;
+    font-variation-settings: 'wght' 560;
   }
 
   /* The one calligraphic gesture per page. Padding keeps the swash in the box. */

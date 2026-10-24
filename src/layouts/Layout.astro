@@ -1,12 +1,12 @@
 ---
-// Cinzel: the Roman capitals of the logo's "BARBER". Hanken: body.
-// Pinyon (the script) is imported only by the component that uses it.
-import '@fontsource-variable/cinzel';
-import '@fontsource-variable/hanken-grotesk';
+// EB Garamond: the classic roman for titles and the tariff.
+// Source Serif 4: body text. Pinyon stays in the one component that uses it.
+import '@fontsource-variable/eb-garamond';
+import '@fontsource-variable/source-serif-4';
 import '../styles/global.css';
 
 // Resolved through Vite so the preload points at the real hashed asset.
-import cinzelWoff from '@fontsource-variable/cinzel/files/cinzel-latin-wght-normal.woff2?url';
+import displayWoff from '@fontsource-variable/eb-garamond/files/eb-garamond-latin-wght-normal.woff2?url';
 
 import { business, services, hours, reviews } from '../data/content.js';
 
@@ -110,7 +110,7 @@ const schema = {
     <!-- LCP: first still of the walk-through, sized per breakpoint. -->
     <link rel="preload" as="image" href="/tour/m/000.webp" media="(max-width: 767px)" fetchpriority="high" />
     <link rel="preload" as="image" href="/tour/d/000.webp" media="(min-width: 768px)" fetchpriority="high" />
-    <link rel="preload" as="font" type="font/woff2" crossorigin href={cinzelWoff} />
+    <link rel="preload" as="font" type="font/woff2" crossorigin href={displayWoff} />
 
     <title>{title}</title>
     <meta name="description" content={description} />
