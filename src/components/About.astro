@@ -8,7 +8,7 @@
  * the ring alone rather than a stock silhouette.
  */
 import { Image } from 'astro:assets';
-import { business, barbers, shopImages } from '../data/content.js';
+import { barbers, shopImages } from '../data/content.js';
 import '@fontsource/pinyon-script';
 ---
 
@@ -19,7 +19,6 @@ import '@fontsource/pinyon-script';
       <h2 id="local-title" class="text-sect display">
         El equipo
       </h2>
-      <div class="veta-draw mt-6 h-px w-24 bg-roble" aria-hidden="true"></div>
     </header>
 
     <div class="grid gap-x-10 gap-y-12 pt-10 lg:grid-cols-12">
@@ -34,10 +33,6 @@ import '@fontsource/pinyon-script';
           Azedin abrió la barbería en 2020 en la Avenida José Barrionuevo Peña.
           Hoy sois tres en el salón: Azedin, Samir y Anas. Al reservar eliges con
           quién.
-        </p>
-        <p class="mt-5 text-cal-dim">
-          Las {business.reviewCount} reseñas de Booksy repiten lo mismo:
-          profesionalidad, detalle y buen trato.
         </p>
       </div>
 
@@ -83,7 +78,20 @@ import '@fontsource/pinyon-script';
               )}
             </div>
             <div>
-              <h3 class="display text-sub" style="font-variation-settings: 'wght' 600;">{b.name}</h3>
+              <h3 class="display text-sub" style="font-variation-settings: 'wght' 600;">
+                {b.instagram ? (
+                  <a
+                    href={b.instagram}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    class="underline decoration-veta underline-offset-4 transition-colors duration-120 ease-marmol hover:text-roble hover:decoration-roble"
+                  >
+                    {b.name}
+                  </a>
+                ) : (
+                  b.name
+                )}
+              </h3>
               <p class="mt-1 font-body text-cap text-humo">{b.role} · {b.share}</p>
             </div>
           </li>

@@ -9,15 +9,16 @@
  * itself whenever they post. The browser fetches it on each visit (cached
  * 10 min per tab), so new posts appear with no rebuild.
  *
- * Until that URL exists, the section is the handle and the follow link.
- * The archivo already shows the cuts; a second mosaic of the same frames
- * only repeated them.
+ * Without that URL the section is not rendered. A heading that says
+ * "Últimas publicaciones" over an empty block is a false promise. The
+ * handle already lives in the footer, and the archivo links to the profile.
  */
 import { business } from '../data/content.js';
 
 const FEED_URL = import.meta.env.PUBLIC_IG_FEED_URL ?? '';
 ---
 
+{FEED_URL && (
 <section id="instagram" class="relative py-20 md:py-30" aria-labelledby="ig-title">
   <div class="frame">
     <header class="ruled-bottom flex flex-wrap items-end justify-between gap-6 pb-8">
@@ -37,6 +38,7 @@ const FEED_URL = import.meta.env.PUBLIC_IG_FEED_URL ?? '';
     }
   </div>
 </section>
+)}
 
 <script>
   type Post = { permalink: string; image: string; alt: string; video: boolean };

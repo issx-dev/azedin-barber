@@ -22,4 +22,5 @@ What this branch changes, and what it cannot:
 - The archivo encodes the existing files at retina size, and two unused sharp frames replace two softer ones.
 - The archivo is a still grid of the six frames sharp enough to judge. The softer phone crops and the video posters stay off the page.
 - Every button says Reservar. The tour, the prices, and the persistent bar earn it. Dónde only gives directions. The footer is the one sentence, Reserva tu cita, at the end.
+- The walk's chapters name what is in the frame. The empty Instagram block is not rendered: the handle is in the footer.
 - A 10 still needs a proper photo set. These files are the best already on disk. This branch does not invent a shoot.
