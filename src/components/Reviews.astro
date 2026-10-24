@@ -26,11 +26,14 @@ const fmt = (iso: string) => new Date(iso).toLocaleDateString('es-ES', { month: 
       <div>
         <p class="eyebrow mb-4">Reseñas verificadas · {business.reviewSource}</p>
         <h2 id="resenas-title" class="sr-only">Reseñas</h2>
-        <p class="font-display leading-none text-cal" style="font-size: clamp(5rem, 14vw, 10rem); font-variation-settings: 'wght' 600;">
+        <p
+          class="font-display leading-none text-cal"
+          style="font-size: clamp(4.5rem, 12vw, 9rem); font-variation-settings: 'wght' 600; letter-spacing: -0.04em;"
+        >
           {business.rating}
         </p>
         <p class="mt-4 flex items-center gap-3">
-          <span class="text-pino tracking-wide" aria-hidden="true">★★★★★</span>
+          <span class="text-roble tracking-[0.2em]" aria-hidden="true">★★★★★</span>
           <span class="font-body text-cap text-cal-dim tabular">{business.reviewCount} reseñas</span>
         </p>
         <ul class="mt-6 flex flex-wrap gap-2" aria-label="Lo que más se repite">
@@ -38,23 +41,30 @@ const fmt = (iso: string) => new Date(iso).toLocaleDateString('es-ES', { month: 
         </ul>
       </div>
 
-      <!-- 2. One quote at a time. -->
-      <div class="rev-rotator relative min-h-[13rem] border-l border-veta pl-6 md:min-h-[11rem] md:pl-10" aria-live="polite">
+      <!-- 2. One quote at a time — Cormorant italic, not body sans. -->
+      <div class="rev-rotator relative min-h-[14rem] border-l border-veta pl-6 md:min-h-[12rem] md:pl-10" aria-live="polite">
         {
           featured.map((r, i) => (
-            <figure class="rev-slide absolute inset-0 pl-6 md:pl-10" data-i={i} style={i === 0 ? '' : 'opacity:0;visibility:hidden'}>
+            <figure class="rev-slide absolute inset-0" data-i={i} style={i === 0 ? '' : 'opacity:0;visibility:hidden'}>
               <blockquote>
-                <p class="font-body text-cal" style="font-size: var(--step-2); line-height: 1.25; text-wrap: balance; max-width: 30ch;">
+                <p
+                  class="font-display text-cal"
+                  style="font-size: clamp(1.35rem, 2.8vw, 2rem); font-style: italic; font-variation-settings: 'wght' 500; text-transform: none; letter-spacing: 0; line-height: 1.3; text-wrap: balance; max-width: 28ch;"
+                >
                   “{r.quote}”
                 </p>
               </blockquote>
-              <figcaption class="mt-5 font-body text-cap text-humo tabular">
-                <span class="text-cal">{r.author}</span> · {r.service} con {r.barber} · {fmt(r.date)}
+              <figcaption class="mt-6 font-body text-cap text-humo tabular">
+                <span class="text-cal">{r.author}</span>
+                <span class="mx-2 text-veta" aria-hidden="true">·</span>
+                {r.service} con {r.barber}
+                <span class="mx-2 text-veta" aria-hidden="true">·</span>
+                {fmt(r.date)}
               </figcaption>
             </figure>
           ))
         }
-        <div class="absolute -bottom-8 left-6 flex gap-2 md:left-10" role="tablist" aria-label="Elegir reseña">
+        <div class="absolute -bottom-8 left-0 flex gap-1 md:left-0" role="tablist" aria-label="Elegir reseña">
           {
             featured.map((r, i) => (
               <button
@@ -72,17 +82,17 @@ const fmt = (iso: string) => new Date(iso).toLocaleDateString('es-ES', { month: 
     </div>
   </div>
 
-  <!-- 3. The belts. -->
-  <div class="mt-24 space-y-4" aria-label="Más reseñas de clientes">
+  <!-- 3. The belts — hairline rules, no card chrome. -->
+  <div class="mt-24 space-y-3" aria-label="Más reseñas de clientes">
     {
       [beltA, beltB].map((belt, b) => (
         <div class="rev-belt group flex overflow-hidden" data-dir={b === 0 ? 'left' : 'right'}>
           {[0, 1].map((copy) => (
-            <ul class="rev-track flex shrink-0 gap-4 pr-4" aria-hidden={copy === 1 ? 'true' : undefined}>
+            <ul class="rev-track flex shrink-0 gap-8 pr-8" aria-hidden={copy === 1 ? 'true' : undefined}>
               {belt.map((r) => (
-                <li class="flex shrink-0 items-baseline gap-3 border border-veta bg-marmol-2 px-5 py-3 shadow-reflejo">
+                <li class="flex shrink-0 items-baseline gap-3 border-b border-veta pb-3">
                   <span class="whitespace-nowrap font-body text-cal">“{r.quote}”</span>
-                  <span class="whitespace-nowrap font-body text-cap text-humo">{r.author}</span>
+                  <span class="whitespace-nowrap font-body text-cap uppercase tracking-wide text-humo">{r.author}</span>
                 </li>
               ))}
             </ul>
