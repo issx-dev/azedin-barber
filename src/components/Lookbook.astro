@@ -19,7 +19,9 @@ const total = String(galleryItems.length).padStart(2, '0');
 ---
 
 <section id="archivo" class="relative" aria-labelledby="archivo-title" data-reel>
-  <div class="reel-stage flex min-h-[100svh] flex-col justify-center overflow-hidden bg-marmol py-20 md:py-0">
+  <!-- Exactly one screen. A stage taller than the viewport is pinned flush
+       with the top and then jumps up by the overflow when the pin lets go. -->
+  <div class="reel-stage flex h-[100svh] max-h-[100svh] flex-col overflow-hidden bg-marmol pt-20 pb-6 md:justify-center md:py-0">
     <header class="frame flex items-end justify-between gap-6">
       <div>
         <p class="eyebrow mb-3">Trabajos recientes</p>
@@ -31,13 +33,13 @@ const total = String(galleryItems.length).padStart(2, '0');
     </header>
 
     <!-- No-JS: native scroller with snap. With JS: driven by the page scroll. -->
-    <div class="reel-viewport mt-8 overflow-x-auto md:mt-12" tabindex="0" aria-label="Galería de cortes, desplazable">
-      <ul class="reel-rail relative flex w-max gap-4 px-[11vw] md:gap-8 md:px-[calc(50vw-160px)]">
+    <div class="reel-viewport mt-6 min-h-0 flex-1 overflow-x-auto md:mt-12 md:flex-none" tabindex="0" aria-label="Galería de cortes, desplazable">
+      <ul class="reel-rail relative flex h-full w-max gap-4 px-[11vw] md:h-auto md:gap-8 md:px-[calc(50vw-160px)]">
         {
           galleryItems.map((item, i) => (
-            <li class="reel-card w-[78vw] shrink-0 snap-center sm:w-[44vw] md:w-[clamp(240px,22vw,320px)]" data-i={i}>
-              <figure>
-                <div class="reel-media relative aspect-reel overflow-hidden border border-veta bg-marmol-2">
+            <li class="reel-card flex h-full w-[78vw] shrink-0 snap-center sm:w-[44vw] md:block md:h-auto md:w-[clamp(240px,22vw,320px)]" data-i={i}>
+              <figure class="flex h-full min-h-0 w-full flex-col md:block md:h-auto">
+                <div class="reel-media relative aspect-auto min-h-0 w-full flex-1 overflow-hidden border border-veta bg-marmol-2 md:aspect-reel md:flex-none">
                   {item.video ? (
                     <video
                       class="reel-video absolute inset-0 h-full w-full object-cover"
@@ -70,7 +72,7 @@ const total = String(galleryItems.length).padStart(2, '0');
                     </span>
                   )}
                 </div>
-                <figcaption class="mt-4 flex items-baseline justify-between gap-3">
+                <figcaption class="mt-4 flex shrink-0 items-baseline justify-between gap-3">
                   <span class="font-display text-cap font-semibold uppercase tracking-wide text-cal">{item.label}</span>
                   <span class="font-body text-cap text-humo">{item.barber}</span>
                 </figcaption>
@@ -81,7 +83,7 @@ const total = String(galleryItems.length).padStart(2, '0');
       </ul>
     </div>
 
-    <div class="frame mt-8 flex items-center justify-between gap-6 md:mt-12">
+    <div class="frame mt-6 flex shrink-0 items-center justify-between gap-6 md:mt-12">
       <span class="relative block h-px flex-1 bg-veta" aria-hidden="true">
         <span class="reel-progress absolute inset-y-0 left-0 block w-full origin-left scale-x-0 bg-roble"></span>
       </span>
