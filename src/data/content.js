@@ -51,14 +51,14 @@ export const business = {
   instagramSamirUrl: 'https://www.instagram.com/smr.barber/',
 };
 
-/** Verbatim from Booksy. Monday afternoons only, Saturday closes at 15:30. */
+/** Verbatim from the Google Business listing. Monday afternoons only. */
 export const hours = [
-  { day: 'Lunes', slots: ['15:30 – 20:00'], note: 'Solo tarde' },
+  { day: 'Lunes', slots: ['16:00 – 20:30'], note: 'Solo tarde' },
   { day: 'Martes', slots: ['10:00 – 14:00', '16:00 – 20:00'] },
   { day: 'Miércoles', slots: ['10:00 – 14:00', '16:00 – 20:00'] },
   { day: 'Jueves', slots: ['10:00 – 14:00', '16:00 – 20:00'] },
   { day: 'Viernes', slots: ['10:00 – 14:00', '16:00 – 20:00'] },
-  { day: 'Sábado', slots: ['09:30 – 14:00', '14:30 – 15:30'], note: 'Jornada corta' },
+  { day: 'Sábado', slots: ['10:00 – 14:00', '16:00 – 20:00'] },
   { day: 'Domingo', slots: [], note: 'Cerrado' },
 ];
 
