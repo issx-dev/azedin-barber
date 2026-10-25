@@ -3,13 +3,11 @@
  * El local — the room, and the three people in it.
  *
  * No invented metaphor: the shop's own materials are the argument. Marble
- * floor, oak slats, hexagonal light. The team gets a ring-light avatar each
- * because the ring light is in the room; Anas has no portrait yet, so he gets
- * the ring alone rather than a stock silhouette.
+ * floor, oak slats, hexagonal light. Whoever has a portrait gets an avatar;
+ * Anas has none yet, so he is listed by name and role only.
  */
 import { Image } from 'astro:assets';
 import { barbers, shopImages } from '../data/content.js';
-import '@fontsource/pinyon-script';
 ---
 
 <section id="local" class="relative py-20 md:py-30" aria-labelledby="local-title">
@@ -26,10 +24,7 @@ import '@fontsource/pinyon-script';
       <div class="lamas hidden w-full lg:col-span-1 lg:block" aria-hidden="true"></div>
 
       <div class="lg:col-span-5">
-        <!-- The one script gesture of the page: their own tagline, in the
-             hand of their own logo. -->
-        <p class="script text-sect" style="font-size: var(--step-3);">Estilo y Elegancia</p>
-        <p class="mt-8 text-cal-dim">
+        <p class="text-cal-dim">
           Azedin abrió la barbería en 2020 en la Avenida José Barrionuevo Peña.
           Hoy sois tres en el salón: Azedin, Samir y Anas. Al reservar eliges con
           quién.
@@ -63,8 +58,8 @@ import '@fontsource/pinyon-script';
       {
         barbers.map((b) => (
           <li class="flex items-center gap-5">
-            <div class="aro relative h-16 w-16 shrink-0 overflow-hidden bg-marmol-2">
-              {b.img && (
+            {b.img && (
+              <div class="aro relative h-16 w-16 shrink-0 overflow-hidden bg-marmol-2">
                 <Image
                   src={b.img}
                   alt={`${b.name}, barbero`}
@@ -75,8 +70,8 @@ import '@fontsource/pinyon-script';
                   quality={72}
                   class="h-full w-full object-cover"
                 />
-              )}
-            </div>
+              </div>
+            )}
             <div>
               <h3 class="display text-sub" style="font-variation-settings: 'wght' 600;">
                 {b.instagram ? (
@@ -92,7 +87,7 @@ import '@fontsource/pinyon-script';
                   b.name
                 )}
               </h3>
-              <p class="mt-1 font-body text-cap text-humo">{b.role} · {b.share}</p>
+              <p class="mt-1 font-body text-cap text-humo">{b.role}</p>
             </div>
           </li>
         ))

@@ -10,14 +10,13 @@
  */
 import { business, hours } from '../data/content.js';
 
-const mapsUrl = `https://www.google.com/maps/place/?q=place_id:${business.placeId}`;
 const directionsUrl = `https://www.google.com/maps/dir/?api=1&destination=${business.lat},${business.lng}&destination_place_id=${business.placeId}`;
 ---
 
 <section id="donde" class="relative py-20 md:py-30" aria-labelledby="donde-title">
   <div class="frame">
     <header class="ruled-bottom pb-8">
-      <p class="eyebrow mb-4">{business.plusCode}</p>
+      <p class="eyebrow mb-4">{business.town}, {business.province}</p>
       <h2 id="donde-title" class="text-sect display text-cal">Dónde</h2>
     </header>
 
@@ -64,23 +63,6 @@ const directionsUrl = `https://www.google.com/maps/dir/?api=1&destination=${busi
         <div class="mt-8">
           <a class="btn btn-ghost" href={directionsUrl} target="_blank" rel="noopener noreferrer">Cómo llegar</a>
         </div>
-      </div>
-
-      <div class="lg:col-span-3">
-        <p class="eyebrow mb-5">En Berja</p>
-        <a
-          href={mapsUrl}
-          target="_blank"
-          rel="noopener noreferrer"
-          class="group block border border-veta p-5 transition-colors duration-240 ease-marmol hover:border-cal-dim"
-        >
-          <p class="font-body text-cap tabular text-humo">
-            {business.lat.toFixed(5)}<br />{business.lng.toFixed(5)}
-          </p>
-          <p class="mt-6 font-body text-cap uppercase tracking-wide text-cal">
-            Ver en Google Maps <span class="text-roble">→</span>
-          </p>
-        </a>
       </div>
     </div>
   </div>

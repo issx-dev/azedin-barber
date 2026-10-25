@@ -137,14 +137,6 @@
     font-variation-settings: 'wght' 600;
   }
 
-  /* The one calligraphic gesture per page. Padding keeps the swash in the box. */
-  .script {
-    @apply font-script normal-case text-cal;
-    letter-spacing: 0;
-    line-height: 1;
-    padding-inline: 0.15em;
-  }
-
   /* --- Price ledger ------------------------------------------------------- */
   .ledger-row {
     @apply grid items-baseline gap-x-4 py-5;

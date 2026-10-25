@@ -37,12 +37,11 @@ export const business = {
   addressFull: 'Avenida José Barrionuevo Peña 14, 04760 Berja, Almería',
   lat: 36.841288,
   lng: -2.9454388,
-  plusCode: 'R3R3+GR Berja',
   placeId: 'ChIJ7W6d2rNJcA0Rzn67hTCZhgo',
   phone: '+34 643 94 55 22',
   phoneRaw: '+34643945522',
   rating: '5,0',
-  reviewCount: 179,
+  reviewCount: 202,
   reviewSource: 'Booksy',
   booksyUrl: 'https://azedinbarber.booksy.com/a',
   booksyProfileUrl: 'https://booksy.com/es-es/141862_azedin-barber_barberia_26193_berja',
@@ -88,7 +87,6 @@ export const barbers = [
   {
     name: 'Azedin',
     role: 'Fundador',
-    share: '60% de las reseñas',
     img: personaAzedin,
     width: 320,
     height: 320,
@@ -97,13 +95,12 @@ export const barbers = [
   {
     name: 'Samir',
     role: 'Barbero',
-    share: '35% de las reseñas',
     img: personaSamir,
     width: 320,
     height: 320,
     instagram: business.instagramSamirUrl,
   },
-  { name: 'Anas', role: 'Barbero', share: 'Incorporación 2026', img: null },
+  { name: 'Anas', role: 'Barbero', img: null },
 ];
 
 // --- Reviews -----------------------------------------------------------------

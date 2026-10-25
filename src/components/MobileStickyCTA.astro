@@ -3,8 +3,8 @@
  * MobileStickyCTA — persistent booking bar on small screens.
  *
  * Shown after the tour, which already has the button. Hidden again over
- * the reviews and the footer, where a bar would cover the quote or the
- * closing line. Hours keep it: that section no longer has its own button.
+ * the archivo, the reviews and the footer, where a bar would cover the
+ * caption, the quote or the closing line. Hours keep it: that section no longer has its own button.
  */
 import { business } from '../data/content.js';
 ---
@@ -24,7 +24,7 @@ import { business } from '../data/content.js';
 <script>
   const cta = document.getElementById('mobile-sticky-cta');
   const tour = document.querySelector('[data-tour]');
-  const quiet = ['#resenas', '#instagram', 'footer']
+  const quiet = ['#archivo', '#resenas', '#instagram', 'footer']
     .map((s) => document.querySelector(s))
     .filter(Boolean) as Element[];
 
