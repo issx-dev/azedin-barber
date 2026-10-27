@@ -57,7 +57,7 @@ const links = [
       >
       <button
         type="button"
-        class="btn btn-ghost min-h-11 px-4 lg:hidden"
+        class="btn btn-ghost hidden min-h-11 px-4 lg:hidden"
         data-nav-toggle
         aria-expanded="false"
         aria-controls="mobile-nav">Menú</button
@@ -65,11 +65,12 @@ const links = [
     </div>
   </div>
 
-  <!-- Mobile nav: a plain disclosure. No JS needed to read it, only to toggle. -->
+  <!-- Mobile nav: a plain list, visible without JS. The inline script below
+       (sync, before first paint) collapses it and reveals the toggle. -->
   <nav
     id="mobile-nav"
     aria-label="Principal móvil"
-    class="hidden border-t border-veta bg-marmol lg:!hidden"
+    class="max-h-[70vh] overflow-y-auto border-t border-veta bg-marmol lg:!hidden"
     data-nav-panel
   >
     <ul class="frame py-4">
@@ -89,6 +90,11 @@ const links = [
       }
     </ul>
   </nav>
+  <script is:inline>
+    // JS is running: hand the menu over to the toggle (no flash, runs pre-paint).
+    document.querySelector('[data-nav-toggle]').classList.remove('hidden');
+    document.querySelector('[data-nav-panel]').classList.add('hidden');
+  </script>
 </header>
 
 <style>

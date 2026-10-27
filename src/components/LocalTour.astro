@@ -143,6 +143,11 @@ const chapters = [
   const root = document.querySelector<HTMLElement>('[data-tour]');
   const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
   const saveData = (navigator as any).connection?.saveData === true;
+  // Slow cellular or a low-memory device: only the window around the scrub
+  // head is fetched, never the whole walk in the background.
+  const constrained =
+    ['slow-2g', '2g', '3g'].includes((navigator as any).connection?.effectiveType) ||
+    ((navigator as any).deviceMemory ?? 8) <= 2;
 
   if (root && !reduced && !saveData) {
     const N = Number(root.dataset.frames);
@@ -250,6 +255,8 @@ const chapters = [
       target = progressAt();
       priorityHead = Math.round(target * (N - 1));
       bumpPriority();
+      scrolled = true;
+      tryBulk();
       if (!raf) raf = requestAnimationFrame(tick);
     }
 
@@ -259,6 +266,20 @@ const chapters = [
     let queuedHead = -999;
     let loadedCount = 0;
     let pumping = false;
+    // Bulk = queue every frame, not just the window. Stays off on constrained
+    // connections; otherwise it flips on after load + first scroll or a delay.
+    let bulk = false;
+    let scrolled = false;
+    let bulkDelayDone = false;
+
+    function tryBulk() {
+      if (bulk || constrained || document.readyState !== 'complete') return;
+      if (!scrolled && !bulkDelayDone) return;
+      bulk = true;
+      rebuildQueue(priorityHead);
+      queuedHead = priorityHead;
+      void ensurePump();
+    }
 
     // Decode off the critical path before a frame is ever drawn.
     async function load(i: number) {
@@ -297,7 +318,8 @@ const chapters = [
         push(head + d);
         if (d) push(head - d);
       }
-      // Then every remaining frame by distance from head.
+      // Then every remaining frame by distance from head (bulk only).
+      if (!bulk) { queue = ordered; return gen; }
       const rest: number[] = [];
       for (let i = 0; i < N; i++) if (!seen.has(i) && !frames[i]) rest.push(i);
       rest.sort((a, b) => Math.abs(a - head) - Math.abs(b - head));
@@ -323,8 +345,9 @@ const chapters = [
           while (loadedCount < N) {
             const next = queue.shift();
             if (next === undefined) {
-              // Queue drained — wait for a priority bump or finish.
-              if (loadedCount + loading.size >= N) return;
+              // Queue drained — wait for a priority bump or finish. Outside
+              // bulk mode the window is all there is, so stop until re-bumped.
+              if (!bulk || loadedCount + loading.size >= N) return;
               await new Promise((r) => setTimeout(r, 24));
               continue;
             }
@@ -356,7 +379,15 @@ const chapters = [
 
       rebuildQueue(priorityHead);
       queuedHead = priorityHead;
-      await ensurePump();
+      void ensurePump();
+
+      // Bulk download starts only after window load, then first scroll or 3.5 s.
+      const afterLoad = () => {
+        setTimeout(() => { bulkDelayDone = true; tryBulk(); }, 3500);
+        tryBulk();
+      };
+      if (document.readyState === 'complete') afterLoad();
+      else window.addEventListener('load', afterLoad, { once: true });
     }
 
     if ('requestIdleCallback' in window) requestIdleCallback(start, { timeout: 800 });

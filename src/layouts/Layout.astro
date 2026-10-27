@@ -12,11 +12,14 @@ import { business, services, hours, reviews } from '../data/content.js';
 export interface Props {
   title?: string;
   description?: string;
+  /** Emit the tour's first-frame preloads (only the home page uses them). */
+  preloadTour?: boolean;
 }
 
 const {
   title = `${business.name} — Barbería en Berja, Almería | Corte y barba`,
   description = `${business.tagline}. Corte y barba de precisión en Berja, Almería. ${business.rating}★ con ${business.reviewCount} reseñas verificadas. Reserva online con Azedin, Samir o Anas.`,
+  preloadTour = false,
 } = Astro.props;
 
 const site = Astro.site ?? 'https://azedinbarber.com';
@@ -107,8 +110,12 @@ const schema = {
 
     <!-- Only the display face is preloaded; body text can swap with matched metrics. -->
     <!-- LCP: first still of the walk-through — AVIF matches <picture> preference so the preload is consumed. -->
-    <link rel="preload" as="image" type="image/avif" href="/tour/m/000.avif" media="(max-width: 767px)" fetchpriority="high" />
-    <link rel="preload" as="image" type="image/avif" href="/tour/d/000.avif" media="(min-width: 768px)" fetchpriority="high" />
+    {preloadTour && (
+      <>
+        <link rel="preload" as="image" type="image/avif" href="/tour/m/000.avif" media="(max-width: 767px)" fetchpriority="high" />
+        <link rel="preload" as="image" type="image/avif" href="/tour/d/000.avif" media="(min-width: 768px)" fetchpriority="high" />
+      </>
+    )}
     <link rel="preload" as="font" type="font/woff2" crossorigin href={displayWoff} />
 
     <title>{title}</title>

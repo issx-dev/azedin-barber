@@ -20,8 +20,9 @@ const total = String(galleryItems.length).padStart(2, '0');
 
 <section id="archivo" class="relative" aria-labelledby="archivo-title" data-reel>
   <!-- Exactly one screen. A stage taller than the viewport is pinned flush
-       with the top and then jumps up by the overflow when the pin lets go. -->
-  <div class="reel-stage flex h-[100svh] max-h-[100svh] flex-col overflow-hidden bg-marmol pt-20 pb-6 md:justify-center md:py-0">
+       with the top and then jumps up by the overflow when the pin lets go.
+       pt-24 (not 20) so the eyebrow clears the 80px fixed header on #archivo. -->
+  <div class="reel-stage flex h-[100svh] max-h-[100svh] flex-col overflow-hidden bg-marmol pt-24 pb-6 md:justify-center md:pb-0 md:pt-20">
     <header class="frame flex items-end justify-between gap-6">
       <div>
         <p class="eyebrow mb-3">Trabajos recientes</p>
@@ -33,44 +34,26 @@ const total = String(galleryItems.length).padStart(2, '0');
     </header>
 
     <!-- No-JS: native scroller with snap. With JS: driven by the page scroll. -->
-    <div class="reel-viewport mt-6 min-h-0 flex-1 overflow-x-auto md:mt-12 md:flex-none" tabindex="0" aria-label="Galería de cortes, desplazable">
+    <div class="reel-viewport mt-6 min-h-0 flex-1 overflow-x-auto md:mt-12 md:flex-none" tabindex="0" role="region" aria-label="Galería de cortes, desplazable">
       <ul class="reel-rail relative flex h-full w-max gap-4 px-[11vw] md:h-auto md:gap-8 md:px-[calc(50vw-160px)]">
         {
           galleryItems.map((item, i) => (
-            <li class="reel-card flex h-full w-[78vw] shrink-0 snap-center sm:w-[44vw] md:block md:h-auto md:w-[clamp(240px,22vw,320px)]" data-i={i}>
+            <li class="reel-card flex h-full w-[78vw] shrink-0 snap-center sm:w-[44vw] md:block md:h-auto md:w-[clamp(176px,calc((100svh-25rem)*9/16),clamp(240px,22vw,320px))]" data-i={i}>
               <figure class="flex h-full min-h-0 w-full flex-col md:block md:h-auto">
                 <div class="reel-media relative aspect-auto min-h-0 w-full flex-1 overflow-hidden border border-veta bg-marmol-2 md:aspect-reel md:flex-none">
-                  {item.video ? (
-                    <video
-                      class="reel-video absolute inset-0 h-full w-full object-cover"
-                      muted
-                      loop
-                      playsinline
-                      preload="none"
-                      poster={item.poster}
-                      aria-label={item.alt}
-                      data-src={item.video}
-                    />
-                  ) : (
-                    <Image
-                      src={item.src}
-                      alt={item.alt}
-                      width={1200}
-                      height={2133}
-                      widths={[640, 960, 1200]}
-                      sizes="(min-width: 768px) 320px, 78vw"
-                      format="avif"
-                      quality={78}
-                      loading={i < 3 ? 'eager' : 'lazy'}
-                      style={`object-position: ${item.focus}`}
-                      class="absolute inset-0 h-full w-full object-cover"
-                    />
-                  )}
-                  {item.video && (
-                    <span class="absolute left-3 top-3 border border-cal/30 bg-marmol/70 px-2 py-1 font-body text-[0.625rem] font-semibold uppercase tracking-wide text-cal">
-                      Vídeo
-                    </span>
-                  )}
+                  <Image
+                    src={item.src}
+                    alt={item.alt}
+                    width={1200}
+                    height={2133}
+                    widths={[640, 960, 1200]}
+                    sizes="(min-width: 768px) 320px, 78vw"
+                    format="avif"
+                    quality={78}
+                    loading={i < 3 ? 'eager' : 'lazy'}
+                    style={`object-position: ${item.focus}`}
+                    class="absolute inset-0 h-full w-full object-cover"
+                  />
                 </div>
                 <figcaption class="mt-4 flex shrink-0 items-baseline justify-between gap-3">
                   <span class="font-display text-cap font-semibold uppercase tracking-wide text-cal">{item.label}</span>
@@ -91,7 +74,7 @@ const total = String(galleryItems.length).padStart(2, '0');
         href={business.instagramUrl}
         target="_blank"
         rel="noopener noreferrer"
-        class="shrink-0 font-body text-cap font-semibold uppercase tracking-wide text-humo transition-colors duration-120 hover:text-cal"
+        class="inline-flex min-h-11 shrink-0 items-center font-body text-cap font-semibold uppercase tracking-wide text-humo transition-colors duration-120 hover:text-cal"
       >
         Más en Instagram <span class="text-roble">→</span>
       </a>
@@ -180,15 +163,6 @@ const total = String(galleryItems.length).padStart(2, '0');
       on = best;
       cards.forEach((c, i) => c.classList.toggle('is-on', i === best));
       if (indexEl) indexEl.textContent = String(best + 1).padStart(2, '0');
-      // Only the focused video plays; the others pause and keep their poster.
-      cards.forEach((c, i) => {
-        const v = c.querySelector<HTMLVideoElement>('video');
-        if (!v) return;
-        if (i === best && !reduced) {
-          if (!v.src) v.src = v.dataset.src!;
-          v.play().catch(() => {});
-        } else v.pause();
-      });
     }
 
     if (reduced) {

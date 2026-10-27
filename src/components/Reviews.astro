@@ -37,7 +37,7 @@ const fmt = (iso: string) => new Date(iso).toLocaleDateString('es-ES', { month: 
       </div>
 
       <!-- 2. One quote at a time — Cormorant italic, not body sans. -->
-      <div class="rev-rotator border-l border-veta pl-6 md:pl-10" aria-live="polite">
+      <div class="rev-rotator border-l border-veta pl-6 md:pl-10">
         {
           featured.map((r, i) => (
             <figure class="rev-slide" data-i={i} hidden={i === 0 ? undefined : true}>
@@ -59,15 +59,14 @@ const fmt = (iso: string) => new Date(iso).toLocaleDateString('es-ES', { month: 
             </figure>
           ))
         }
-        <div class="mt-6 flex gap-1" role="tablist" aria-label="Elegir reseña">
+        <div class="mt-6 flex gap-1" role="group" aria-label="Elegir reseña">
           {
             featured.map((r, i) => (
               <button
                 type="button"
                 class="rev-dot relative h-11 w-11 bg-transparent"
-                role="tab"
                 aria-label={`Reseña de ${r.author}`}
-                aria-selected={i === 0 ? 'true' : 'false'}
+                aria-pressed={i === 0 ? 'true' : 'false'}
                 data-i={i}
               />
             ))
@@ -109,7 +108,7 @@ const fmt = (iso: string) => new Date(iso).toLocaleDateString('es-ES', { month: 
     background: var(--c-veta);
     transition: background-color 240ms var(--ease-led);
   }
-  .rev-dot[aria-selected='true']::after {
+  .rev-dot[aria-pressed='true']::after {
     background: var(--c-roble);
   }
 </style>
@@ -126,7 +125,7 @@ const fmt = (iso: string) => new Date(iso).toLocaleDateString('es-ES', { month: 
       slides.forEach((s, k) => {
         s.hidden = k !== i;
       });
-      dots.forEach((d, k) => d.setAttribute('aria-selected', String(k === i)));
+      dots.forEach((d, k) => d.setAttribute('aria-pressed',String(k === i)));
     }
     dots.forEach((d) => d.addEventListener('click', () => show(Number(d.dataset.i))));
     show(0);

@@ -9,8 +9,9 @@
 import { business } from '../data/content.js';
 ---
 
-<div
+<aside
   id="mobile-sticky-cta"
+  aria-label="Reservar cita"
   class="pointer-events-none fixed inset-x-0 bottom-0 z-30 translate-y-full border-t border-veta bg-marmol/95 p-3 pb-[max(0.75rem,env(safe-area-inset-bottom))] transition-transform duration-420 ease-led md:hidden motion-reduce:transition-none"
 >
   <a
@@ -19,7 +20,7 @@ import { business } from '../data/content.js';
     target="_blank"
     rel="noopener noreferrer">Reservar · {business.rating} ★</a
   >
-</div>
+</aside>
 
 <script>
   const cta = document.getElementById('mobile-sticky-cta');

@@ -10,7 +10,6 @@ import { business, hours } from '../data/content.js';
 import Logo from './Logo.astro';
 
 const year = new Date().getFullYear();
-const today = hours[(new Date().getDay() + 6) % 7];
 ---
 
 <footer class="ruled-top relative bg-marmol-2 py-16 md:py-22">
@@ -27,12 +26,11 @@ const today = hours[(new Date().getDay() + 6) % 7];
     </a>
 
     <div class="ruled-top mt-14 grid gap-x-10 gap-y-10 pt-10 sm:grid-cols-2 lg:grid-cols-4">
-      <div>
+      <!-- "Hoy" is resolved in the browser (Europe/Madrid): a static build cannot know the day. -->
+      <div data-hoy data-hours={JSON.stringify(hours)}>
         <p class="eyebrow mb-4">Hoy</p>
-        <p class="font-body text-cap tabular text-cal">
-          {today.slots.length ? today.slots.join(' · ') : 'Cerrado'}
-        </p>
-        <p class="mt-1 font-body text-cap text-humo">{today.day}</p>
+        <p class="font-body text-cap tabular text-cal" data-hoy-slots>Consulta el horario semanal</p>
+        <p class="mt-1 font-body text-cap text-humo" data-hoy-day></p>
       </div>
 
       <div>
@@ -58,7 +56,7 @@ const today = hours[(new Date().getDay() + 6) % 7];
 
       <div>
         <p class="eyebrow mb-4">Valoración</p>
-        <p class="font-body text-cap tabular text-cal">{business.rating} ★ · {business.reviewCount}</p>
+        <p class="font-body text-cap tabular text-cal">{business.rating} ★ · {business.reviewCount} reseñas</p>
         <a
           href={business.booksyProfileUrl}
           target="_blank"
@@ -78,3 +76,18 @@ const today = hours[(new Date().getDay() + 6) % 7];
     </div>
   </div>
 </footer>
+
+<script>
+  const box = document.querySelector<HTMLElement>('[data-hoy]');
+  if (box) {
+    try {
+      const hours = JSON.parse(box.dataset.hours ?? '[]');
+      const wd = new Intl.DateTimeFormat('en-US', { weekday: 'short', timeZone: 'Europe/Madrid' }).format(new Date());
+      const today = hours[['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'].indexOf(wd)];
+      if (today) {
+        box.querySelector('[data-hoy-slots]')!.textContent = today.slots.length ? today.slots.join(' · ') : 'Cerrado';
+        box.querySelector('[data-hoy-day]')!.textContent = today.day;
+      }
+    } catch {}
+  }
+</script>

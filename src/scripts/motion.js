@@ -44,6 +44,10 @@ function teardownLenis() {
 function trazo() {
   const logo = document.querySelector('[data-logo]');
   if (!logo || sessionStorage.getItem('az-trazo')) return;
+  // The logo is already painted solid; blanking it to redraw would flash.
+  // Trade-off: on slow loads the intro is skipped (flag left unset, so a
+  // later visit that loads fast can still play it).
+  if (performance.now() > 600) return;
   sessionStorage.setItem('az-trazo', '1');
   const paths = logo.querySelectorAll('path');
   gsap.set(logo, { fill: 'transparent', stroke: 'currentColor', strokeWidth: 3 });
