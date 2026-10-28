@@ -194,7 +194,7 @@ export const shortReviews = [
 export const reviewThemes = ['Profesionalidad', 'Detalle', 'Buen trato', 'Puntualidad', 'Limpieza'];
 
 // --- Gallery -----------------------------------------------------------------
-// Placeholder frames. `focus` sets object-position so the haircut, not the
+// The client's own photos of real cuts. `focus` sets object-position so the haircut, not the
 // ceiling, survives the crop.
 export const galleryItems = [
   { label: 'Low Fade', barber: 'Azedin', alt: 'Crop con low fade', src: corteLowFade, width: 1755, height: 2340, focus: 'center 28%' },
