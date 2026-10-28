@@ -21,8 +21,9 @@
  * Phones get 660x1173 AVIF (~6.8 MB for the whole walk); desktop gets a
  * pre-cropped panel (~6.6 MB). Frame 0 is a real <img> (the desktop LCP; on
  * phones it fills the viewport, which Chrome treats as background, so the
- * chapter title is the LCP). The rest stream from the scrub head outward
- * once the page has loaded; the canvas only shows once the walk moves.
+ * chapter title is the LCP). After load only a small window around the scrub
+ * head is fetched; the whole walk streams in once the visitor starts walking
+ * it. The canvas only shows once the walk moves.
  *
  * Chapters carry a fact for that stretch of the walk: the street, the room,
  * the price, who cuts. They do not caption the furniture.
@@ -51,12 +52,31 @@ const chapters = [
        (when the script starts) re-laid-out the whole page, moved the reel's
        pin after it was measured, and left the gallery within lazy-load
        distance of the first screen, so its images competed with the hero.
-       Without JS the section stays one screen tall. -->
+       Without JS the section stays one screen tall.
+       Fail-safe: the tour module marks the section data-ready as soon as it
+       is evaluated. Module scripts run before DOMContentLoaded, so if it is
+       still unmarked 4 s after load (or 8 s after DOMContentLoaded) it was
+       blocked or failed to download: give the scroll length back and leave
+       frame 0 as the photograph, the no-JS layout. -->
   <script is:inline>
     (function (s) {
       try {
         var c = navigator.connection;
-        if (matchMedia('(prefers-reduced-motion: no-preference)').matches && !(c && c.saveData)) s.classList.add('is-tall');
+        if (!matchMedia('(prefers-reduced-motion: no-preference)').matches || (c && c.saveData)) return;
+        s.classList.add('is-tall');
+        var check = function () {
+          if (s.hasAttribute('data-ready') || !s.classList.contains('is-tall')) return;
+          s.classList.remove('is-tall');
+          // The page just got shorter above everything: put an anchor back
+          // in view and let pinned sections re-measure.
+          try {
+            var h = location.hash && document.getElementById(decodeURIComponent(location.hash.slice(1)));
+            if (h) h.scrollIntoView();
+          } catch (e) {}
+          dispatchEvent(new Event('resize'));
+        };
+        addEventListener('load', function () { setTimeout(check, 4000); }, { once: true });
+        addEventListener('DOMContentLoaded', function () { setTimeout(check, 8000); }, { once: true });
       } catch (e) {}
     })(document.currentScript.parentElement);
   </script>
@@ -134,14 +154,20 @@ const chapters = [
 <style>
   /* Scroll length of the walk. Without JS the section is one screen tall
      and frame 0 stands as a photograph. */
-  /* Phones: ~3.2 screens. One frame every ~12px is still a walk, not a slideshow.
-     Desktop keeps the long scrub, about one frame per 16px. */
+  /* Travel is the height minus the 100svh stage, over 215 frame steps.
+     Phones: 3.2 screens, 2.2 of travel (~1860px at 844 tall): a frame every
+     ~8.6px, a walk, not a slideshow.
+     Desktop: 4 screens, 3 of travel (2700px at 900 tall): a frame every
+     ~12.5px. Lenis spreads each wheel tick over several frames, so the walk
+     still advances a frame or two per paint, and prices arrive ~2.5 screens
+     sooner than with the old 6.5.
+     Each chapter keeps at least ~0.6 screen of travel. */
   .tour.is-tall {
     height: 320svh;
   }
   @media (min-width: 768px) {
     .tour.is-tall {
-      height: 650svh;
+      height: 400svh;
     }
   }
   /* The canvas stays hidden while the poster <img> already shows frame 0:
@@ -160,6 +186,9 @@ const chapters = [
 
 <script>
   const root = document.querySelector<HTMLElement>('[data-tour]');
+  // Synchronously, at evaluation: tells the inline fail-safe the module
+  // arrived, even though the tour itself is only set up on idle.
+  root?.setAttribute('data-ready', '');
   const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
   const saveData = (navigator as any).connection?.saveData === true;
 
@@ -296,7 +325,12 @@ const chapters = [
       priorityHead = Math.round(target * (N - 1));
       started = true;
       bumpPriority();
-      scrolled = true;
+      // Walking = the tour is on screen and has moved off frame 0. An anchor
+      // jump past it (or a scroll back to the very top) does not count.
+      if (!walking) {
+        const r = root.getBoundingClientRect();
+        walking = target > 0 && r.bottom > 0;
+      }
       tryBulk();
       if (!raf) raf = requestAnimationFrame(tick);
     }
@@ -310,14 +344,14 @@ const chapters = [
     // then the page's own images and fonts have the connection.
     let started = false;
     // Bulk = queue every frame, not just the window. Stays off on constrained
-    // connections; otherwise it flips on after load + first scroll or a delay.
+    // connections; otherwise it flips on after load, once the visitor actually
+    // starts walking the tour. No timer: someone who reads the first screen
+    // and leaves never pays for the other ~6 MB.
     let bulk = false;
-    let scrolled = false;
-    let bulkDelayDone = false;
+    let walking = false;
 
     function tryBulk() {
-      if (bulk || constrained || document.readyState !== 'complete') return;
-      if (!scrolled && !bulkDelayDone) return;
+      if (bulk || constrained || !walking || document.readyState !== 'complete') return;
       bulk = true;
       rebuildQueue(priorityHead);
       queuedHead = priorityHead;
@@ -428,11 +462,10 @@ const chapters = [
       queuedHead = priorityHead;
 
       // The first window starts after window load (or on the first scroll);
-      // bulk download after load, then first scroll or 3.5 s.
+      // bulk download after load, once the walk starts.
       const afterLoad = () => {
         started = true;
         void ensurePump();
-        setTimeout(() => { bulkDelayDone = true; tryBulk(); }, 3500);
         tryBulk();
       };
       if (document.readyState === 'complete') afterLoad();
