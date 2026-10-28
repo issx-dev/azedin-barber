@@ -26,11 +26,15 @@ const year = new Date().getFullYear();
     </a>
 
     <div class="ruled-top mt-14 grid gap-x-10 gap-y-10 pt-10 sm:grid-cols-2 lg:grid-cols-4">
-      <!-- "Hoy" is resolved in the browser (Europe/Madrid): a static build cannot know the day. -->
+      <!-- "Hoy" is resolved in the browser (Europe/Madrid, src/scripts/open-status.js):
+           a static build cannot know the day. Without JS it points to the weekly hours. -->
       <div data-hoy data-hours={JSON.stringify(hours)}>
         <p class="eyebrow mb-4">Hoy</p>
-        <p class="font-body text-cap tabular text-cal" data-hoy-slots>Consulta el horario semanal</p>
-        <p class="mt-1 font-body text-cap text-humo" data-hoy-day></p>
+        <p class="flex items-center gap-3 font-body text-cap tabular text-cal">
+          <span data-hoy-dot hidden class="h-2 w-2 shrink-0 rounded-full bg-humo" aria-hidden="true"></span>
+          <span data-hoy-status>Consulta el horario semanal</span>
+        </p>
+        <p class="mt-1 font-body text-cap tabular text-humo" data-hoy-day></p>
       </div>
 
       <div>
@@ -78,16 +82,24 @@ const year = new Date().getFullYear();
 </footer>
 
 <script>
+  import { getOpenStatus, everyMinute } from '../scripts/open-status.js';
+
   const box = document.querySelector<HTMLElement>('[data-hoy]');
   if (box) {
     try {
       const hours = JSON.parse(box.dataset.hours ?? '[]');
-      const wd = new Intl.DateTimeFormat('en-US', { weekday: 'short', timeZone: 'Europe/Madrid' }).format(new Date());
-      const today = hours[['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'].indexOf(wd)];
-      if (today) {
-        box.querySelector('[data-hoy-slots]')!.textContent = today.slots.length ? today.slots.join(' · ') : 'Cerrado';
-        box.querySelector('[data-hoy-day]')!.textContent = today.day;
-      }
+      const dot = box.querySelector<HTMLElement>('[data-hoy-dot]')!;
+      const status = box.querySelector<HTMLElement>('[data-hoy-status]')!;
+      const day = box.querySelector<HTMLElement>('[data-hoy-day]')!;
+
+      everyMinute(() => {
+        const s = getOpenStatus(hours, new Date());
+        if (status.textContent !== s.label) status.textContent = s.label;
+        dot.hidden = false;
+        dot.classList.toggle('bg-salvia', s.open);
+        dot.classList.toggle('bg-humo', !s.open);
+        day.textContent = `${s.dayName} · ${s.todaySlots.length ? s.todaySlots.join(' · ') : 'Cerrado'}`;
+      });
     } catch {}
   }
 </script>

@@ -22,12 +22,18 @@ const directionsUrl = `https://www.google.com/maps/dir/?api=1&destination=${busi
 
     <div class="grid gap-x-10 gap-y-12 pt-10 lg:grid-cols-12">
       <!-- Hours: the docket again, with the exceptions made explicit. -->
-      <div class="lg:col-span-5">
+      <div class="lg:col-span-5" data-open-hours data-hours={JSON.stringify(hours)}>
         <p class="eyebrow mb-5">Horario</p>
+        {/* Live status, filled in the browser (Europe/Madrid). Hidden until
+            then: without JS the weekly hours below are the whole truth. */}
+        <p data-open-status role="status" class="mb-4 hidden items-center gap-3 font-body text-base text-cal">
+          <span data-open-dot class="h-2 w-2 shrink-0 rounded-full bg-humo" aria-hidden="true"></span>
+          <span data-open-label></span>
+        </p>
         <dl>
           {
             hours.map((h) => (
-              <div class="flex items-baseline justify-between gap-4 border-b border-veta py-3">
+              <div data-day={h.day} class="hours-row flex items-baseline justify-between gap-4 border-b border-veta py-3">
                 <dt class="font-body text-cap uppercase tracking-wide text-cal">{h.day}</dt>
                 <dd class="text-right font-body text-cap tabular text-humo">
                   {h.slots.length ? h.slots.join(' · ') : 'Cerrado'}
@@ -67,3 +73,45 @@ const directionsUrl = `https://www.google.com/maps/dir/?api=1&destination=${busi
     </div>
   </div>
 </section>
+
+<style>
+  /* Today's row: full-strength text and a short oak rule before the day,
+     the same hairline language as the ledger. Set by the script below. */
+  .hours-row[data-today] dt,
+  .hours-row[data-today] dd {
+    color: #ececea;
+  }
+  .hours-row[data-today] dt::before {
+    content: '';
+    display: inline-block;
+    width: 12px;
+    height: 1px;
+    margin-right: 0.6em;
+    vertical-align: middle;
+    background: #b3a98f;
+  }
+</style>
+
+<script>
+  import { getOpenStatus, everyMinute } from '../scripts/open-status.js';
+
+  const box = document.querySelector<HTMLElement>('[data-open-hours]');
+  if (box) {
+    try {
+      const hours = JSON.parse(box.dataset.hours ?? '[]');
+      const line = box.querySelector<HTMLElement>('[data-open-status]')!;
+      const dot = box.querySelector<HTMLElement>('[data-open-dot]')!;
+      const label = box.querySelector<HTMLElement>('[data-open-label]')!;
+      const rows = [...box.querySelectorAll<HTMLElement>('[data-day]')];
+
+      everyMinute(() => {
+        const s = getOpenStatus(hours, new Date());
+        if (label.textContent !== s.label) label.textContent = s.label;
+        dot.classList.toggle('bg-salvia', s.open);
+        dot.classList.toggle('bg-humo', !s.open);
+        line.classList.replace('hidden', 'flex');
+        rows.forEach((r) => r.toggleAttribute('data-today', r.dataset.day === s.dayName));
+      });
+    } catch {}
+  }
+</script>
