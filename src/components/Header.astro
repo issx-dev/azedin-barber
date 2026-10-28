@@ -18,7 +18,7 @@ const links = [
 ---
 
 <header class="site-header fixed inset-x-0 top-0 z-50 border-b border-transparent" data-header>
-  <div class="frame flex h-20 items-center justify-between gap-3 sm:gap-6">
+  <div class="frame flex h-20 items-center justify-between gap-3 sm:gap-6 xl:grid xl:grid-cols-[1fr_auto_1fr]">
     <a
       href="#hero"
       class="inline-flex min-h-11 shrink-0 items-center text-cal"
@@ -32,7 +32,7 @@ const links = [
         links.map((l) => (
           <a
             href={l.href}
-            class="inline-flex min-h-11 items-center font-body text-sm uppercase tracking-wide text-cal-dim transition-colors duration-120 ease-marmol hover:text-cal"
+            class="inline-flex min-h-11 items-center font-body text-cap font-semibold uppercase tracking-wide text-cal-dim transition-colors duration-120 ease-marmol hover:text-cal"
           >
             {l.label}
           </a>
@@ -40,12 +40,12 @@ const links = [
       }
     </nav>
 
-    <div class="flex items-center gap-3">
+    <div class="flex items-center gap-3 lg:gap-6 xl:justify-self-end">
       <a
         href={business.instagramUrl}
         target="_blank"
         rel="noopener noreferrer"
-        class="hidden min-h-11 items-center font-body text-sm uppercase tracking-wide text-cal-dim transition-colors duration-120 ease-marmol hover:text-cal sm:inline-flex"
+        class="hidden min-h-11 items-center font-body text-cap font-semibold uppercase tracking-wide text-cal-dim transition-colors duration-120 ease-marmol hover:text-cal sm:inline-flex"
       >
         Instagram
       </a>
@@ -65,24 +65,22 @@ const links = [
     </div>
   </div>
 
-  <!-- Mobile nav: a plain list, visible without JS. The inline script below
-       (sync, before first paint) collapses it and reveals the toggle. -->
+  <!-- Mobile nav. Without JS it is one compact, horizontally scrollable row
+       of the five anchors under the bar (the header is fixed, so a full list
+       would cover half a phone screen for good). The inline script below runs
+       before first paint: it collapses the row and turns it into the
+       disclosure that the Menú button opens. -->
   <nav
     id="mobile-nav"
     aria-label="Principal móvil"
-    class="max-h-[70vh] overflow-y-auto border-t border-veta bg-marmol lg:!hidden"
+    class="nav-panel border-t border-veta bg-marmol lg:!hidden"
     data-nav-panel
   >
-    <ul class="frame py-4">
+    <ul class="nav-list frame">
       {
         links.map((l) => (
-          <li class="border-b border-veta last:border-0">
-            <a
-              href={l.href}
-              class="block py-4 font-display uppercase text-cal"
-              style="font-size: var(--step-1); font-variation-settings: 'wght' 600;"
-              data-nav-link
-            >
+          <li class="nav-item">
+            <a href={l.href} class="nav-link" data-nav-link>
               {l.label}
             </a>
           </li>
@@ -93,7 +91,8 @@ const links = [
   <script is:inline>
     // JS is running: hand the menu over to the toggle (no flash, runs pre-paint).
     document.querySelector('[data-nav-toggle]').classList.remove('hidden');
-    document.querySelector('[data-nav-panel]').classList.add('hidden');
+    var navPanel = document.querySelector('[data-nav-panel]');
+    navPanel.classList.add('hidden', 'is-disclosure');
   </script>
 </header>
 
@@ -111,6 +110,60 @@ const links = [
     background: var(--c-marmol);
     border-color: var(--c-veta);
     box-shadow: 0 1px 0 0 rgb(236 236 234 / 0.04);
+  }
+
+  /* --- Mobile nav, no JS: one row of small caps, each a 44px target. ---- */
+  .nav-list {
+    display: flex;
+    gap: 1rem;
+    overflow-x: auto;
+    scrollbar-width: none;
+    overscroll-behavior-x: contain;
+  }
+  .nav-list::-webkit-scrollbar {
+    display: none;
+  }
+  .nav-item {
+    flex: none;
+  }
+  .nav-link {
+    display: inline-flex;
+    align-items: center;
+    min-height: 44px;
+    font-family: theme('fontFamily.body');
+    font-size: var(--step--1);
+    font-weight: 600;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--c-cal-dim);
+    white-space: nowrap;
+  }
+
+  /* --- With JS: the disclosure, a full-width list opened by Menú. -------- */
+  .nav-panel.is-disclosure {
+    max-height: 70vh;
+    overflow-y: auto;
+  }
+  .is-disclosure .nav-list {
+    display: block;
+    overflow: visible;
+    padding-block: 1rem;
+  }
+  .is-disclosure .nav-item {
+    border-bottom: 1px solid var(--c-veta);
+  }
+  .is-disclosure .nav-item:last-child {
+    border-bottom: 0;
+  }
+  .is-disclosure .nav-link {
+    display: flex;
+    padding-block: 1rem;
+    font-family: theme('fontFamily.display');
+    font-size: var(--step-1);
+    font-variation-settings: 'wght' 600;
+    font-weight: 600;
+    letter-spacing: 0;
+    color: var(--c-cal);
   }
 </style>
 

@@ -3,35 +3,40 @@
  * Services — the ledger.
  *
  * Prices are visible without a click, because that is the one thing a
- * barbershop customer is actually looking for. Rendered as a mine docket:
- * numbered rows, dot leaders, tabular numerals. Not three cards with scissors.
+ * barbershop customer is actually looking for. Numbered rows, dot leaders,
+ * tabular numerals. Not three cards with scissors.
+ *
+ * Only what Booksy states is printed: the duration and the price. The old
+ * "Sin recargo por reserva online" line is not on the listing, so it is gone.
  */
 import { services, business } from '../data/content.js';
+
+// "Corte niño" already reads "Consultar" in the price column: do not say it twice.
+const noteFor = (s: { price: string | null; note?: string }) =>
+  s.price ? s.note : s.note?.replace(/\s*·\s*consultar$/i, '');
 ---
 
 <section id="servicios" class="relative py-20 md:py-30" aria-labelledby="servicios-title">
   <div class="frame">
-    <header class="ruled-bottom flex flex-wrap items-end justify-between gap-6 pb-8">
+    <header class="ruled-bottom flex flex-wrap items-end justify-between gap-x-6 gap-y-3 pb-6 md:pb-8">
       <div>
         <p class="eyebrow mb-4">Tarifa</p>
         <h2 id="servicios-title" class="text-sect display text-cal">Precios</h2>
       </div>
-      <p class="font-body text-cap text-humo">
-        Todos los servicios, 30 min<br />Sin recargo por reserva online
-      </p>
+      <p class="font-body text-cap text-humo md:pb-2">Todos los servicios, 30 min</p>
     </header>
 
-    <ul class="mt-4">
+    <ul class="mt-1 md:mt-4">
       {
         services.map((s) => (
           <li class="ledger-row" data-tour-row>
-            <span class="font-body text-cap text-humo tabular">{s.num}</span>
+            <span class="w-6 font-body text-cap text-humo tabular">{s.num}</span>
             <span class="flex min-w-0 flex-col gap-1 sm:flex-row sm:items-baseline sm:gap-4">
-              <span class="min-w-0 font-body font-semibold uppercase tracking-wide text-cal">
+              <span class="min-w-0 font-body font-semibold uppercase tracking-[0.1em] text-cal sm:tracking-wide">
                 {s.name}
               </span>
-              <span class="ledger-leader hidden min-w-6 flex-1 sm:block" aria-hidden="true"></span>
-              {s.note && <span class="font-body text-cap text-humo sm:shrink-0">{s.note}</span>}
+              <span class="ledger-leader hidden min-w-6 flex-1 sm:block" aria-hidden="true" />
+              {noteFor(s) && <span class="font-body text-cap text-humo sm:shrink-0">{noteFor(s)}</span>}
             </span>
             <span class="ledger-price whitespace-nowrap" style="font-size: var(--step-1);">
               {s.price ? `${s.price} €` : 'Consultar'}
@@ -41,13 +46,19 @@ import { services, business } from '../data/content.js';
       }
     </ul>
 
-    <div class="mt-10 flex flex-wrap items-center gap-4">
-      <a class="btn btn-primary" href={business.booksyUrl} target="_blank" rel="noopener noreferrer">
+    <!-- The booking row: one line of what happens next, one button. -->
+    <div class="mt-8 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between sm:gap-8 md:mt-10">
+      <p class="font-body text-cal-dim">
+        Eliges barbero y hora en Booksy.
+      </p>
+      <a
+        class="btn btn-primary w-full sm:w-auto sm:min-w-[14rem]"
+        href={business.booksyUrl}
+        target="_blank"
+        rel="noopener noreferrer"
+      >
         Reservar
       </a>
-      <p class="font-body text-cap text-humo">
-        Elige barbero y hora. {business.reviewCount} reseñas verificadas.
-      </p>
     </div>
   </div>
 </section>

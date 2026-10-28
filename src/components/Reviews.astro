@@ -1,14 +1,19 @@
 ---
 /**
- * Reseñas — a crowd of voices, not a wall of paragraphs.
+ * Reseñas — the number, one voice, then a crowd.
  *
- * Three layers, each short enough to read at a glance:
  *   1. The number: 5,0 and 202, set large. That alone is the argument.
- *   2. One featured quote. The other three are there if you tap a dash.
- *      Nothing rotates: the tour is the only motion on the page.
- *   3. Short reviews in a still grid. A looping belt clipped words in half.
+ *   2. One featured quote, upright Cormorant (the italic was hard to read on
+ *      a phone). The other three are there if you tap a dash. Nothing
+ *      rotates: the tour is the only motion on the page. The dashes sit
+ *      above the quote and all four quotes share one grid cell, so a tap
+ *      never moves the controls or the page.
+ *   3. Short reviews in a still grid.
+ *
+ * The "profesionalidad · detalle · buen trato" line came from an old reading
+ * of ~60 reviews, not the 202 on Booksy now, so it is not printed.
  */
-import { reviews, shortReviews, reviewThemes, business } from '../data/content.js';
+import { reviews, shortReviews, business } from '../data/content.js';
 
 const featured = reviews.slice(0, 4);
 const fmt = (iso: string) => new Date(iso).toLocaleDateString('es-ES', { month: 'short', year: 'numeric' });
@@ -16,50 +21,29 @@ const fmt = (iso: string) => new Date(iso).toLocaleDateString('es-ES', { month: 
 
 <section id="resenas" class="relative overflow-hidden py-20 md:py-30" aria-labelledby="resenas-title">
   <div class="frame">
-    <div class="grid gap-x-16 gap-y-12 lg:grid-cols-[auto_1fr] lg:items-center">
+    <header class="ruled-bottom pb-6">
+      <p class="eyebrow">Reseñas verificadas · {business.reviewSource}</p>
+      <h2 id="resenas-title" class="sr-only">Reseñas</h2>
+    </header>
+
+    <div class="grid gap-x-16 gap-y-10 pt-10 lg:grid-cols-12 lg:items-start lg:pt-14">
       <!-- 1. The number. -->
-      <div>
-        <p class="eyebrow mb-4">Reseñas verificadas · {business.reviewSource}</p>
-        <h2 id="resenas-title" class="sr-only">Reseñas</h2>
+      <div class="flex items-end gap-5 lg:col-span-4 lg:flex-col lg:items-start lg:gap-4">
         <p
           class="font-display leading-none text-cal"
-          style="font-size: clamp(4.5rem, 12vw, 9rem); font-variation-settings: 'wght' 600; letter-spacing: -0.04em;"
+          style="font-size: clamp(4.5rem, 3rem + 7vw, 9rem); font-variation-settings: 'wght' 600; letter-spacing: -0.04em;"
         >
           {business.rating}
         </p>
-        <p class="mt-4 flex items-center gap-3">
+        <p class="flex flex-col gap-1 pb-2 lg:pb-0">
           <span class="text-roble tracking-[0.2em]" aria-hidden="true">★★★★★</span>
           <span class="font-body text-cap text-cal-dim tabular">{business.reviewCount} reseñas</span>
         </p>
-        <p class="mt-6 font-body text-cap uppercase tracking-wide text-humo">
-          {reviewThemes.slice(0, 3).join(' · ')}
-        </p>
       </div>
 
-      <!-- 2. One quote at a time — Cormorant italic, not body sans. -->
-      <div class="rev-rotator border-l border-veta pl-6 md:pl-10">
-        {
-          featured.map((r, i) => (
-            <figure class="rev-slide" data-i={i} hidden={i === 0 ? undefined : true}>
-              <blockquote>
-                <p
-                  class="font-display text-cal"
-                  style="font-size: clamp(1.35rem, 2.8vw, 2rem); font-style: italic; font-variation-settings: 'wght' 500; text-transform: none; letter-spacing: 0; line-height: 1.3; text-wrap: balance; max-width: 28ch;"
-                >
-                  “{r.quote}”
-                </p>
-              </blockquote>
-              <figcaption class="mt-6 font-body text-cap text-humo tabular">
-                <span class="text-cal">{r.author}</span>
-                <span class="mx-2 text-veta" aria-hidden="true">·</span>
-                {r.service} con {r.barber}
-                <span class="mx-2 text-veta" aria-hidden="true">·</span>
-                {fmt(r.date)}
-              </figcaption>
-            </figure>
-          ))
-        }
-        <div class="mt-6 flex gap-1" role="group" aria-label="Elegir reseña">
+      <!-- 2. One quote at a time. -->
+      <div class="rev-rotator lg:col-span-8 lg:border-l lg:border-veta lg:pl-16">
+        <div class="-ml-1.5 -mt-3 mb-2 flex lg:mb-4" role="group" aria-label="Elegir reseña">
           {
             featured.map((r, i) => (
               <button
@@ -72,22 +56,45 @@ const fmt = (iso: string) => new Date(iso).toLocaleDateString('es-ES', { month: 
             ))
           }
         </div>
+        <div class="rev-stack">
+          {
+            featured.map((r, i) => (
+              <figure class="rev-slide" data-i={i} hidden={i === 0 ? undefined : true}>
+                <blockquote>
+                  <p
+                    class="font-display text-cal"
+                    style="font-size: clamp(1.5rem, 1.15rem + 1.5vw, 2.375rem); font-variation-settings: 'wght' 500; text-transform: none; letter-spacing: 0; line-height: 1.25; text-wrap: pretty; max-width: 30ch;"
+                  >
+                    “{r.quote}”
+                  </p>
+                </blockquote>
+                <figcaption class="mt-5 font-body text-cap text-humo tabular">
+                  <span class="text-cal">{r.author}</span>
+                  <span class="mx-2 text-veta" aria-hidden="true">·</span>
+                  {r.service} con {r.barber}
+                  <span class="mx-2 text-veta" aria-hidden="true">·</span>
+                  {fmt(r.date)}
+                </figcaption>
+              </figure>
+            ))
+          }
+        </div>
       </div>
     </div>
 
-    <!-- 3. Short reviews, still, inside the same measure as the number. -->
-    <ul class="mt-16 grid gap-x-12 gap-y-8 border-t border-veta pt-10 sm:grid-cols-2 lg:grid-cols-3" aria-label="Más reseñas de clientes">
+    <!-- 3. Short reviews, still. Four on a phone, six from two columns up. -->
+    <ul class="mt-14 grid gap-x-12 border-t border-veta sm:grid-cols-2 lg:mt-20 lg:grid-cols-3" aria-label="Más reseñas de clientes">
       {
-        shortReviews.slice(0, 6).map((r) => (
-          <li class="border-b border-veta pb-4">
+        shortReviews.slice(0, 6).map((r, i) => (
+          <li class:list={['border-b border-veta py-5', i >= 4 && 'hidden sm:block']}>
             <p class="font-body text-cal" style="text-wrap: pretty;">“{r.quote}”</p>
-            <p class="mt-2 font-body text-cap uppercase tracking-wide text-humo">{r.author}</p>
+            <p class="mt-1.5 font-body text-cap uppercase tracking-wide text-humo">{r.author}</p>
           </li>
         ))
       }
     </ul>
 
-    <p class="mt-10 font-body text-cap text-humo">
+    <p class="mt-8 font-body text-cap text-humo">
       Todas de clientes con reserva confirmada.
       <a href={business.booksyProfileUrl} target="_blank" rel="noopener noreferrer" class="text-cal underline decoration-veta underline-offset-4 hover:decoration-roble">
         Ver las {business.reviewCount} en Booksy
@@ -97,6 +104,19 @@ const fmt = (iso: string) => new Date(iso).toLocaleDateString('es-ES', { month: 
 </section>
 
 <style>
+  /* All slides in one cell: the tallest sets the height, so tapping a dash
+     never shifts what is below. Hidden ones keep their space, not their ink. */
+  .rev-stack {
+    display: grid;
+  }
+  .rev-slide {
+    grid-area: 1 / 1;
+  }
+  .rev-slide[hidden] {
+    display: block;
+    visibility: hidden;
+  }
+
   .rev-dot::after {
     content: '';
     position: absolute;
@@ -107,6 +127,9 @@ const fmt = (iso: string) => new Date(iso).toLocaleDateString('es-ES', { month: 
     transform: translate(-50%, -50%);
     background: var(--c-veta);
     transition: background-color 240ms var(--ease-led);
+  }
+  .rev-dot:hover::after {
+    background: var(--c-humo);
   }
   .rev-dot[aria-pressed='true']::after {
     background: var(--c-roble);
@@ -125,7 +148,7 @@ const fmt = (iso: string) => new Date(iso).toLocaleDateString('es-ES', { month: 
       slides.forEach((s, k) => {
         s.hidden = k !== i;
       });
-      dots.forEach((d, k) => d.setAttribute('aria-pressed',String(k === i)));
+      dots.forEach((d, k) => d.setAttribute('aria-pressed', String(k === i)));
     }
     dots.forEach((d) => d.addEventListener('click', () => show(Number(d.dataset.i))));
     show(0);
