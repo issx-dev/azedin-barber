@@ -13,16 +13,16 @@ import { business, hours } from '../data/content.js';
 const directionsUrl = `https://www.google.com/maps/dir/?api=1&destination=${business.lat},${business.lng}&destination_place_id=${business.placeId}`;
 ---
 
-<section id="donde" class="relative py-20 md:py-30" aria-labelledby="donde-title">
+<section id="donde" class="section relative" aria-labelledby="donde-title">
   <div class="frame">
-    <header class="ruled-bottom pb-8">
+    <header class="section-head ruled-bottom">
       <p class="eyebrow mb-4">{business.town}, {business.province}</p>
       <h2 id="donde-title" class="text-sect display text-cal">Dónde</h2>
     </header>
 
-    <div class="grid gap-x-10 gap-y-12 pt-10 lg:grid-cols-12">
+    <div class="section-body grid gap-x-16 gap-y-12 lg:grid-cols-12">
       <!-- Hours: the docket again, with the exceptions made explicit. -->
-      <div class="lg:col-span-5" data-open-hours data-hours={JSON.stringify(hours)}>
+      <div class="lg:col-span-6" data-open-hours data-hours={JSON.stringify(hours)}>
         <p class="eyebrow mb-5">Horario</p>
         {/* Live status, filled in the browser (Europe/Madrid). Hidden until
             then: without JS the weekly hours below are the whole truth. */}
@@ -47,28 +47,29 @@ const directionsUrl = `https://www.google.com/maps/dir/?api=1&destination=${busi
         </dl>
       </div>
 
-      <div class="lg:col-span-4">
+      <!-- Address: the other half of the frame. A hairline echoes the reviews
+           divider; the street is set a step larger so it carries the column,
+           and phone + directions sit on the floor, level with Domingo. -->
+      <div class="flex flex-col lg:col-span-6 lg:border-l lg:border-veta lg:pl-16">
         <p class="eyebrow mb-5">Dirección</p>
-        <address class="not-italic">
-          <p class="font-display uppercase text-cal" style="font-size: var(--step-1); font-variation-settings: 'wght' 600;">
+        <address class="flex flex-1 flex-col not-italic">
+          <p class="font-display uppercase text-cal" style="font-size: var(--step-2); line-height: 1.1; font-variation-settings: 'wght' 600; max-width: 16ch;">
             {business.address}
           </p>
-          <p class="mt-2 font-body text-cap text-humo">
+          <p class="mt-3 font-body text-cap text-humo">
             {business.postalCode} {business.town}, {business.province}
           </p>
-          <p class="mt-5">
+
+          <div class="mt-8 flex flex-wrap items-center justify-between gap-x-8 gap-y-4 border-t border-veta pt-5 lg:mt-auto">
             <a
               href={`tel:${business.phoneRaw}`}
-              class="font-body tabular text-cal underline decoration-veta underline-offset-4 transition-colors duration-120 ease-marmol hover:decoration-roble py-3 min-h-[44px] inline-flex items-center"
+              class="inline-flex min-h-[44px] items-center py-3 font-body tabular text-cal underline decoration-veta underline-offset-4 transition-colors duration-120 ease-marmol hover:decoration-roble"
             >
               {business.phone}
             </a>
-          </p>
+            <a class="btn btn-ghost" href={directionsUrl} target="_blank" rel="noopener noreferrer">Cómo llegar</a>
+          </div>
         </address>
-
-        <div class="mt-8">
-          <a class="btn btn-ghost" href={directionsUrl} target="_blank" rel="noopener noreferrer">Cómo llegar</a>
-        </div>
       </div>
     </div>
   </div>

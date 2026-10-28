@@ -12,7 +12,7 @@ import Logo from './Logo.astro';
 const year = new Date().getFullYear();
 ---
 
-<footer class="ruled-top relative bg-marmol-2 py-16 md:py-22">
+<footer class="section ruled-top relative bg-marmol-2">
   <div class="frame">
     <!-- The CTA is the loudest thing here. -->
     <a
@@ -22,10 +22,11 @@ const year = new Date().getFullYear();
       class="group block max-w-measure font-display uppercase text-cal transition-colors duration-240 ease-marmol hover:text-roble"
       style="font-size: var(--step-3); line-height: 0.95; letter-spacing: -0.03em;"
     >
-      Reserva tu cita <span class="text-roble group-hover:text-cal">→</span>
+      {/* "cita →" never breaks: the arrow must not end up alone on a phone. */}
+      Reserva tu <span class="whitespace-nowrap">cita&nbsp;<span class="text-roble group-hover:text-cal">→</span></span>
     </a>
 
-    <div class="ruled-top mt-14 grid gap-x-10 gap-y-10 pt-10 sm:grid-cols-2 lg:grid-cols-4">
+    <div class="ruled-top mt-12 grid gap-x-10 gap-y-10 pt-10 sm:grid-cols-2 lg:grid-cols-4">
       <!-- "Hoy" is resolved in the browser (Europe/Madrid, src/scripts/open-status.js):
            a static build cannot know the day. Without JS it points to the weekly hours. -->
       <div data-hoy data-hours={JSON.stringify(hours)}>

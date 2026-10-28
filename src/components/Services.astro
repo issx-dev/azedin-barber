@@ -16,9 +16,9 @@ const noteFor = (s: { price: string | null; note?: string }) =>
   s.price ? s.note : s.note?.replace(/\s*·\s*consultar$/i, '');
 ---
 
-<section id="servicios" class="relative py-20 md:py-30" aria-labelledby="servicios-title">
+<section id="servicios" class="section section-end-tight relative" aria-labelledby="servicios-title">
   <div class="frame">
-    <header class="ruled-bottom flex flex-wrap items-end justify-between gap-x-6 gap-y-3 pb-6 md:pb-8">
+    <header class="section-head ruled-bottom flex flex-wrap items-end justify-between gap-x-6 gap-y-3">
       <div>
         <p class="eyebrow mb-4">Tarifa</p>
         <h2 id="servicios-title" class="text-sect display text-cal">Precios</h2>
@@ -47,7 +47,7 @@ const noteFor = (s: { price: string | null; note?: string }) =>
     </ul>
 
     <!-- The booking row: one line of what happens next, one button. -->
-    <div class="mt-8 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between sm:gap-8 md:mt-10">
+    <div class="mt-6 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between sm:gap-8 md:mt-8">
       <p class="font-body text-cal-dim">
         Eliges barbero y hora en Booksy.
       </p>
