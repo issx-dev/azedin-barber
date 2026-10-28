@@ -27,7 +27,10 @@ MobileStickyCTA. `homepage.spec.js` asserts this order.
   (no GSAP). An inline script adds `.is-live` before first paint so the section's
   scroll height is reserved up front (no layout shift, anchors land correctly);
   without JS or with reduced motion it is a native snap scroller. LocalTour reserves
-  its height the same way (`is-tall`).
+  its height the same way (`is-tall`: 400svh desktop, 320svh phones). Each module sets
+  `data-ready` when it evaluates; if it never does, the inline script drops the class
+  after load (fail-safe back to the no-JS layout). Tour frames beyond the first window
+  download only once the visitor starts walking.
 - `src/scripts/motion.js` (Web Animations + IntersectionObserver; Lenis only for
   fine pointers) is dynamically imported from
   `Layout.astro` on idle, and only when `prefers-reduced-motion: no-preference`.
