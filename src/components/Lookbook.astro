@@ -11,6 +11,14 @@
  * brightness as they leave the centre, so the cut in front stays obvious
  * and the next one is still a cut, not a black rectangle.
  * Without JS the rail is a native horizontal scroller with snap points.
+ *
+ * The "pin" is CSS `position: sticky` (as in LocalTour), not a GSAP
+ * ScrollTrigger pin. The scroll length is reserved in CSS before first paint
+ * (an inline script arms `.is-live`), so the sections below never move after
+ * load and an early anchor jump to #resenas/#local/#donde lands where it
+ * should. Sticky also keeps the stage in flow: the fixed-position swap of a
+ * JS pin was scored by Chrome as two full-viewport layout shifts (CLS ~2.0)
+ * on every pass through the reel. The scrub below is ~1 KB, no GSAP.
  */
 import { Image } from 'astro:assets';
 import { galleryItems, business } from '../data/content.js';
@@ -18,9 +26,21 @@ import { galleryItems, business } from '../data/content.js';
 const total = String(galleryItems.length).padStart(2, '0');
 ---
 
-<section id="archivo" class="relative" aria-labelledby="archivo-title" data-reel>
-  <!-- Exactly one screen. A stage taller than the viewport is pinned flush
-       with the top and then jumps up by the overflow when the pin lets go.
+<section
+  id="archivo"
+  class="relative"
+  aria-labelledby="archivo-title"
+  data-reel
+  style={`--reel-gaps: ${galleryItems.length - 1}`}
+>
+  <script is:inline>
+    // Pre-paint: reserve the reel's scroll length now, not when JS arrives, so
+    // nothing below it shifts later. Reduced motion keeps the native scroller.
+    if (matchMedia('(prefers-reduced-motion: no-preference)').matches)
+      document.getElementById('archivo').classList.add('is-live');
+  </script>
+  <!-- Exactly one screen. A stage taller than the viewport sticks flush
+       with the top and then jumps up by the overflow when it lets go.
        pt-24 (not 20) so the eyebrow clears the 80px fixed header on #archivo. -->
   <div class="reel-stage flex h-[100svh] max-h-[100svh] flex-col overflow-hidden bg-marmol pt-24 pb-6 md:justify-center md:pb-0 md:pt-20">
     <header class="frame flex items-end justify-between gap-6">
@@ -46,8 +66,8 @@ const total = String(galleryItems.length).padStart(2, '0');
                     alt={item.alt}
                     width={1200}
                     height={2133}
-                    widths={[640, 960, 1200]}
-                    sizes="(min-width: 768px) 320px, 78vw"
+                    widths={[320, 400, 480, 600, 720, 860, 940, 1080]}
+                    sizes="(min-width: 1455px) 320px, (min-width: 768px) 22vw, (min-width: 640px) 44vw, 78vw"
                     format="avif"
                     quality={78}
                     loading={i < 3 ? 'eager' : 'lazy'}
@@ -90,6 +110,25 @@ const total = String(galleryItems.length).padStart(2, '0');
   .reel-viewport::-webkit-scrollbar {
     display: none;
   }
+  /* Scroll-driven: the section is one screen plus one STEP per card change,
+     and the stage sticks for that travel. STEP is px of page scroll per cut;
+     it lives only here (the script reads the travel back from layout).
+     Phones need a real beat on each cut; desktop scales with the stage. */
+  [data-reel].is-live {
+    --reel-step: 360px;
+    height: calc(100vh + var(--reel-step) * var(--reel-gaps));
+    height: calc(100svh + var(--reel-step) * var(--reel-gaps));
+  }
+  @media (min-width: 768px) {
+    [data-reel].is-live {
+      --reel-step: clamp(300px, 40vh, 420px);
+      --reel-step: clamp(300px, 40svh, 420px);
+    }
+  }
+  [data-reel].is-live .reel-stage {
+    position: sticky;
+    top: 0;
+  }
   /* Driven by scroll: the viewport no longer scrolls natively. */
   [data-reel].is-live .reel-viewport {
     overflow: visible;
@@ -125,20 +164,13 @@ const total = String(galleryItems.length).padStart(2, '0');
 </style>
 
 <script>
-  import gsap from 'gsap';
-  import { ScrollTrigger } from 'gsap/ScrollTrigger';
-  gsap.registerPlugin(ScrollTrigger);
-  // Mobile browsers resize the viewport when the address bar hides/shows.
-  // Recomputing the pin on each of those mid-scroll makes the page jump.
-  ScrollTrigger.config({ ignoreMobileResize: true });
-
   const root = document.querySelector<HTMLElement>('[data-reel]');
-  const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
   if (root) {
     const stage = root.querySelector<HTMLElement>('.reel-stage')!;
     const rail = root.querySelector<HTMLElement>('.reel-rail')!;
     const cards = [...root.querySelectorAll<HTMLElement>('.reel-card')];
+    const media = cards.map((c) => c.querySelector<HTMLElement>('.reel-media'));
     const indexEl = root.querySelector<HTMLElement>('.reel-index');
     const progress = root.querySelector<HTMLElement>('.reel-progress');
     let on = -1;
@@ -165,85 +197,92 @@ const total = String(galleryItems.length).padStart(2, '0');
       if (indexEl) indexEl.textContent = String(best + 1).padStart(2, '0');
     }
 
-    if (reduced) {
-      // Keep the native snap scroller; just track focus as the user swipes.
-      root.querySelector('.reel-viewport')!.addEventListener('scroll', focus, { passive: true });
+    if (!root.classList.contains('is-live')) {
+      // Reduced motion: keep the native snap scroller; track focus on swipe.
+      root.querySelector('.reel-viewport')!.addEventListener('scroll', () => focus(), { passive: true });
       focus();
     } else {
-      root.classList.add('is-live');
-      // Card centres in rail coordinates (offsetLeft is rail-relative: the
-      // rail is `relative`). Untransformed layout, so CSS scale on the cards
-      // never skews them.
-      const centres = () => cards.map((c) => c.offsetLeft + c.offsetWidth / 2);
-      // Rail x that puts screen-centre on rail-coordinate `cx`.
-      // The rail's horizontal start inside the viewport. Its viewport box is
-      // (layout left + current translateX); subtracting the translate gives
-      // the layout left. Horizontal only, so pin state (fixed vs static,
-      // which shifts vertical offsets) does not affect it.
-      const railLeft = () => rail.getBoundingClientRect().left - (Number(gsap.getProperty(rail, 'x')) || 0);
-      const xFor = (cx: number) => window.innerWidth / 2 - railLeft() - cx;
+      // Geometry, measured on load/resize only. Card centres are in rail
+      // coordinates (offsetLeft is rail-relative: the rail is `relative`) and
+      // untransformed, so the CSS scale on the cards never skews them.
+      let centres: number[] = [];
+      let railLeft = 0;
+      let x = 0;
+      const measure = () => {
+        centres = cards.map((c) => c.offsetLeft + c.offsetWidth / 2);
+        railLeft = rail.getBoundingClientRect().left - x;
+      };
 
-      // One card per STEP px of scroll. Phones need a real beat on each cut:
-      // 180px blew six cuts past the chair before the eye could settle.
-      // Desktop stays tied to the stage (100svh), not window.innerHeight,
-      // which changes as a phone's address bar slides.
-      const STEP = () => (window.innerWidth < 768 ? 360 : Math.min(420, Math.max(300, stage.offsetHeight * 0.4)));
-      const travel = () => STEP() * (cards.length - 1);
+      // Progress through the stuck span. Travel is the section's extra height
+      // over the stage (both svh-based, so a phone's sliding address bar does
+      // not move it mid-swipe).
+      const progressAt = () => {
+        const r = root.getBoundingClientRect();
+        const travel = r.height - stage.offsetHeight;
+        return travel > 0 ? Math.min(1, Math.max(0, -r.top / travel)) : 0;
+      };
 
-      // Map progress -> rail x piecewise-linearly through the card centres,
-      // so at progress k/(n-1) card k is exactly centred, whatever the widths
-      // and gaps. A single linear tween drifted off by the gap ratio.
-      const state = { p: 0 };
       // Neighbour falls to 0.9 scale and ~0.45 brightness. The value follows
       // the fractional index, so the handoff glides instead of popping.
       const pose = (f: number) => {
         cards.forEach((card, i) => {
           const fall = Math.min(1, Math.abs(i - f));
           card.style.transform = `scale(${(1 - fall * 0.1).toFixed(4)})`;
-          const media = card.querySelector<HTMLElement>('.reel-media');
-          if (!media) return;
-          if (fall < 0.04) {
-            media.style.filter = 'none';
-          } else {
-            const bright = (1 - fall * 0.55).toFixed(3);
-            const sat = (1 - fall * 0.32).toFixed(3);
-            media.style.filter = `brightness(${bright}) saturate(${sat})`;
-          }
+          const m = media[i];
+          if (!m) return;
+          m.style.filter = fall < 0.04
+            ? 'none'
+            : `brightness(${(1 - fall * 0.55).toFixed(3)}) saturate(${(1 - fall * 0.32).toFixed(3)})`;
         });
       };
-      const apply = () => {
-        const c = centres();
-        const f = state.p * (cards.length - 1);
+
+      // Map progress -> rail x piecewise-linearly through the card centres,
+      // so at progress k/(n-1) card k is exactly centred, whatever the widths
+      // and gaps. A single linear tween drifted off by the gap ratio.
+      const apply = (p: number) => {
+        const f = p * (cards.length - 1);
         const k = Math.min(cards.length - 2, Math.floor(f));
-        const t = f - k;
-        const cx = c[k] + (c[k + 1] - c[k]) * t;
-        gsap.set(rail, { x: xFor(cx) });
-        if (progress) progress.style.transform = `scaleX(${state.p})`;
+        const cx = centres[k] + (centres[k + 1] - centres[k]) * (f - k);
+        x = window.innerWidth / 2 - railLeft - cx;
+        rail.style.transform = `translate3d(${x.toFixed(2)}px,0,0)`;
+        if (progress) progress.style.transform = `scaleX(${p})`;
         pose(f);
-        focus(state.p);
+        focus(p);
       };
 
-      gsap.to(state, {
-        p: 1,
-        ease: 'none',
-        onUpdate: apply,
-        scrollTrigger: {
-          trigger: root,
-          pin: stage,
-          start: 'top top',
-          end: () => '+=' + travel(),
-          // No `snap`: it scrolls the window while a thumb is still driving
-          // it, and the two fought — that was the mobile breakage.
-          scrub: 0.5,
-          invalidateOnRefresh: true,
-          // No anticipatePin: a flick pinned this panel over Precios while
-          // the stage was still transparent, so the two sections painted together.
-          onRefresh: apply,
-        },
-      });
-      apply();
-      document.fonts?.ready.then(() => ScrollTrigger.refresh());
-      window.addEventListener('load', () => ScrollTrigger.refresh(), { once: true });
+      // Scrub: the rail eases toward the scroll position (~0.5 s to settle,
+      // like the old `scrub: 0.5`). No snapping: it fought a thumb mid-swipe.
+      let shown = 0;
+      let target = 0;
+      let raf = 0;
+      let lastT = 0;
+      const tick = (t: number) => {
+        const dt = lastT ? Math.min(0.05, (t - lastT) / 1000) : 1 / 60;
+        lastT = t;
+        shown += (target - shown) * (1 - Math.exp(-dt / 0.1));
+        if (Math.abs(target - shown) < 1e-4) shown = target;
+        apply(shown);
+        if (shown !== target) raf = requestAnimationFrame(tick);
+        else { raf = 0; lastT = 0; }
+      };
+      const onScroll = () => {
+        target = progressAt();
+        if (!raf) raf = requestAnimationFrame(tick);
+      };
+      // Layout changed (resize, fonts): re-measure, repaint, keep easing.
+      const settle = () => {
+        measure();
+        apply(shown);
+        onScroll();
+      };
+
+      measure();
+      shown = target = progressAt();
+      apply(shown);
+      window.addEventListener('scroll', onScroll, { passive: true });
+      window.addEventListener('resize', settle, { passive: true });
+      document.fonts?.ready.then(settle);
+      window.addEventListener('load', settle, { once: true });
     }
   }
 </script>
