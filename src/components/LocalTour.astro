@@ -19,8 +19,10 @@
  *    globally (that paints every-Nth frame and feels like a slideshow).
  *
  * Phones get 660x1173 AVIF (~6.8 MB for the whole walk); desktop gets a
- * pre-cropped panel (~6.6 MB). Frame 0 is a real <img> and the LCP; the
- * rest stream from the scrub head outward after the page is interactive.
+ * pre-cropped panel (~6.6 MB). Frame 0 is a real <img> (the desktop LCP; on
+ * phones it fills the viewport, which Chrome treats as background, so the
+ * chapter title is the LCP). The rest stream from the scrub head outward
+ * once the page has loaded; the canvas only shows once the walk moves.
  *
  * Chapters carry a fact for that stretch of the walk: the street, the room,
  * the price, who cuts. They do not caption the furniture.
@@ -44,6 +46,20 @@ const chapters = [
   data-tour
   data-frames={FRAMES}
 >
+  <!-- Reserve the walk's scroll length before the first layout, under the
+       same conditions the tour script runs in. Growing the section later
+       (when the script starts) re-laid-out the whole page, moved the reel's
+       pin after it was measured, and left the gallery within lazy-load
+       distance of the first screen, so its images competed with the hero.
+       Without JS the section stays one screen tall. -->
+  <script is:inline>
+    (function (s) {
+      try {
+        var c = navigator.connection;
+        if (matchMedia('(prefers-reduced-motion: no-preference)').matches && !(c && c.saveData)) s.classList.add('is-tall');
+      } catch (e) {}
+    })(document.currentScript.parentElement);
+  </script>
   <div class="tour-stage sticky top-0 h-[100svh] overflow-hidden bg-marmol">
     <!-- The walk. Phones: full-bleed (the footage is vertical, like the
          screen). Desktop: a vertical panel on the right at native resolution,
@@ -120,18 +136,21 @@ const chapters = [
      and frame 0 stands as a photograph. */
   /* Phones: ~3.2 screens. One frame every ~12px is still a walk, not a slideshow.
      Desktop keeps the long scrub, about one frame per 16px. */
-  .tour.is-live {
+  .tour.is-tall {
     height: 320svh;
   }
   @media (min-width: 768px) {
-    .tour.is-live {
+    .tour.is-tall {
       height: 650svh;
     }
   }
+  /* The canvas stays hidden while the poster <img> already shows frame 0:
+     painting that same frame again would cost a main-thread decode during
+     load for no visible change. It shows once the walk moves. */
   .tour-canvas {
     opacity: 0;
   }
-  .tour.is-live .tour-canvas {
+  .tour.is-live .tour-canvas.is-painted {
     opacity: 1;
   }
   .tour-chapter {
@@ -143,13 +162,20 @@ const chapters = [
   const root = document.querySelector<HTMLElement>('[data-tour]');
   const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
   const saveData = (navigator as any).connection?.saveData === true;
-  // Slow cellular or a low-memory device: only the window around the scrub
-  // head is fetched, never the whole walk in the background.
-  const constrained =
-    ['slow-2g', '2g', '3g'].includes((navigator as any).connection?.effectiveType) ||
-    ((navigator as any).deviceMemory ?? 8) <= 2;
 
+  // The whole tour is set up on idle, after the first paint, so none of it
+  // lands in the module's own task. Until then the poster <img> is frame 0.
   if (root && !reduced && !saveData) {
+    if ('requestIdleCallback' in window) requestIdleCallback(() => tour(root), { timeout: 800 });
+    else window.addEventListener('load', () => tour(root), { once: true });
+  }
+
+  function tour(root: HTMLElement) {
+    // Slow cellular or a low-memory device: only the window around the scrub
+    // head is fetched, never the whole walk in the background.
+    const constrained =
+      ['slow-2g', '2g', '3g'].includes((navigator as any).connection?.effectiveType) ||
+      ((navigator as any).deviceMemory ?? 8) <= 2;
     const N = Number(root.dataset.frames);
     const canvas = root.querySelector<HTMLCanvasElement>('.tour-canvas')!;
     // desynchronized: prefer low-latency paints while scrubbing; fall back if unsupported.
@@ -170,11 +196,18 @@ const chapters = [
 
     const src = (i: number) => `/tour/${dir}/${String(i).padStart(3, '0')}.avif`;
 
+    // The backing store never holds more pixels than the frames carry: past
+    // the source resolution a bigger canvas only upscales (the compositor does
+    // that for free) while every drawImage pays for each extra pixel. On a
+    // 3x phone this is ~3x fewer pixels per scrubbed frame, with no lost detail.
     function size() {
       const dpr = Math.min(window.devicePixelRatio || 1, 2.5);
       const r = canvas.getBoundingClientRect();
-      const w = Math.round(r.width * dpr);
-      const h = Math.round(r.height * dpr);
+      const f0 = frames[0];
+      const native = f0 ? Math.max(1, 1 / Math.max(r.width / f0.naturalWidth, r.height / f0.naturalHeight)) : dpr;
+      const scale = Math.min(dpr, native);
+      const w = Math.round(r.width * scale);
+      const h = Math.round(r.height * scale);
       if (canvas.width !== w || canvas.height !== h) {
         canvas.width = w;
         canvas.height = h;
@@ -208,7 +241,7 @@ const chapters = [
     // from jumping mid-swipe on phones.
     const stage = root.querySelector<HTMLElement>('.tour-stage')!;
     function progressAt() {
-      const r = root!.getBoundingClientRect();
+      const r = root.getBoundingClientRect();
       const travel = r.height - stage.offsetHeight;
       return travel > 0 ? Math.min(1, Math.max(0, -r.top / travel)) : 0;
     }
@@ -216,6 +249,7 @@ const chapters = [
     let shown = 0;   // eased progress actually painted
     let target = 0;  // progress the scroll asks for
     let drawn = -1;  // index of the frame on the canvas
+    let painted = false; // canvas visible (it covers the poster)
     let activeChapter = -1;
     let raf = 0;
     let lastT = 0;
@@ -224,9 +258,15 @@ const chapters = [
     function paint(p: number) {
       const want = Math.round(p * (N - 1));
       const i = frames[want] ? want : nearestLoaded(want);
-      if (i >= 0 && i !== drawn) {
+      // Frame 0 is what the poster already shows: leave the canvas hidden
+      // until the walk actually moves.
+      if (i >= 0 && i !== drawn && (painted || i !== 0)) {
         draw(frames[i]!);
         drawn = i;
+        if (!painted) {
+          painted = true;
+          canvas.classList.add('is-painted');
+        }
       }
       if (progressBar) progressBar.style.transform = `scaleX(${p})`;
       let active = 0;
@@ -254,6 +294,7 @@ const chapters = [
     function onScroll() {
       target = progressAt();
       priorityHead = Math.round(target * (N - 1));
+      started = true;
       bumpPriority();
       scrolled = true;
       tryBulk();
@@ -262,10 +303,12 @@ const chapters = [
 
     // Priority queue + loader state — declared before load() so increments are safe.
     let queue: number[] = [];
-    let queueGen = 0;
     let queuedHead = -999;
     let loadedCount = 0;
     let pumping = false;
+    // The first window waits for window load (or the first scroll): until
+    // then the page's own images and fonts have the connection.
+    let started = false;
     // Bulk = queue every frame, not just the window. Stays off on constrained
     // connections; otherwise it flips on after load + first scroll or a delay.
     let bulk = false;
@@ -305,7 +348,6 @@ const chapters = [
     }
 
     function rebuildQueue(head: number) {
-      const gen = ++queueGen;
       const ordered: number[] = [];
       const seen = new Set<number>();
       const push = (i: number) => {
@@ -319,12 +361,11 @@ const chapters = [
         if (d) push(head - d);
       }
       // Then every remaining frame by distance from head (bulk only).
-      if (!bulk) { queue = ordered; return gen; }
+      if (!bulk) { queue = ordered; return; }
       const rest: number[] = [];
       for (let i = 0; i < N; i++) if (!seen.has(i) && !frames[i]) rest.push(i);
       rest.sort((a, b) => Math.abs(a - head) - Math.abs(b - head));
       queue = ordered.concat(rest);
-      return gen;
     }
 
     function bumpPriority() {
@@ -337,7 +378,7 @@ const chapters = [
     }
 
     async function ensurePump() {
-      if (pumping || loadedCount >= N) return;
+      if (!started || pumping || loadedCount >= N) return;
       pumping = true;
       const workers = desktop ? 8 : 5;
       await Promise.all(
@@ -362,10 +403,16 @@ const chapters = [
 
     async function start() {
       // Frame 0 doubles as the AVIF support test: if it cannot be decoded,
-      // the still photograph stays and nothing else is downloaded.
+      // the still photograph stays and nothing else is downloaded. It is the
+      // poster's own file, so this is a cache hit.
       await load(0);
-      if (!frames[0]) return;
-      root!.classList.add('is-live');
+      if (!frames[0]) {
+        // Give the scroll length back; let pinned sections re-measure.
+        root.classList.remove('is-tall');
+        window.dispatchEvent(new Event('resize'));
+        return;
+      }
+      root.classList.add('is-tall', 'is-live');
       shown = target = progressAt();
       priorityHead = Math.round(shown * (N - 1));
       size();
@@ -379,18 +426,21 @@ const chapters = [
 
       rebuildQueue(priorityHead);
       queuedHead = priorityHead;
-      void ensurePump();
 
-      // Bulk download starts only after window load, then first scroll or 3.5 s.
+      // The first window starts after window load (or on the first scroll);
+      // bulk download after load, then first scroll or 3.5 s.
       const afterLoad = () => {
+        started = true;
+        void ensurePump();
         setTimeout(() => { bulkDelayDone = true; tryBulk(); }, 3500);
         tryBulk();
       };
       if (document.readyState === 'complete') afterLoad();
       else window.addEventListener('load', afterLoad, { once: true });
+      // Arrived mid-walk (reload, back/forward): that stretch is needed now.
+      if (priorityHead > 0) onScroll();
     }
 
-    if ('requestIdleCallback' in window) requestIdleCallback(start, { timeout: 800 });
-    else window.addEventListener('load', start, { once: true });
+    void start();
   }
 </script>
