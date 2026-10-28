@@ -54,10 +54,10 @@ MobileStickyCTA. `homepage.spec.js` asserts this order.
 
 ## CSP and deployment
 
-`netlify.toml` sets a strict Content-Security-Policy (script, style, font, img,
-connect and frame sources are enumerated: self, Booksy, Behold/Instagram feed,
-Google frames). Add any new third-party origin there or it will be blocked in
-production.
+`netlify.toml` sets a strict Content-Security-Policy: scripts, styles and fonts are
+self-only, `frame-src 'none'`, and `connect-src` allows only Booksy and the
+Behold/Instagram feed. Add any new third-party origin there or it will be blocked in
+production. `/tour/*` is cached 30 days (not `immutable`: filenames are not hashed).
 
 ## Gotchas
 
