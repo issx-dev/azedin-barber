@@ -12,14 +12,14 @@ import { Image } from 'astro:assets';
 import { barbers, shopImages } from '../data/content.js';
 ---
 
-<section id="local" class="relative py-20 md:py-30" aria-labelledby="local-title">
+<section id="local" class="section relative" aria-labelledby="local-title">
   <div class="frame">
-    <header class="ruled-bottom pb-8">
+    <header class="section-head ruled-bottom">
       <p class="eyebrow mb-4">Desde 2020</p>
       <h2 id="local-title" class="text-sect display">El equipo</h2>
     </header>
 
-    <div class="grid gap-x-16 gap-y-10 pt-10 lg:grid-cols-12 lg:items-end lg:pt-14">
+    <div class="grid gap-x-16 section-body gap-y-10 lg:grid-cols-12 lg:items-end">
       <figure class="lg:col-span-7">
         <div class="relative aspect-[4/3] overflow-hidden border border-veta bg-marmol-2" data-lama-reveal>
           <Image

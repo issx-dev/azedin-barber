@@ -33,6 +33,13 @@
 
     --rule: 1px;
     --gutter: clamp(1.25rem, 4vw, 3.5rem);
+
+    /* Vertical rhythm. Two steps only, so every section breathes the same:
+       --section-y between sections (56px phone, 88px desktop, so two
+       neighbours sit ~176px apart, not 240), --block-y between a section's
+       ruled header and its body (32px to 48px). */
+    --section-y: clamp(3.5rem, 2rem + 4vw, 5.5rem);
+    --block-y: clamp(2rem, 1.5rem + 1.25vw, 3rem);
     --gap: calc(((16 * 100) / 1440) * 1vw);
     --safe: calc(((24 * 100) / 1440) * 1vw);
 
@@ -117,6 +124,22 @@
   .frame {
     @apply mx-auto w-full max-w-frame;
     padding-inline: var(--gutter);
+  }
+
+  /* --- Rhythm ------------------------------------------------------------ */
+  .section {
+    padding-block: var(--section-y);
+  }
+  /* A section whose neighbour below brings its own top air (the Archivo
+     stage clears the fixed header with ~96px): end on the smaller step. */
+  .section-end-tight {
+    padding-bottom: var(--block-y);
+  }
+  .section-head {
+    padding-bottom: clamp(1.5rem, 1.25rem + 0.6vw, 2rem);
+  }
+  .section-body {
+    padding-top: var(--block-y);
   }
 
   .ruled-top {

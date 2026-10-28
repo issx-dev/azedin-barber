@@ -19,14 +19,14 @@ const featured = reviews.slice(0, 4);
 const fmt = (iso: string) => new Date(iso).toLocaleDateString('es-ES', { month: 'short', year: 'numeric' });
 ---
 
-<section id="resenas" class="relative overflow-hidden py-20 md:py-30" aria-labelledby="resenas-title">
+<section id="resenas" class="section relative overflow-hidden" aria-labelledby="resenas-title">
   <div class="frame">
-    <header class="ruled-bottom pb-6">
+    <header class="section-head ruled-bottom">
       <p class="eyebrow">Reseñas verificadas · {business.reviewSource}</p>
       <h2 id="resenas-title" class="sr-only">Reseñas</h2>
     </header>
 
-    <div class="grid gap-x-16 gap-y-10 pt-10 lg:grid-cols-12 lg:items-start lg:pt-14">
+    <div class="section-body grid gap-x-16 gap-y-10 lg:grid-cols-12 lg:items-stretch">
       <!-- 1. The number. -->
       <div class="flex items-end gap-5 lg:col-span-4 lg:flex-col lg:items-start lg:gap-4">
         <p
@@ -62,13 +62,13 @@ const fmt = (iso: string) => new Date(iso).toLocaleDateString('es-ES', { month: 
               <figure class="rev-slide" data-i={i} hidden={i === 0 ? undefined : true}>
                 <blockquote>
                   <p
-                    class="font-display text-cal"
-                    style="font-size: clamp(1.5rem, 1.15rem + 1.5vw, 2.375rem); font-variation-settings: 'wght' 500; text-transform: none; letter-spacing: 0; line-height: 1.25; text-wrap: pretty; max-width: 30ch;"
+                    class="rev-quote font-display text-cal"
+                    style="font-size: clamp(1.5rem, 1.15rem + 1.5vw, 2.375rem); font-variation-settings: 'wght' 500; text-transform: none; letter-spacing: 0; line-height: 1.25; text-wrap: pretty;"
                   >
                     “{r.quote}”
                   </p>
                 </blockquote>
-                <figcaption class="mt-5 font-body text-cap text-humo tabular">
+                <figcaption class="rev-cite font-body text-cap text-humo tabular">
                   <span class="text-cal">{r.author}</span>
                   <span class="mx-2 text-veta" aria-hidden="true">·</span>
                   {r.service} con {r.barber}
@@ -83,7 +83,7 @@ const fmt = (iso: string) => new Date(iso).toLocaleDateString('es-ES', { month: 
     </div>
 
     <!-- 3. Short reviews, still. Four on a phone, six from two columns up. -->
-    <ul class="mt-14 grid gap-x-12 border-t border-veta sm:grid-cols-2 lg:mt-20 lg:grid-cols-3" aria-label="Más reseñas de clientes">
+    <ul class="mt-12 grid gap-x-12 border-t border-veta sm:grid-cols-2 lg:mt-16 lg:grid-cols-3" aria-label="Más reseñas de clientes">
       {
         shortReviews.slice(0, 6).map((r, i) => (
           <li class:list={['border-b border-veta py-5', i >= 4 && 'hidden sm:block']}>
@@ -94,7 +94,7 @@ const fmt = (iso: string) => new Date(iso).toLocaleDateString('es-ES', { month: 
       }
     </ul>
 
-    <p class="mt-8 font-body text-cap text-humo">
+    <p class="mt-6 font-body text-cap text-humo">
       Todas de clientes con reserva confirmada.
       <a href={business.booksyProfileUrl} target="_blank" rel="noopener noreferrer" class="text-cal underline decoration-veta underline-offset-4 hover:decoration-roble">
         Ver las {business.reviewCount} en Booksy
@@ -105,15 +105,33 @@ const fmt = (iso: string) => new Date(iso).toLocaleDateString('es-ES', { month: 
 
 <style>
   /* All slides in one cell: the tallest sets the height, so tapping a dash
-     never shifts what is below. Hidden ones keep their space, not their ink. */
+     never shifts what is below. Hidden ones keep their space, not their ink.
+     Each slide fills the cell and the attribution sits on its floor, so a
+     short quote leaves an even margin above a fixed signature line instead
+     of a hole under it. From lg the measure opens to 36ch: the longest quote
+     loses a line, and so does the reserved height. */
   .rev-stack {
     display: grid;
   }
   .rev-slide {
     grid-area: 1 / 1;
+    display: flex;
+    flex-direction: column;
+  }
+  .rev-quote {
+    max-width: 30ch;
+  }
+  .rev-cite {
+    margin-top: auto;
+    padding-top: 1.25rem;
+  }
+  @media (min-width: 1024px) {
+    .rev-quote {
+      max-width: 36ch;
+    }
   }
   .rev-slide[hidden] {
-    display: block;
+    display: flex;
     visibility: hidden;
   }
 
