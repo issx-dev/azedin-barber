@@ -1,10 +1,12 @@
 ---
 /**
- * El local — the room, and the three people in it.
+ * El equipo — the room, and the three people in it.
  *
- * No invented metaphor: the shop's own materials are the argument. Marble
- * floor, oak slats, hexagonal light. Whoever has a portrait gets an avatar;
- * Anas has none yet, so he is listed by name and role only.
+ * The photograph is the anchor: a real cut on the marble, set large. Beside
+ * it, one tight typographic column: the sentence, then the three names.
+ * Every barber gets the same avatar slot so the list reads as one grid.
+ * Anas has no portrait yet, so his slot holds his initial in Cormorant
+ * instead of a stand-in photo: honest, and the names still line up.
  */
 import { Image } from 'astro:assets';
 import { barbers, shopImages } from '../data/content.js';
@@ -14,36 +16,23 @@ import { barbers, shopImages } from '../data/content.js';
   <div class="frame">
     <header class="ruled-bottom pb-8">
       <p class="eyebrow mb-4">Desde 2020</p>
-      <h2 id="local-title" class="text-sect display">
-        El equipo
-      </h2>
+      <h2 id="local-title" class="text-sect display">El equipo</h2>
     </header>
 
-    <div class="grid gap-x-10 gap-y-12 pt-10 lg:grid-cols-12">
-      <!-- The slat wall, as an actual slat wall. -->
-      <div class="lamas hidden w-full lg:col-span-1 lg:block" aria-hidden="true"></div>
-
-      <div class="lg:col-span-5">
-        <p class="text-cal-dim">
-          Azedin abrió la barbería en 2020 en la Avenida José Barrionuevo Peña.
-          Hoy sois tres en el salón: Azedin, Samir y Anas. Al reservar eliges con
-          quién.
-        </p>
-      </div>
-
-      <figure class="lg:col-span-6">
-        <div class="relative aspect-[16/10] overflow-hidden border border-veta bg-marmol-2" data-lama-reveal>
+    <div class="grid gap-x-16 gap-y-10 pt-10 lg:grid-cols-12 lg:items-end lg:pt-14">
+      <figure class="lg:col-span-7">
+        <div class="relative aspect-[4/3] overflow-hidden border border-veta bg-marmol-2" data-lama-reveal>
           <Image
             src={shopImages.salon.src}
             alt={shopImages.salon.alt}
             width={1600}
-            height={1000}
-            widths={[800, 1200, 1600]}
-            sizes="(min-width: 1024px) 44vw, 90vw"
+            height={1200}
+            widths={[400, 640, 800, 1200, 1600]}
+            sizes="(min-width: 1024px) min(54vw, 47rem), calc(100vw - 2.5rem)"
             format="avif"
             quality={78}
-            loading="eager"
-            style="object-position: center 38%;"
+            loading="lazy"
+            style="object-position: center 40%;"
             class="h-full w-full object-cover"
           />
         </div>
@@ -51,47 +40,58 @@ import { barbers, shopImages } from '../data/content.js';
           <span>El salón</span><span>Berja</span>
         </figcaption>
       </figure>
-    </div>
 
-    <!-- The team. -->
-    <ul class="ruled-top mt-16 grid gap-x-10 gap-y-10 pt-10 sm:grid-cols-3">
-      {
-        barbers.map((b) => (
-          <li class="flex items-center gap-5">
-            {b.img && (
-              <div class="aro relative h-16 w-16 shrink-0 overflow-hidden bg-marmol-2">
-                <Image
-                  src={b.img}
-                  alt={`${b.name}, barbero`}
-                  width={192}
-                  height={192}
-                  widths={[128, 192]}
-                  format="avif"
-                  quality={72}
-                  class="h-full w-full object-cover"
-                />
-              </div>
-            )}
-            <div>
-              <h3 class="display text-sub" style="font-variation-settings: 'wght' 600;">
-                {b.instagram ? (
-                  <a
-                    href={b.instagram}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    class="underline decoration-veta underline-offset-4 transition-colors duration-120 ease-marmol hover:text-roble hover:decoration-roble"
-                  >
-                    {b.name}
-                  </a>
-                ) : (
-                  b.name
-                )}
-              </h3>
-              <p class="mt-1 font-body text-cap text-humo">{b.role}</p>
-            </div>
-          </li>
-        ))
-      }
-    </ul>
+      <div class="lg:col-span-5 lg:pb-9">
+        <p class="text-sub text-cal-dim" style="text-wrap: pretty; max-width: 30ch;">
+          Azedin abrió la barbería en 2020 en la Avenida José Barrionuevo Peña.
+          Hoy son tres en el salón. Al reservar eliges con quién.
+        </p>
+
+        <ul class="mt-10 border-t border-veta" aria-label="Barberos">
+          {
+            barbers.map((b) => (
+              <li class="grid grid-cols-[3.5rem_minmax(0,1fr)] items-center gap-x-5 border-b border-veta py-4">
+                <div class="aro relative grid h-14 w-14 place-items-center overflow-hidden bg-marmol-2" aria-hidden={b.img ? undefined : 'true'}>
+                  {b.img ? (
+                    <Image
+                      src={b.img}
+                      alt={`${b.name}, barbero`}
+                      width={192}
+                      height={192}
+                      widths={[128, 192]}
+                      sizes="56px"
+                      format="avif"
+                      quality={72}
+                      class="h-full w-full object-cover"
+                    />
+                  ) : (
+                    <span class="font-display text-h3 leading-none text-roble" style="font-variation-settings: 'wght' 500;">
+                      {b.name.charAt(0)}
+                    </span>
+                  )}
+                </div>
+                <div class="flex min-w-0 items-baseline justify-between gap-4">
+                  <h3 class="display text-sub leading-tight">
+                    {b.instagram ? (
+                      <a
+                        href={b.instagram}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        class="underline decoration-veta underline-offset-4 transition-colors duration-120 ease-marmol hover:text-roble hover:decoration-roble"
+                      >
+                        {b.name}
+                      </a>
+                    ) : (
+                      b.name
+                    )}
+                  </h3>
+                  <p class="shrink-0 font-body text-cap uppercase tracking-wide text-humo">{b.role}</p>
+                </div>
+              </li>
+            ))
+          }
+        </ul>
+      </div>
+    </div>
   </div>
 </section>
