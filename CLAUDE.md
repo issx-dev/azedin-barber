@@ -23,9 +23,13 @@ MobileStickyCTA. `homepage.spec.js` asserts this order.
 - LocalTour: `<canvas>` painted from 216 frames in `public/tour/{d,m}/NNN.avif`
   (frame 000 is a real `<img>`, the LCP). Frames are in `public/`, so Astro neither
   processes nor hashes them.
-- Lookbook.astro: one GSAP ScrollTrigger-pinned horizontal reel on all breakpoints;
-  without JS it is a native snap scroller.
-- `src/scripts/motion.js` (GSAP, ScrollTrigger, Lenis) is dynamically imported from
+- Lookbook.astro: a CSS `position: sticky` horizontal reel driven by a small rAF scrub
+  (no GSAP). An inline script adds `.is-live` before first paint so the section's
+  scroll height is reserved up front (no layout shift, anchors land correctly);
+  without JS or with reduced motion it is a native snap scroller. LocalTour reserves
+  its height the same way (`is-tall`).
+- `src/scripts/motion.js` (Web Animations + IntersectionObserver; Lenis only for
+  fine pointers) is dynamically imported from
   `Layout.astro` on idle, and only when `prefers-reduced-motion: no-preference`.
   Pages must be complete without it.
 - InstagramFeed renders only if `PUBLIC_IG_FEED_URL` is set.
@@ -66,4 +70,7 @@ production. `/tour/*` is cached 30 days (not `immutable`: filenames are not hash
 - Footer "Hoy" is filled in on the client (Europe/Madrid weekday, from the `hours`
   JSON in `data-hours`); without JS it shows a neutral weekly-hours line. Never
   compute "today" in Astro frontmatter: the page is static.
+- No GSAP anywhere: it was removed for main-thread cost (Lighthouse mobile 99).
+- Logo.astro ships its paths once per page: `mode="symbol"` in Header, `mode="use"`
+  in Header/Footer, inline only in the hero (the trazo intro animates real paths).
 - Fonts come from `@fontsource-variable` (bundled under `/_astro`), not `public/`.

@@ -11,7 +11,7 @@ The home page is a booking funnel: every CTA opens the Booksy profile in a new t
   Tailwind's default theme (colours, radius, shadows, font sizes, opacity steps).
 - Fonts: `@fontsource-variable/cormorant` (display) and
   `@fontsource-variable/source-sans-3` (body), self-hosted.
-- GSAP + ScrollTrigger and Lenis (`src/scripts/motion.js`), imported dynamically
+- Motion with the Web Animations API and Lenis (`src/scripts/motion.js`), imported dynamically
   after first paint (idle callback) and only when `prefers-reduced-motion: no-preference`.
   Without JS the page is complete.
 - Playwright + axe-core for end-to-end and accessibility tests.

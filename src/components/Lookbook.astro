@@ -70,7 +70,7 @@ const total = String(galleryItems.length).padStart(2, '0');
                     sizes="(min-width: 1455px) 320px, (min-width: 768px) 22vw, (min-width: 640px) 44vw, 78vw"
                     format="avif"
                     quality={78}
-                    loading={i < 3 ? 'eager' : 'lazy'}
+                    loading="lazy"
                     style={`object-position: ${item.focus}`}
                     class="absolute inset-0 h-full w-full object-cover"
                   />
