@@ -36,8 +36,26 @@ const total = String(galleryItems.length).padStart(2, '0');
   <script is:inline>
     // Pre-paint: reserve the reel's scroll length now, not when JS arrives, so
     // nothing below it shifts later. Reduced motion keeps the native scroller.
-    if (matchMedia('(prefers-reduced-motion: no-preference)').matches)
-      document.getElementById('archivo').classList.add('is-live');
+    // Fail-safe: the reel module marks the section data-ready when it is
+    // evaluated (module scripts run before DOMContentLoaded). Still unmarked
+    // 4 s after load (or 8 s after DOMContentLoaded) means it was blocked or
+    // never arrived: drop back to the native snap scroller, the no-JS layout.
+    (function (s) {
+      if (!matchMedia('(prefers-reduced-motion: no-preference)').matches) return;
+      s.classList.add('is-live');
+      var check = function () {
+        if (s.hasAttribute('data-ready') || !s.classList.contains('is-live')) return;
+        s.classList.remove('is-live');
+        // Everything below just moved up: put an anchor back in view.
+        try {
+          var h = location.hash && document.getElementById(decodeURIComponent(location.hash.slice(1)));
+          if (h) h.scrollIntoView();
+        } catch (e) {}
+        dispatchEvent(new Event('resize'));
+      };
+      addEventListener('load', function () { setTimeout(check, 4000); }, { once: true });
+      addEventListener('DOMContentLoaded', function () { setTimeout(check, 8000); }, { once: true });
+    })(document.getElementById('archivo'));
   </script>
   <!-- Exactly one screen. A stage taller than the viewport sticks flush
        with the top and then jumps up by the overflow when it lets go.
@@ -167,6 +185,8 @@ const total = String(galleryItems.length).padStart(2, '0');
   const root = document.querySelector<HTMLElement>('[data-reel]');
 
   if (root) {
+    // First thing, synchronously: tells the inline fail-safe the module ran.
+    root.setAttribute('data-ready', '');
     const stage = root.querySelector<HTMLElement>('.reel-stage')!;
     const rail = root.querySelector<HTMLElement>('.reel-rail')!;
     const cards = [...root.querySelectorAll<HTMLElement>('.reel-card')];
