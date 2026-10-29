@@ -197,12 +197,12 @@ export const reviewThemes = ['Profesionalidad', 'Detalle', 'Buen trato', 'Puntua
 // The client's own photos of real cuts. `focus` sets object-position so the haircut, not the
 // ceiling, survives the crop.
 export const galleryItems = [
-  { label: 'Low Fade', barber: 'Azedin', alt: 'Crop con low fade', src: corteLowFade, width: 1755, height: 2340, focus: 'center 28%' },
-  { label: 'Crop Top', barber: 'Azedin', alt: 'Crop top texturizado', src: corteCropTop, width: 1755, height: 2340, focus: 'center 30%' },
-  { label: 'Afeitado a navaja', barber: 'Azedin', alt: 'Afeitado clásico con navaja', src: corteAfeitadoClasico, width: 1755, height: 2340, focus: 'center 38%' },
-  { label: 'French crop', barber: 'Azedin', alt: 'French crop con degradado', src: corteArregloBarba, width: 1179, height: 2556, focus: 'center 30%' },
-  { label: 'Mid Fade clásico', barber: 'Azedin', alt: 'Mid fade degradado medio', src: corteMidFade, width: 1440, height: 1800, focus: 'center 30%' },
-  { label: 'Skin Fade', barber: 'Azedin', alt: 'Skin fade degradado', src: corteSkinFade, width: 1179, height: 2071, focus: 'center 30%' },
+  { label: 'Low Fade', alt: 'Crop con low fade', src: corteLowFade, width: 1755, height: 2340, focus: 'center 28%' },
+  { label: 'Crop Top', alt: 'Crop top texturizado', src: corteCropTop, width: 1755, height: 2340, focus: 'center 30%' },
+  { label: 'Crop con skin fade', alt: 'Crop con skin fade y raya marcada, visto de espaldas', src: corteAfeitadoClasico, width: 1755, height: 2340, focus: 'center 38%' },
+  { label: 'French crop', alt: 'French crop con degradado', src: corteArregloBarba, width: 1179, height: 2556, focus: 'center 30%' },
+  { label: 'Mid Fade clásico', alt: 'Mid fade degradado medio', src: corteMidFade, width: 1440, height: 1800, focus: 'center 30%' },
+  { label: 'Skin Fade', alt: 'Skin fade degradado', src: corteSkinFade, width: 1179, height: 2071, focus: 'center 30%' },
 ];
 
 export const shopImages = {

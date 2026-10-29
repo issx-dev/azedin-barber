@@ -4,7 +4,8 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Commands
 
-- `pnpm dev` / `pnpm build` / `pnpm preview` / `pnpm test:e2e` (Playwright, chromium only).
+- `pnpm dev` / `pnpm build` / `pnpm preview` / `pnpm test:e2e` (Playwright: chromium and
+  webkit projects; `--project=chromium` for one).
 - Single test: `pnpm exec playwright test e2e/<file>`.
 - Build first: the e2e config starts `pnpm preview`, which serves `dist/`.
   `PLAYWRIGHT_TEST_BASE_URL` points tests at an existing server (preview on :4399).
@@ -42,7 +43,7 @@ MobileStickyCTA. `homepage.spec.js` asserts this order.
   `bg-marmol`, `text-roble`). Opacity steps are whitelisted (0, 5, 6, 10, 15, 20, 25,
   30, 40, 50, 60, 70, 75, 80, 85, 90, 95, 100): other values (e.g. `bg-marmol/55`)
   silently produce no CSS and no build error. Design rules are in the header of
-  `src/styles/global.css` and `docs/identity-system.md`.
+  `src/styles/global.css` and in `tailwind.config.mjs` comments.
 
 ## Constraints locked by e2e (`e2e/`)
 
@@ -77,3 +78,9 @@ production. `/tour/*` is cached 30 days (not `immutable`: filenames are not hash
 - Logo.astro ships its paths once per page: `mode="symbol"` in Header, `mode="use"`
   in Header/Footer, inline only in the hero (the trazo intro animates real paths).
 - Fonts come from `@fontsource-variable` (bundled under `/_astro`), not `public/`.
+  Do not add a font preload: Safari fetches same-origin @font-face without CORS, so
+  a `crossorigin` preload never matches and the face downloads twice.
+- Safari/WebKit performance: no CSS `filter` on anything that changes per frame
+  (Safari repaints it; the reel dims with an opacity shade instead), canvas
+  `imageSmoothingQuality` stays 'low', and on iPhone/iPad the tour keeps only ~72
+  decoded frames (all 216 would be ~670 MB). Check scroll smoothness in webkit too.

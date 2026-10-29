@@ -92,10 +92,10 @@ const total = String(galleryItems.length).padStart(2, '0');
                     style={`object-position: ${item.focus}`}
                     class="absolute inset-0 h-full w-full object-cover"
                   />
+                  <span class="reel-shade pointer-events-none absolute inset-0 bg-marmol" aria-hidden="true"></span>
                 </div>
-                <figcaption class="mt-4 flex shrink-0 items-baseline justify-between gap-3">
-                  <span class="font-display text-cap font-semibold uppercase tracking-wide text-cal">{item.label}</span>
-                  <span class="font-body text-cap text-humo">{item.barber}</span>
+                <figcaption class="mt-4 shrink-0 font-display text-cap font-semibold uppercase tracking-wide text-cal">
+                  {item.label}
                 </figcaption>
               </figure>
             </li>
@@ -158,21 +158,28 @@ const total = String(galleryItems.length).padStart(2, '0');
       transform 420ms var(--ease-marmol);
   }
   /* Resting pose before the first scroll frame. JS then drives scale and
-     brightness from distance to the chair, every frame, so the CSS transition
-     would only lag the finger. Captions stay undimmed (WCAG AA). */
+     the shade from distance to the chair, every frame, so the CSS transition
+     would only lag the finger. Captions stay undimmed (WCAG AA).
+     Dimming is a marble shade over the photo, not a CSS filter: Safari
+     repaints filtered images every frame (iPhone: ~70 ms per frame with
+     filters, ~25 ms with an opacity layer, which it only composites). */
   [data-reel].is-live .reel-card {
     transform: scale(0.9);
     transition: none;
+    will-change: transform;
   }
-  [data-reel].is-live .reel-card .reel-media {
-    filter: brightness(0.45) saturate(0.68);
-    transition: none;
+  .reel-shade {
+    opacity: 0;
+    will-change: opacity;
+  }
+  [data-reel].is-live .reel-card .reel-shade {
+    opacity: 0.55;
   }
   [data-reel].is-live .reel-card.is-on {
     transform: scale(1);
   }
-  [data-reel].is-live .reel-card.is-on .reel-media {
-    filter: none;
+  [data-reel].is-live .reel-card.is-on .reel-shade {
+    opacity: 0;
   }
   @media (prefers-reduced-motion: reduce) {
     [data-reel].is-live .reel-card {
@@ -190,7 +197,7 @@ const total = String(galleryItems.length).padStart(2, '0');
     const stage = root.querySelector<HTMLElement>('.reel-stage')!;
     const rail = root.querySelector<HTMLElement>('.reel-rail')!;
     const cards = [...root.querySelectorAll<HTMLElement>('.reel-card')];
-    const media = cards.map((c) => c.querySelector<HTMLElement>('.reel-media'));
+    const shades = cards.map((c) => c.querySelector<HTMLElement>('.reel-shade'));
     const indexEl = root.querySelector<HTMLElement>('.reel-index');
     const progress = root.querySelector<HTMLElement>('.reel-progress');
     let on = -1;
@@ -242,17 +249,14 @@ const total = String(galleryItems.length).padStart(2, '0');
         return travel > 0 ? Math.min(1, Math.max(0, -r.top / travel)) : 0;
       };
 
-      // Neighbour falls to 0.9 scale and ~0.45 brightness. The value follows
-      // the fractional index, so the handoff glides instead of popping.
+      // Neighbour falls to 0.9 scale under a 55% marble shade (~0.45 brightness).
+      // The value follows the fractional index, so the handoff glides.
       const pose = (f: number) => {
         cards.forEach((card, i) => {
           const fall = Math.min(1, Math.abs(i - f));
           card.style.transform = `scale(${(1 - fall * 0.1).toFixed(4)})`;
-          const m = media[i];
-          if (!m) return;
-          m.style.filter = fall < 0.04
-            ? 'none'
-            : `brightness(${(1 - fall * 0.55).toFixed(3)}) saturate(${(1 - fall * 0.32).toFixed(3)})`;
+          const sh = shades[i];
+          if (sh) sh.style.opacity = fall < 0.04 ? '0' : (fall * 0.55).toFixed(3);
         });
       };
 

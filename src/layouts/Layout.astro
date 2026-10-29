@@ -4,9 +4,6 @@ import '@fontsource-variable/cormorant';
 import '@fontsource-variable/source-sans-3';
 import '../styles/global.css';
 
-// Resolved through Vite so the preload points at the real hashed asset.
-import displayWoff from '@fontsource-variable/cormorant/files/cormorant-latin-wght-normal.woff2?url';
-
 import { business, services, hours, reviews } from '../data/content.js';
 
 export interface Props {
@@ -108,7 +105,9 @@ const schema = {
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
-    <!-- Only the display face is preloaded; body text can swap with matched metrics. -->
+    <!-- No font preload: Safari fetches same-origin @font-face without CORS, so a
+         crossorigin preload never matches and the face downloads twice. Both faces
+         swap in over metric-matched fallbacks (global.css), so nothing shifts. -->
     <!-- LCP: first still of the walk-through — AVIF matches <picture> preference so the preload is consumed. -->
     {preloadTour && (
       <>
@@ -116,7 +115,6 @@ const schema = {
         <link rel="preload" as="image" type="image/avif" href="/tour/d/000.avif" media="(min-width: 768px)" fetchpriority="high" />
       </>
     )}
-    <link rel="preload" as="font" type="font/woff2" crossorigin href={displayWoff} />
 
     <title>{title}</title>
     <meta name="description" content={description} />

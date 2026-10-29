@@ -13,6 +13,12 @@ export default defineConfig({
       name: 'chromium',
       use: { browserName: 'chromium' },
     },
+    // Safari's engine: every browser on iOS runs it, and it renders and
+    // schedules differently enough to need its own run.
+    {
+      name: 'webkit',
+      use: { browserName: 'webkit' },
+    },
   ],
   webServer: {
     command: process.env.PLAYWRIGHT_TEST_BASE_URL ? 'pnpm preview --port 4399' : 'pnpm preview',

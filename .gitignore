@@ -30,3 +30,7 @@ azedin-resources/
 e2e/screenshots/
 # Local AI runtime state
 .atl/
+
+# Process notes and client originals: kept locally, not in the repo
+docs/
+odd/

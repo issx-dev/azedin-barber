@@ -222,6 +222,16 @@ const chapters = [
     const frames: (HTMLImageElement | null)[] = new Array(N).fill(null);
     const loading = new Set<number>();
     const WINDOW = 24; // dense neighborhood around the scrub head
+    // iPhone/iPad WebKit (every browser on iOS) keeps each decoded frame in
+    // memory: the whole walk is ~670 MB, enough for iOS to reload the tab.
+    // There only a window stays decoded and far frames are dropped; the HTTP
+    // cache keeps their bytes, so coming back costs a decode, not a download.
+    // Bulk loading is off for the same reason. Desktop Safari keeps them all.
+    const iosWebkit =
+      /AppleWebKit/.test(navigator.userAgent) &&
+      !/Chrome|Chromium|Android/.test(navigator.userAgent) &&
+      navigator.maxTouchPoints > 0;
+    const KEEP = iosWebkit ? 3 * WINDOW : N;
 
     const src = (i: number) => `/tour/${dir}/${String(i).padStart(3, '0')}.avif`;
 
@@ -241,8 +251,10 @@ const chapters = [
         canvas.width = w;
         canvas.height = h;
       }
+      // Frames are drawn at (or below) their own resolution, so 'low' is
+      // indistinguishable here — and 'high' costs Safari 4–6x per drawImage.
       ctx.imageSmoothingEnabled = true;
-      ctx.imageSmoothingQuality = 'high';
+      ctx.imageSmoothingQuality = 'low';
       drawn = -1;
       paint(shown);
     }
@@ -351,7 +363,7 @@ const chapters = [
     let walking = false;
 
     function tryBulk() {
-      if (bulk || constrained || !walking || document.readyState !== 'complete') return;
+      if (bulk || constrained || iosWebkit || !walking || document.readyState !== 'complete') return;
       bulk = true;
       rebuildQueue(priorityHead);
       queuedHead = priorityHead;
@@ -374,10 +386,28 @@ const chapters = [
       frames[i] = img;
       loading.delete(i);
       loadedCount += 1;
+      if (loadedCount > KEEP) evict();
       const want = Math.round(shown * (N - 1));
       if (drawn < 0 || Math.abs(i - want) <= Math.abs(drawn - want)) {
         drawn = -1;
         paint(shown);
+      }
+    }
+
+    // Drop the decoded frames farthest from the scrub head (never frame 0 or
+    // the one on the canvas) until we are back under KEEP.
+    function evict() {
+      while (loadedCount > KEEP) {
+        let far = -1;
+        let farD = -1;
+        for (let k = 1; k < N; k++) {
+          if (!frames[k] || k === drawn) continue;
+          const d = Math.abs(k - priorityHead);
+          if (d > farD) { farD = d; far = k; }
+        }
+        if (far < 0) return;
+        frames[far] = null;
+        loadedCount -= 1;
       }
     }
 

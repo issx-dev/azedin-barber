@@ -1,7 +1,7 @@
 # Azedin Barber
 
 One-page static site for a barbershop in Berja (Almería). Spanish copy, design
-system **MÁRMOL** (colours sampled from the shop itself; see `docs/identity-system.md`).
+system **MÁRMOL** (colours sampled from the shop itself; the rules are in the header of `src/styles/global.css` and `tailwind.config.mjs`).
 The home page is a booking funnel: every CTA opens the Booksy profile in a new tab.
 
 ## Stack
@@ -29,8 +29,7 @@ Footer and MobileStickyCTA.
 All business data lives in `src/data/content.js`: `business`, `hours` (copied
 from the Google listing), `services`, `barbers`, `reviews`, `galleryItems`,
 `shopImages`. Edit it there, not in components. Gallery photos are in
-`src/assets/img/` and optimised by Astro at build time. Client originals are kept
-in `azedin-images/` and are not part of the build.
+`src/assets/img/` and optimised by Astro at build time.
 
 ## Tour frame sequence
 
