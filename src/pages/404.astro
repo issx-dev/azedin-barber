@@ -2,10 +2,13 @@
 import Layout from '../layouts/Layout.astro';
 ---
 <Layout title="404 — Página no encontrada | Azedin Barber" description="La página que buscas no existe.">
-  <main id="main-content" class="min-h-[100dvh] bg-bg-deep flex flex-col items-center justify-center text-center px-6">
-    <p class="text-oak font-display text-[clamp(6rem,20vw,12rem)] font-bold leading-none" aria-hidden="true">404</p>
-    <h1 class="font-display text-ink text-[clamp(1.5rem,4vw,2.5rem)] mt-4 mb-6">Página no encontrada</h1>
-    <p class="text-ink-faint max-w-md mb-10">El corte que buscas no está en nuestra agenda. Vuelve al inicio y reserva tu cita.</p>
-    <a href="/" class="btn-oak">Volver al inicio</a>
+  <main id="main-content" class="flex min-h-[100dvh] items-center bg-marmol py-16">
+    <div class="frame text-center">
+      <p class="eyebrow mb-6">Error 404</p>
+      <p class="display text-roble" style="font-size: var(--step-poster); line-height: 0.9;" aria-hidden="true">404</p>
+      <h1 class="display mt-6" style="font-size: var(--step-2); line-height: 1;">Página no encontrada</h1>
+      <p class="mx-auto mb-10 mt-4 max-w-measure font-body text-humo">El corte que buscas no está en nuestra agenda. Vuelve al inicio y reserva tu cita.</p>
+      <a href="/" class="btn btn-primary">Volver al inicio</a>
+    </div>
   </main>
 </Layout>

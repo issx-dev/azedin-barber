@@ -1,25 +1,15 @@
 import { test, expect } from '@playwright/test';
 
-test('lookbook renders editorial catalog items without filters', async ({ page }) => {
-  await page.goto('/');
+test('archivo renders the catalog without filters', async ({ page }) => {
+  await page.goto('/', { waitUntil: 'domcontentloaded' });
 
-  // Wait for DOM content to load
-  await page.waitForLoadState('domcontentloaded');
+  const archivo = page.locator('#archivo');
+  await expect(archivo).toBeVisible({ timeout: 10000 });
+  await expect(archivo.getByRole('heading', { name: 'Archivo' })).toBeVisible();
 
-  // Scroll to lookbook section
-  await page.evaluate(() => {
-    document.querySelector('#lookbook')?.scrollIntoView();
-  });
+  await expect(page.locator('#archivo .reel-card')).toHaveCount(6);
+  await expect(page.locator('#archivo video')).toHaveCount(0);
 
-  // Lookbook section should be visible
-  const lookbook = page.locator('#lookbook');
-  await expect(lookbook).toBeVisible({ timeout: 10000 });
-
-  // Editorial catalog items should render (6 items with .lookbook-item class)
-  const catalogItems = page.locator('.lookbook-item');
-  await expect(catalogItems).toHaveCount(6, { timeout: 10000 });
-
-  // No filter buttons should be present
-  const filterButtons = page.locator('button', { hasText: 'Todos' });
-  await expect(filterButtons).toHaveCount(0);
+  await expect(page.getByRole('button', { name: 'Todos' })).toHaveCount(0);
+  await expect(page.getByRole('button', { name: 'Ver más' })).toHaveCount(0);
 });

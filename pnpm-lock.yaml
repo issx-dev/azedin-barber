@@ -14,18 +14,15 @@ importers:
       '@astrojs/tailwind':
         specifier: ^5.1.4
         version: 5.1.5(astro@4.16.19(@types/node@24.13.3)(lightningcss@1.33.0)(rollup@4.62.2)(typescript@5.9.3))(tailwindcss@3.4.19(yaml@2.9.0))
-      '@fontsource-variable/instrument-sans':
+      '@fontsource-variable/cormorant':
         specifier: ^5.3.0
         version: 5.3.0
-      '@fontsource/fraunces':
-        specifier: ^5.3.0
-        version: 5.3.0
+      '@fontsource-variable/source-sans-3':
+        specifier: ^5.3.1
+        version: 5.3.1
       astro:
         specifier: ^4.16.19
         version: 4.16.19(@types/node@24.13.3)(lightningcss@1.33.0)(rollup@4.62.2)(typescript@5.9.3)
-      gsap:
-        specifier: ^3.15.0
-        version: 3.15.0
       lenis:
         specifier: ^1.3.25
         version: 1.3.25(react@18.3.1)
@@ -356,11 +353,11 @@ packages:
     cpu: [x64]
     os: [win32]
 
-  '@fontsource-variable/instrument-sans@5.3.0':
-    resolution: {integrity: sha512-u4gKbDBTNFGkg997tfQn3eHOhHuquWUFTRT/rwzuKtrxX5P2ekfs2x+LgBPP4P32+cC+vUwF1Cr+IdRoPQbrGw==}
+  '@fontsource-variable/cormorant@5.3.0':
+    resolution: {integrity: sha512-S3/jFZ2+Erx8ML5+lo71rYKqVpJF13CZ3yWX7xfjQk1wFcPhT9Gp+l2tnNSLOx5Mzjn3mQmVPutpvx91O2VqpQ==}
 
-  '@fontsource/fraunces@5.3.0':
-    resolution: {integrity: sha512-LEHTOBiZufQzAvnAe2rZ8ZknbDS28Q9kzwb0L+gZJEmjLGr8hhZ/5NuHXwDuHBWhVXYoiGGXmrb0H6Ko/RrHTg==}
+  '@fontsource-variable/source-sans-3@5.3.1':
+    resolution: {integrity: sha512-u0p5Z/PM2e1uxYOMiodLM6NVzxHwULcB6Oi7QSr2WU/sdoLBFP/BeOZ3YYHeJ6rHsjPZA1nZweZVaV7sf2MAyQ==}
 
   '@img/colour@1.1.0':
     resolution: {integrity: sha512-Td76q7j57o/tLVdgS746cYARfSyxk8iEfRxewL9h4OMzYhbW4TAcppl0mT4eyqXddh6L/jwoM75mo7ixa/pCeQ==}
@@ -1270,9 +1267,6 @@ packages:
   gray-matter@4.0.3:
     resolution: {integrity: sha512-5v6yZd4JK3eMI3FqqCouswVqwugaA9r4dNZB1wwcmrD02QkV5H0y7XBQW8QwQqEaZY1pM9aqORSORhJRdNK44Q==}
     engines: {node: '>=6.0'}
-
-  gsap@3.15.0:
-    resolution: {integrity: sha512-dMW4CWBTUK1AEEDeZc1g4xpPGIrSf9fJF960qbTZmN/QwZIWY5wgliS6JWl9/25fpTGJrMRtSjGtOmPnfjZB+A==}
 
   hasown@2.0.4:
     resolution: {integrity: sha512-T2UbfbBEF32wiepXIsMlTW9+dDYC6wMh/t/vYA4tuOMKqWz/n3vr1NFSxQiyP+zk2mXsoMA/i/7qV6LKut1t1A==}
@@ -2755,9 +2749,9 @@ snapshots:
   '@esbuild/win32-x64@0.21.5':
     optional: true
 
-  '@fontsource-variable/instrument-sans@5.3.0': {}
+  '@fontsource-variable/cormorant@5.3.0': {}
 
-  '@fontsource/fraunces@5.3.0': {}
+  '@fontsource-variable/source-sans-3@5.3.1': {}
 
   '@img/colour@1.1.0': {}
 
@@ -3620,8 +3614,6 @@ snapshots:
       kind-of: 6.0.3
       section-matter: 1.0.0
       strip-bom-string: 1.0.0
-
-  gsap@3.15.0: {}
 
   hasown@2.0.4:
     dependencies:

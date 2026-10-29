@@ -1,128 +1,312 @@
 ---
 /**
- * Lookbook — Winston Studio Inspired Editorial Catalog.
+ * Archivo — the work, as a reel you scroll through.
  *
- * Spacious 3-column portrait grid with clean external captions below each image.
- * Zero overlays covering the haircuts.
+ * One pinned horizontal rail on EVERY breakpoint (the previous version
+ * collapsed to a grid on phones, and the pin never ran there). On phones each
+ * card is ~78vw, so one cut fills the screen and the next peeks in.
+ *
+ * Six cuts, the ones sharp enough to judge. The card in the centre is on
+ * the chair: full size, full light. Neighbours ease back to about half
+ * brightness as they leave the centre, so the cut in front stays obvious
+ * and the next one is still a cut, not a black rectangle.
+ * Without JS the rail is a native horizontal scroller with snap points.
+ *
+ * The "pin" is CSS `position: sticky` (as in LocalTour), not a GSAP
+ * ScrollTrigger pin. The scroll length is reserved in CSS before first paint
+ * (an inline script arms `.is-live`), so the sections below never move after
+ * load and an early anchor jump to #resenas/#local/#donde lands where it
+ * should. Sticky also keeps the stage in flow: the fixed-position swap of a
+ * JS pin was scored by Chrome as two full-viewport layout shifts (CLS ~2.0)
+ * on every pass through the reel. The scrub below is ~1 KB, no GSAP.
  */
 import { Image } from 'astro:assets';
-import { galleryItems } from '../data/content.js';
-import CTA from './CTA.astro';
+import { galleryItems, business } from '../data/content.js';
 
-// Use first 6 curated haircuts for the editorial catalog
-const items = galleryItems.slice(0, 6);
+const total = String(galleryItems.length).padStart(2, '0');
 ---
 
 <section
-  id="lookbook"
-  class="bg-bg-deep py-0"
-  aria-label="Galería de cortes — Lookbook"
+  id="archivo"
+  class="relative"
+  aria-labelledby="archivo-title"
+  data-reel
+  style={`--reel-gaps: ${galleryItems.length - 1}`}
 >
-  <!-- Section header -->
-  <div class="px-6 md:px-10 pt-24 pb-14 max-w-6xl mx-auto">
-    <p
-      data-fade
-      class="text-[13px] md:text-[14.5px] tracking-[0.15em] uppercase text-ink-dim font-medium mb-4"
-    >
-      Nuestro trabajo
-    </p>
-    <h2
-      data-reveal
-      class="font-display display-large text-cream"
-    >
-      Lookbook
-    </h2>
-  </div>
+  <script is:inline>
+    // Pre-paint: reserve the reel's scroll length now, not when JS arrives, so
+    // nothing below it shifts later. Reduced motion keeps the native scroller.
+    // Fail-safe: the reel module marks the section data-ready when it is
+    // evaluated (module scripts run before DOMContentLoaded). Still unmarked
+    // 4 s after load (or 8 s after DOMContentLoaded) means it was blocked or
+    // never arrived: drop back to the native snap scroller, the no-JS layout.
+    (function (s) {
+      if (!matchMedia('(prefers-reduced-motion: no-preference)').matches) return;
+      s.classList.add('is-live');
+      var check = function () {
+        if (s.hasAttribute('data-ready') || !s.classList.contains('is-live')) return;
+        s.classList.remove('is-live');
+        // Everything below just moved up: put an anchor back in view.
+        try {
+          var h = location.hash && document.getElementById(decodeURIComponent(location.hash.slice(1)));
+          if (h) h.scrollIntoView();
+        } catch (e) {}
+        dispatchEvent(new Event('resize'));
+      };
+      addEventListener('load', function () { setTimeout(check, 4000); }, { once: true });
+      addEventListener('DOMContentLoaded', function () { setTimeout(check, 8000); }, { once: true });
+    })(document.getElementById('archivo'));
+  </script>
+  <!-- Exactly one screen. A stage taller than the viewport sticks flush
+       with the top and then jumps up by the overflow when it lets go.
+       pt-24 (not 20) so the eyebrow clears the 80px fixed header on #archivo. -->
+  <div class="reel-stage flex h-[100svh] max-h-[100svh] flex-col overflow-hidden bg-marmol pt-24 pb-6 md:justify-center md:pb-0 md:pt-20">
+    <header class="frame flex items-end justify-between gap-6">
+      <div>
+        <p class="eyebrow mb-3">Trabajos recientes</p>
+        <h2 id="archivo-title" class="text-sect display">Archivo</h2>
+      </div>
+      <p class="pb-1 font-display text-sub tabular text-humo" aria-hidden="true">
+        <span class="reel-index text-cal">01</span> / {total}
+      </p>
+    </header>
 
-  <!-- Editorial Catalog Grid -->
-  <div class="px-5 sm:px-8 md:px-10 max-w-6xl mx-auto pb-8 md:pb-16">
-    <div class="grid grid-cols-2 lg:grid-cols-3 gap-3.5 sm:gap-8 lg:gap-14">
-      {items.map((item, index) => {
-        const isExtra = index >= 4;
-        return (
-          <div 
-            data-fade 
-            class={`lookbook-item group flex flex-col ${isExtra ? 'lookbook-extra hidden md:flex' : ''}`}
-          >
-            <!-- Portrait photo card -->
-            <div class="relative aspect-[3/4] overflow-hidden bg-bg-panel border border-steel/15 rounded-sm">
-              <Image
-                src={item.src}
-                alt={item.alt}
-                widths={[320, 380, 480, 640, 960]}
-                sizes="(max-width: 640px) calc(50vw - 1.75rem), (max-width: 1024px) 33vw, 400px"
-                quality={82}
-                format="avif"
-                loading="lazy"
-                class="lookbook-img photo-preset w-full h-full object-cover transition-transform duration-300 ease-out group-hover:scale-105"
-                style={`object-position: ${item.focus}`}
-              />
-            </div>
-
-            <!-- Clean external caption below image (Winston Studio pattern) -->
-            <div class="mt-2.5 sm:mt-4 flex items-center justify-between border-b border-steel/20 pb-2">
-              <span class="font-display font-semibold text-[11px] sm:text-[14px] text-cream uppercase tracking-wide truncate pr-1">
-                {String(index + 1).padStart(2, '0')} / {item.label}
-              </span>
-              <span class="text-steel/70 text-[9px] sm:text-[11px] font-mono tracking-wider shrink-0">
-                {item.barber}
-              </span>
-            </div>
-          </div>
-        );
-      })}
+    <!-- No-JS: native scroller with snap. With JS: driven by the page scroll. -->
+    <div class="reel-viewport mt-6 min-h-0 flex-1 overflow-x-auto md:mt-12 md:flex-none" tabindex="0" role="region" aria-label="Galería de cortes, desplazable">
+      <ul class="reel-rail relative flex h-full w-max gap-4 px-[11vw] md:h-auto md:gap-8 md:px-[calc(50vw-160px)]">
+        {
+          galleryItems.map((item, i) => (
+            <li class="reel-card flex h-full w-[78vw] shrink-0 snap-center sm:w-[44vw] md:block md:h-auto md:w-[clamp(176px,calc((100svh-25rem)*9/16),clamp(240px,22vw,320px))]" data-i={i}>
+              <figure class="flex h-full min-h-0 w-full flex-col md:block md:h-auto">
+                <div class="reel-media relative aspect-auto min-h-0 w-full flex-1 overflow-hidden border border-veta bg-marmol-2 md:aspect-reel md:flex-none">
+                  <Image
+                    src={item.src}
+                    alt={item.alt}
+                    width={1200}
+                    height={2133}
+                    widths={[320, 400, 480, 600, 720, 860, 940, 1080]}
+                    sizes="(min-width: 1455px) 320px, (min-width: 768px) 22vw, (min-width: 640px) 44vw, 78vw"
+                    format="avif"
+                    quality={78}
+                    loading="lazy"
+                    style={`object-position: ${item.focus}`}
+                    class="absolute inset-0 h-full w-full object-cover"
+                  />
+                  <span class="reel-shade pointer-events-none absolute inset-0 bg-marmol" aria-hidden="true"></span>
+                </div>
+                <figcaption class="mt-4 shrink-0 font-display text-cap font-semibold uppercase tracking-wide text-cal">
+                  {item.label}
+                </figcaption>
+              </figure>
+            </li>
+          ))
+        }
+      </ul>
     </div>
 
-    <!-- Mobile Progressive Expander Button (visible on mobile < 768px) -->
-    <div class="text-center pt-8 block md:hidden">
-      <button
-        id="lookbook-toggle-btn"
-        class="btn-outline-thin text-[11px] px-8 py-3.5"
-        aria-expanded="false"
-        data-label-more="VER MÁS CORTES ›"
-        data-label-less="VER MENOS ‹"
+    <div class="frame mt-6 flex shrink-0 items-center justify-between gap-6 md:mt-12">
+      <span class="relative block h-px flex-1 bg-veta" aria-hidden="true">
+        <span class="reel-progress absolute inset-y-0 left-0 block w-full origin-left scale-x-0 bg-roble"></span>
+      </span>
+      <a
+        href={business.instagramUrl}
+        target="_blank"
+        rel="noopener noreferrer"
+        class="inline-flex min-h-11 shrink-0 items-center font-body text-cap font-semibold uppercase tracking-wide text-humo transition-colors duration-120 hover:text-cal"
       >
-        VER MÁS CORTES ›
-      </button>
+        Más en Instagram <span class="text-roble">→</span>
+      </a>
     </div>
   </div>
-
-  <!-- CTA below grid (hidden on mobile to prevent conversion clutter) -->
-  <div class="text-center pt-8 pb-16 px-6 hidden md:block">
-    <p class="text-ink-dim text-[13px] mb-6">
-      Cada corte cuenta su propia historia.
-    </p>
-    <CTA label="Reserva tu corte" />
-  </div>
-
 </section>
 
+<style>
+  .reel-viewport {
+    scroll-snap-type: x mandatory;
+    scrollbar-width: none;
+  }
+  .reel-viewport::-webkit-scrollbar {
+    display: none;
+  }
+  /* Scroll-driven: the section is one screen plus one STEP per card change,
+     and the stage sticks for that travel. STEP is px of page scroll per cut;
+     it lives only here (the script reads the travel back from layout).
+     Phones need a real beat on each cut; desktop scales with the stage. */
+  [data-reel].is-live {
+    --reel-step: 360px;
+    height: calc(100vh + var(--reel-step) * var(--reel-gaps));
+    height: calc(100svh + var(--reel-step) * var(--reel-gaps));
+  }
+  @media (min-width: 768px) {
+    [data-reel].is-live {
+      --reel-step: clamp(300px, 40vh, 420px);
+      --reel-step: clamp(300px, 40svh, 420px);
+    }
+  }
+  [data-reel].is-live .reel-stage {
+    position: sticky;
+    top: 0;
+  }
+  /* Driven by scroll: the viewport no longer scrolls natively. */
+  [data-reel].is-live .reel-viewport {
+    overflow: visible;
+    scroll-snap-type: none;
+  }
+  .reel-card {
+    transition:
+      opacity 420ms var(--ease-led),
+      transform 420ms var(--ease-marmol);
+  }
+  /* Resting pose before the first scroll frame. JS then drives scale and
+     the shade from distance to the chair, every frame, so the CSS transition
+     would only lag the finger. Captions stay undimmed (WCAG AA).
+     Dimming is a marble shade over the photo, not a CSS filter: Safari
+     repaints filtered images every frame (iPhone: ~70 ms per frame with
+     filters, ~25 ms with an opacity layer, which it only composites). */
+  [data-reel].is-live .reel-card {
+    transform: scale(0.9);
+    transition: none;
+    will-change: transform;
+  }
+  .reel-shade {
+    opacity: 0;
+    will-change: opacity;
+  }
+  [data-reel].is-live .reel-card .reel-shade {
+    opacity: 0.55;
+  }
+  [data-reel].is-live .reel-card.is-on {
+    transform: scale(1);
+  }
+  [data-reel].is-live .reel-card.is-on .reel-shade {
+    opacity: 0;
+  }
+  @media (prefers-reduced-motion: reduce) {
+    [data-reel].is-live .reel-card {
+      transform: none;
+    }
+  }
+</style>
+
 <script>
-  const toggleBtn = document.getElementById('lookbook-toggle-btn');
-  if (toggleBtn) {
-    toggleBtn.addEventListener('click', () => {
-      const extraItems = document.querySelectorAll('.lookbook-extra');
-      const isExpanded = toggleBtn.getAttribute('aria-expanded') === 'true';
+  const root = document.querySelector<HTMLElement>('[data-reel]');
 
-      extraItems.forEach((item) => {
-        if (isExpanded) {
-          item.classList.add('hidden');
-        } else {
-          item.classList.remove('hidden');
-        }
-      });
+  if (root) {
+    // First thing, synchronously: tells the inline fail-safe the module ran.
+    root.setAttribute('data-ready', '');
+    const stage = root.querySelector<HTMLElement>('.reel-stage')!;
+    const rail = root.querySelector<HTMLElement>('.reel-rail')!;
+    const cards = [...root.querySelectorAll<HTMLElement>('.reel-card')];
+    const shades = cards.map((c) => c.querySelector<HTMLElement>('.reel-shade'));
+    const indexEl = root.querySelector<HTMLElement>('.reel-index');
+    const progress = root.querySelector<HTMLElement>('.reel-progress');
+    let on = -1;
 
-      toggleBtn.setAttribute('aria-expanded', isExpanded ? 'false' : 'true');
-      const moreText = toggleBtn.getAttribute('data-label-more');
-      const lessText = toggleBtn.getAttribute('data-label-less');
-      toggleBtn.textContent = isExpanded ? moreText : lessText;
+    // The focused card ("on the chair") follows progress through the rail, so
+    // the first and last cuts get their turn too — a centre-distance test can
+    // never select them because they cannot scroll to the centre.
+    function focus(p?: number) {
+      let best = 0;
+      if (typeof p === 'number') {
+        best = Math.round(p * (cards.length - 1));
+      } else {
+        const mid = window.innerWidth / 2;
+        let bestD = Infinity;
+        cards.forEach((c, i) => {
+          const r = c.getBoundingClientRect();
+          const d = Math.abs(r.left + r.width / 2 - mid);
+          if (d < bestD) { bestD = d; best = i; }
+        });
+      }
+      if (best === on) return;
+      on = best;
+      cards.forEach((c, i) => c.classList.toggle('is-on', i === best));
+      if (indexEl) indexEl.textContent = String(best + 1).padStart(2, '0');
+    }
 
-      setTimeout(() => {
-        const win = window as unknown as { __ScrollTrigger?: { refresh: () => void } };
-        if (win.__ScrollTrigger) {
-          win.__ScrollTrigger.refresh();
-        }
-      }, 0);
-    });
+    if (!root.classList.contains('is-live')) {
+      // Reduced motion: keep the native snap scroller; track focus on swipe.
+      root.querySelector('.reel-viewport')!.addEventListener('scroll', () => focus(), { passive: true });
+      focus();
+    } else {
+      // Geometry, measured on load/resize only. Card centres are in rail
+      // coordinates (offsetLeft is rail-relative: the rail is `relative`) and
+      // untransformed, so the CSS scale on the cards never skews them.
+      let centres: number[] = [];
+      let railLeft = 0;
+      let x = 0;
+      const measure = () => {
+        centres = cards.map((c) => c.offsetLeft + c.offsetWidth / 2);
+        railLeft = rail.getBoundingClientRect().left - x;
+      };
+
+      // Progress through the stuck span. Travel is the section's extra height
+      // over the stage (both svh-based, so a phone's sliding address bar does
+      // not move it mid-swipe).
+      const progressAt = () => {
+        const r = root.getBoundingClientRect();
+        const travel = r.height - stage.offsetHeight;
+        return travel > 0 ? Math.min(1, Math.max(0, -r.top / travel)) : 0;
+      };
+
+      // Neighbour falls to 0.9 scale under a 55% marble shade (~0.45 brightness).
+      // The value follows the fractional index, so the handoff glides.
+      const pose = (f: number) => {
+        cards.forEach((card, i) => {
+          const fall = Math.min(1, Math.abs(i - f));
+          card.style.transform = `scale(${(1 - fall * 0.1).toFixed(4)})`;
+          const sh = shades[i];
+          if (sh) sh.style.opacity = fall < 0.04 ? '0' : (fall * 0.55).toFixed(3);
+        });
+      };
+
+      // Map progress -> rail x piecewise-linearly through the card centres,
+      // so at progress k/(n-1) card k is exactly centred, whatever the widths
+      // and gaps. A single linear tween drifted off by the gap ratio.
+      const apply = (p: number) => {
+        const f = p * (cards.length - 1);
+        const k = Math.min(cards.length - 2, Math.floor(f));
+        const cx = centres[k] + (centres[k + 1] - centres[k]) * (f - k);
+        x = window.innerWidth / 2 - railLeft - cx;
+        rail.style.transform = `translate3d(${x.toFixed(2)}px,0,0)`;
+        if (progress) progress.style.transform = `scaleX(${p})`;
+        pose(f);
+        focus(p);
+      };
+
+      // Scrub: the rail eases toward the scroll position (~0.5 s to settle,
+      // like the old `scrub: 0.5`). No snapping: it fought a thumb mid-swipe.
+      let shown = 0;
+      let target = 0;
+      let raf = 0;
+      let lastT = 0;
+      const tick = (t: number) => {
+        const dt = lastT ? Math.min(0.05, (t - lastT) / 1000) : 1 / 60;
+        lastT = t;
+        shown += (target - shown) * (1 - Math.exp(-dt / 0.1));
+        if (Math.abs(target - shown) < 1e-4) shown = target;
+        apply(shown);
+        if (shown !== target) raf = requestAnimationFrame(tick);
+        else { raf = 0; lastT = 0; }
+      };
+      const onScroll = () => {
+        target = progressAt();
+        if (!raf) raf = requestAnimationFrame(tick);
+      };
+      // Layout changed (resize, fonts): re-measure, repaint, keep easing.
+      const settle = () => {
+        measure();
+        apply(shown);
+        onScroll();
+      };
+
+      measure();
+      shown = target = progressAt();
+      apply(shown);
+      window.addEventListener('scroll', onScroll, { passive: true });
+      window.addEventListener('resize', settle, { passive: true });
+      document.fonts?.ready.then(settle);
+      window.addEventListener('load', settle, { once: true });
+    }
   }
 </script>

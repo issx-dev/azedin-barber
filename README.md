@@ -1,84 +1,74 @@
-# Azedin Barber — Premium Web Experience
+# Azedin Barber
 
-A high-performance, single-page editorial web application designed for a premium local barbershop in Berja, Almería. This project showcases modern front-end architecture, custom micro-interactions, responsive fluid grids, and optimal Core Web Vitals performance.
+One-page static site for a barbershop in Berja (Almería). Spanish copy, design
+system **MÁRMOL** (colours sampled from the shop itself; the rules are in the header of `src/styles/global.css` and `tailwind.config.mjs`).
+The home page is a booking funnel: every CTA opens the Booksy profile in a new tab.
 
-## 🛠️ Technology Stack
+## Stack
 
-- **Core Framework**: [Astro](https://astro.build/) (Static Site Generation for sub-second load times)
-- **Styling**: [Tailwind CSS](https://tailwindcss.com/) (Utility-first CSS paired with custom variable design tokens)
-- **Interactions & Islands**: [React](https://react.dev/) (Used selectively for state-driven modal components)
-- **Animation Engine**: [GSAP](https://greensock.com/gsap/) + [Lenis](https://github.com/darkroomengineering/lenis) (Hardware-accelerated scroll reveals and smooth inertia scroll)
-- **End-to-End Testing**: [Playwright](https://playwright.dev/) (Functional & visual regression suites)
+- [Astro](https://astro.build/) 4, fully static output, no UI framework islands.
+- [Tailwind CSS](https://tailwindcss.com/) 3. `tailwind.config.mjs` **replaces**
+  Tailwind's default theme (colours, radius, shadows, font sizes, opacity steps).
+- Fonts: `@fontsource-variable/cormorant` (display) and
+  `@fontsource-variable/source-sans-3` (body), self-hosted.
+- Motion with the Web Animations API and Lenis (`src/scripts/motion.js`), imported dynamically
+  after first paint (idle callback) and only when `prefers-reduced-motion: no-preference`.
+  Without JS the page is complete.
+- Playwright + axe-core for end-to-end and accessibility tests.
 
----
+## Page structure
 
-## 📐 Architecture & Core Design Decisions
+`src/pages/index.astro` composes, in order: Header, **LocalTour** (scroll-scrubbed
+walkthrough of the shop), **Services** (`#servicios`, prices), **Lookbook**
+(`#archivo`, pinned horizontal reel), **Reviews** (`#resenas`), **About**
+(`#local`, the team), **Location** (`#donde`), **InstagramFeed** (optional), then
+Footer and MobileStickyCTA.
 
-### 1. Minimalist Industrial Nocturno Design System
-The visual architecture is inspired by premium studio aesthetics, utilizing a desaturated color strategy with controlled high-contrast focal points:
-- **`--color-bg-deep` (`#0C0A09`)**: Deep dark marble canvas.
-- **`--color-steel` (`#8A95A5`)**: Desaturated steel-gray for borders, dot-leaders, and metadata.
-- **`--color-oak` (`#C29367`)**: Accent gold/wood tone reserved exclusively for conversion CTAs and active states.
-- **Typography Hierarchy**:
-  - **Display (Headings)**: `Bricolage Grotesque` (Highly geometric display face).
-  - **Body**: `Instrument Sans` (Clean, highly legible body copy).
-  - **Editorial Quotes**: `Fraunces` (Premium serif for human stories).
+## Content
 
-### 2. High-Performance & Core Web Vitals Optimization
-- **Image Optimization**: Fully automated using Astro’s native `<Image />` component, converting raw images into WebP, generating responsive `srcset` configurations, and setting explicit aspect ratios to eliminate layout shifts (CLS).
-- **Critical Asset Preloading**: Preconnects for Google Fonts and preloads critical variable font files.
-- **Render Performance**: Conditional JS initialization and static markup representation for non-interactive elements keep initial bundle size near zero.
+All business data lives in `src/data/content.js`: `business`, `hours` (copied
+from the Google listing), `services`, `barbers`, `reviews`, `galleryItems`,
+`shopImages`. Edit it there, not in components. Gallery photos are in
+`src/assets/img/` and optimised by Astro at build time.
 
----
+## Tour frame sequence
 
-## 📁 Repository Structure
+`LocalTour.astro` paints a `<canvas>` from 216 frames (24 fps) extracted from the
+shop walkthrough: `public/tour/d/NNN.avif` (desktop crop) and
+`public/tour/m/NNN.avif` (phone), `NNN` = `000`..`215`; frame 000 also has a
+`.webp` fallback and is a real `<img>` (the LCP). Frames live in `public/`, so
+Astro does not process or content-hash them: if you replace a frame, keep the
+name and expect stale browser caches.
+
+## Commands
 
 ```
-src/
-  assets/img/           # Optimized raw image assets
-  components/           # Modular Astro and React components
-    Hero.astro          # Landing block with parallax and video loop
-    Lookbook.astro      # 2-column mobile / 3-column desktop editorial work showcase
-    BookingModal.jsx    # React state-driven booking overlay with B&W-to-color transitions
-    Services.astro      # Dark services matrix with responsive leader lines
-    About.astro         # Narrative section using unified single-column vertical flow
-    InstagramStrip.astro# Responsive social grid strip
-  data/
-    content.js          # Centralized repository for copy, pricing, and social URLs
-  layouts/
-    Layout.astro        # Base HTML document layout and head metadata
-  styles/
-     global.css         # Styling system base, variable tokens, and keyframes
-  scripts/
-     animations.js      # Custom Lenis + GSAP scroll controller
-```
-
----
-
-## 🚀 Local Setup & Build
-
-### Development Server
-Run the local environment:
-```bash
 pnpm install
-pnpm dev
+pnpm dev          # dev server on :4321
+pnpm build        # static build to dist/ (slow: image optimisation)
+pnpm preview      # serve dist/
+pnpm test:e2e     # Playwright (chromium)
 ```
-Open `http://localhost:4321` in your browser.
 
-### Production Build
-Compile and optimize static files for production deployment:
-```bash
-pnpm build
-pnpm preview
-```
-The output directory `dist/` is fully static and ready for direct deployment to Vercel, Netlify, Cloudflare Pages, or static object storage.
+## Tests
 
----
+`e2e/` runs against `pnpm preview` (started by `playwright.config.mjs`), so
+**build first**. Set `PLAYWRIGHT_TEST_BASE_URL` to test an already-running
+server (previewed on port 4399). In sandboxes the bundled Chromium may be missing;
+point Playwright at a system browser with `launchOptions.executablePath`.
+Run one file with `pnpm exec playwright test e2e/no-js.spec.js`.
+CI (`.github/workflows/ci.yml`) runs install, build, then the suite on pushes and
+PRs to `main`.
 
-## 🧪 Automated Testing
+## Environment
 
-This repository includes a full suite of automated Playwright end-to-end (E2E) tests covering responsive navigation overlay events, booking flows, visual font family checks, and layout container stability:
+`PUBLIC_IG_FEED_URL` (optional): JSON endpoint (e.g. a Behold.so feed) for the
+Instagram section. Without it the section is not rendered. `URL` sets the
+canonical site URL for the sitemap (Netlify provides it).
 
-```bash
-pnpm run test:e2e
-```
+## Deployment
+
+Netlify (`netlify.toml`): `pnpm build`, publish `dist`. It also sets security
+headers (CSP, HSTS, frame denial) and immutable caching for `/_astro/*`. Any new
+third-party origin (scripts, fonts, images, fetch targets, iframes) must be
+added to the CSP there.
